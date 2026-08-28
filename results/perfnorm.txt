@@ -12,136 +12,137 @@ WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: bench.WriteStringSpillBench.serializer
+# Benchmark: bench.flat.SingleBench.serialize
+# Parameters: (size = 10)
 
 # Run progress: 0.00% complete, ETA 00:01:00
 # Fork: 1 of 3
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
-# Warmup Iteration   1: 4574.676 ns/op
-# Warmup Iteration   2: 4313.651 ns/op
-# Warmup Iteration   3: 4272.457 ns/op
-# Warmup Iteration   4: 4161.525 ns/op
-# Warmup Iteration   5: 4097.760 ns/op
-Iteration   1: 4320.207 ns/op
-Iteration   2: 4267.349 ns/op
-Iteration   3: 4243.506 ns/op
-Iteration   4: 4106.611 ns/op
-Iteration   5: 4073.497 ns/op
+# Warmup Iteration   1: 565.306 ns/op
+# Warmup Iteration   2: 461.244 ns/op
+# Warmup Iteration   3: 462.399 ns/op
+# Warmup Iteration   4: 419.856 ns/op
+# Warmup Iteration   5: 414.961 ns/op
+Iteration   1: 416.616 ns/op
+Iteration   2: 431.740 ns/op
+Iteration   3: 417.414 ns/op
+Iteration   4: 427.766 ns/op
+Iteration   5: 415.012 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 # Run progress: 16.67% complete, ETA 00:00:54
 # Fork: 2 of 3
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
-# Warmup Iteration   1: 4601.498 ns/op
-# Warmup Iteration   2: 4288.162 ns/op
-# Warmup Iteration   3: 4272.413 ns/op
-# Warmup Iteration   4: 4168.086 ns/op
-# Warmup Iteration   5: 4059.620 ns/op
-Iteration   1: 4265.967 ns/op
-Iteration   2: 4262.391 ns/op
-Iteration   3: 4242.299 ns/op
-Iteration   4: 4098.779 ns/op
-Iteration   5: 4064.316 ns/op
+# Warmup Iteration   1: 564.392 ns/op
+# Warmup Iteration   2: 460.510 ns/op
+# Warmup Iteration   3: 453.016 ns/op
+# Warmup Iteration   4: 423.331 ns/op
+# Warmup Iteration   5: 429.997 ns/op
+Iteration   1: 419.028 ns/op
+Iteration   2: 426.153 ns/op
+Iteration   3: 415.868 ns/op
+Iteration   4: 428.001 ns/op
+Iteration   5: 415.971 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 # Run progress: 33.33% complete, ETA 00:00:43
 # Fork: 3 of 3
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
-# Warmup Iteration   1: 4617.577 ns/op
-# Warmup Iteration   2: 4305.940 ns/op
-# Warmup Iteration   3: 4322.940 ns/op
-# Warmup Iteration   4: 4211.683 ns/op
-# Warmup Iteration   5: 4105.818 ns/op
-Iteration   1: 4299.537 ns/op
-Iteration   2: 4298.927 ns/op
-Iteration   3: 4326.694 ns/op
-Iteration   4: 4568.367 ns/op
-Iteration   5: 4527.773 ns/op
+# Warmup Iteration   1: 573.916 ns/op
+# Warmup Iteration   2: 460.241 ns/op
+# Warmup Iteration   3: 447.555 ns/op
+# Warmup Iteration   4: 416.870 ns/op
+# Warmup Iteration   5: 413.378 ns/op
+Iteration   1: 413.294 ns/op
+Iteration   2: 415.458 ns/op
+Iteration   3: 412.438 ns/op
+Iteration   4: 423.306 ns/op
+Iteration   5: 413.768 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 
-Result "bench.WriteStringSpillBench.serializer":
-  4264.415 ±(99.9%) 156.736 ns/op [Average]
-  (min, avg, max) = (4064.316, 4264.415, 4568.367), stdev = 146.611
-  CI (99.9%): [4107.678, 4421.151] (assumes normal distribution)
+Result "bench.flat.SingleBench.serialize":
+  419.455 ±(99.9%) 6.672 ns/op [Average]
+  (min, avg, max) = (412.438, 419.455, 431.740), stdev = 6.241
+  CI (99.9%): [412.783, 426.128] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:CPI":
-  0.226 ±(99.9%) 0.144 clks/insn [Average]
-  (min, avg, max) = (0.221, 0.226, 0.235), stdev = 0.008
-  CI (99.9%): [0.082, 0.369] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:CPI":
+  0.205 ±(99.9%) 0.023 clks/insn [Average]
+  (min, avg, max) = (0.203, 0.205, 0.206), stdev = 0.001
+  CI (99.9%): [0.182, 0.227] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:IPC":
-  4.437 ±(99.9%) 2.774 insns/clk [Average]
-  (min, avg, max) = (4.261, 4.437, 4.530), stdev = 0.152
-  CI (99.9%): [1.663, 7.211] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:IPC":
+  4.884 ±(99.9%) 0.540 insns/clk [Average]
+  (min, avg, max) = (4.860, 4.884, 4.917), stdev = 0.030
+  CI (99.9%): [4.345, 5.424] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:L1-dcache-load-misses":
-  65.850 ±(99.9%) 637.975 #/op [Average]
-  (min, avg, max) = (45.017, 65.850, 106.223), stdev = 34.970
-  CI (99.9%): [≈ 0, 703.825] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:L1-dcache-load-misses":
+  8.196 ±(99.9%) 6.413 #/op [Average]
+  (min, avg, max) = (7.956, 8.196, 8.600), stdev = 0.351
+  CI (99.9%): [1.784, 14.609] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:L1-dcache-loads":
-  27570.444 ±(99.9%) 20236.931 #/op [Average]
-  (min, avg, max) = (26898.590, 27570.444, 28850.778), stdev = 1109.254
-  CI (99.9%): [7333.513, 47807.375] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:L1-dcache-loads":
+  3021.661 ±(99.9%) 153.196 #/op [Average]
+  (min, avg, max) = (3012.712, 3021.661, 3029.368), stdev = 8.397
+  CI (99.9%): [2868.465, 3174.857] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:L1-icache-load-misses":
-  1.614 ±(99.9%) 6.203 #/op [Average]
-  (min, avg, max) = (1.244, 1.614, 1.912), stdev = 0.340
-  CI (99.9%): [≈ 0, 7.818] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:L1-icache-load-misses":
+  0.017 ±(99.9%) 0.058 #/op [Average]
+  (min, avg, max) = (0.014, 0.017, 0.020), stdev = 0.003
+  CI (99.9%): [≈ 0, 0.075] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:L1-icache-loads":
-  383.282 ±(99.9%) 29.863 #/op [Average]
-  (min, avg, max) = (381.551, 383.282, 384.805), stdev = 1.637
-  CI (99.9%): [353.419, 413.145] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:L1-icache-loads":
+  7.314 ±(99.9%) 6.964 #/op [Average]
+  (min, avg, max) = (6.917, 7.314, 7.679), stdev = 0.382
+  CI (99.9%): [0.350, 14.279] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:branch-misses":
-  11.085 ±(99.9%) 11.274 #/op [Average]
-  (min, avg, max) = (10.497, 11.085, 11.729), stdev = 0.618
-  CI (99.9%): [≈ 0, 22.359] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:branch-misses":
+  0.443 ±(99.9%) 1.013 #/op [Average]
+  (min, avg, max) = (0.385, 0.443, 0.495), stdev = 0.056
+  CI (99.9%): [≈ 0, 1.456] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:branches":
-  14536.270 ±(99.9%) 623.986 #/op [Average]
-  (min, avg, max) = (14497.364, 14536.270, 14561.604), stdev = 34.203
-  CI (99.9%): [13912.284, 15160.256] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:branches":
+  1664.143 ±(99.9%) 52.435 #/op [Average]
+  (min, avg, max) = (1661.727, 1664.143, 1667.322), stdev = 2.874
+  CI (99.9%): [1611.708, 1716.578] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:cycles":
-  18165.683 ±(99.9%) 9428.524 #/op [Average]
-  (min, avg, max) = (17835.123, 18165.683, 18761.241), stdev = 516.809
-  CI (99.9%): [8737.159, 27594.207] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:cycles":
+  1790.590 ±(99.9%) 260.454 #/op [Average]
+  (min, avg, max) = (1774.203, 1790.590, 1800.336), stdev = 14.276
+  CI (99.9%): [1530.136, 2051.043] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:dTLB-load-misses":
-  0.304 ±(99.9%) 0.207 #/op [Average]
-  (min, avg, max) = (0.290, 0.304, 0.311), stdev = 0.011
-  CI (99.9%): [0.097, 0.510] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:dTLB-load-misses":
+  0.112 ±(99.9%) 0.024 #/op [Average]
+  (min, avg, max) = (0.111, 0.112, 0.113), stdev = 0.001
+  CI (99.9%): [0.088, 0.136] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:dTLB-loads":
-  4.445 ±(99.9%) 3.531 #/op [Average]
-  (min, avg, max) = (4.275, 4.445, 4.656), stdev = 0.194
-  CI (99.9%): [0.914, 7.976] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:dTLB-loads":
+  0.198 ±(99.9%) 0.095 #/op [Average]
+  (min, avg, max) = (0.192, 0.198, 0.202), stdev = 0.005
+  CI (99.9%): [0.103, 0.292] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:iTLB-load-misses":
-  0.276 ±(99.9%) 0.125 #/op [Average]
-  (min, avg, max) = (0.268, 0.276, 0.280), stdev = 0.007
-  CI (99.9%): [0.151, 0.401] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:iTLB-load-misses":
+  0.010 ±(99.9%) 0.009 #/op [Average]
+  (min, avg, max) = (0.010, 0.010, 0.011), stdev = 0.001
+  CI (99.9%): [0.002, 0.019] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:iTLB-loads":
-  0.142 ±(99.9%) 0.442 #/op [Average]
-  (min, avg, max) = (0.118, 0.142, 0.167), stdev = 0.024
-  CI (99.9%): [≈ 0, 0.584] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:iTLB-loads":
+  0.015 ±(99.9%) 0.150 #/op [Average]
+  (min, avg, max) = (0.009, 0.015, 0.024), stdev = 0.008
+  CI (99.9%): [≈ 0, 0.165] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:instructions":
-  80545.716 ±(99.9%) 9497.464 #/op [Average]
-  (min, avg, max) = (79948.100, 80545.716, 80900.679), stdev = 520.588
-  CI (99.9%): [71048.251, 90043.180] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:instructions":
+  8745.790 ±(99.9%) 352.823 #/op [Average]
+  (min, avg, max) = (8724.616, 8745.790, 8762.522), stdev = 19.339
+  CI (99.9%): [8392.967, 9098.614] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializer:stalled-cycles-frontend":
-  473.354 ±(99.9%) 800.592 #/op [Average]
-  (min, avg, max) = (444.097, 473.354, 523.812), stdev = 43.883
-  CI (99.9%): [≈ 0, 1273.946] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serialize:stalled-cycles-frontend":
+  16.904 ±(99.9%) 15.654 #/op [Average]
+  (min, avg, max) = (16.224, 16.904, 17.868), stdev = 0.858
+  CI (99.9%): [1.250, 32.558] (assumes normal distribution)
 
 
 # JMH version: 1.37
@@ -154,23 +155,24 @@ Secondary result "bench.WriteStringSpillBench.serializer:stalled-cycles-frontend
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: bench.WriteStringSpillBench.serializerNotInlinedWriteString
+# Benchmark: bench.flat.SingleBench.serializeWriteStringNotInlined
+# Parameters: (size = 10)
 
 # Run progress: 50.00% complete, ETA 00:00:32
 # Fork: 1 of 3
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
 CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-# Warmup Iteration   1: 3344.126 ns/op
-# Warmup Iteration   2: 3120.047 ns/op
-# Warmup Iteration   3: 3045.430 ns/op
-# Warmup Iteration   4: 2968.332 ns/op
-# Warmup Iteration   5: 3093.479 ns/op
-Iteration   1: 3080.002 ns/op
-Iteration   2: 2907.467 ns/op
-Iteration   3: 2913.174 ns/op
-Iteration   4: 2912.206 ns/op
-Iteration   5: 2969.593 ns/op
+# Warmup Iteration   1: 487.556 ns/op
+# Warmup Iteration   2: 356.506 ns/op
+# Warmup Iteration   3: 366.229 ns/op
+# Warmup Iteration   4: 369.216 ns/op
+# Warmup Iteration   5: 346.852 ns/op
+Iteration   1: 348.189 ns/op
+Iteration   2: 340.759 ns/op
+Iteration   3: 341.155 ns/op
+Iteration   4: 339.543 ns/op
+Iteration   5: 340.224 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 # Run progress: 66.67% complete, ETA 00:00:22
@@ -178,16 +180,16 @@ Iteration   5: 2969.593 ns/op
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
 CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-# Warmup Iteration   1: 3525.084 ns/op
-# Warmup Iteration   2: 3193.389 ns/op
-# Warmup Iteration   3: 3048.739 ns/op
-# Warmup Iteration   4: 2991.471 ns/op
-# Warmup Iteration   5: 3109.076 ns/op
-Iteration   1: 3097.686 ns/op
-Iteration   2: 2923.993 ns/op
-Iteration   3: 2923.109 ns/op
-Iteration   4: 2939.310 ns/op
-Iteration   5: 2984.187 ns/op
+# Warmup Iteration   1: 490.665 ns/op
+# Warmup Iteration   2: 370.124 ns/op
+# Warmup Iteration   3: 366.372 ns/op
+# Warmup Iteration   4: 369.502 ns/op
+# Warmup Iteration   5: 343.554 ns/op
+Iteration   1: 343.686 ns/op
+Iteration   2: 341.492 ns/op
+Iteration   3: 343.174 ns/op
+Iteration   4: 346.977 ns/op
+Iteration   5: 342.548 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 # Run progress: 83.33% complete, ETA 00:00:11
@@ -195,98 +197,98 @@ Iteration   5: 2984.187 ns/op
 # Preparing profilers: LinuxPerfNormProfiler 
 # Profilers consume stderr from target VM, use -v EXTRA to copy to console
 CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-# Warmup Iteration   1: 3346.315 ns/op
-# Warmup Iteration   2: 3120.816 ns/op
-# Warmup Iteration   3: 3039.863 ns/op
-# Warmup Iteration   4: 2997.702 ns/op
-# Warmup Iteration   5: 3102.592 ns/op
-Iteration   1: 3079.134 ns/op
-Iteration   2: 2908.076 ns/op
-Iteration   3: 2911.834 ns/op
-Iteration   4: 2913.903 ns/op
-Iteration   5: 2992.251 ns/op
+# Warmup Iteration   1: 486.834 ns/op
+# Warmup Iteration   2: 349.195 ns/op
+# Warmup Iteration   3: 363.510 ns/op
+# Warmup Iteration   4: 375.865 ns/op
+# Warmup Iteration   5: 344.169 ns/op
+Iteration   1: 342.469 ns/op
+Iteration   2: 403.513 ns/op
+Iteration   3: 344.835 ns/op
+Iteration   4: 340.967 ns/op
+Iteration   5: 340.231 ns/op
 # Processing profiler results: LinuxPerfNormProfiler 
 
 
-Result "bench.WriteStringSpillBench.serializerNotInlinedWriteString":
-  2963.728 ±(99.9%) 73.692 ns/op [Average]
-  (min, avg, max) = (2907.467, 2963.728, 3097.686), stdev = 68.932
-  CI (99.9%): [2890.036, 3037.421] (assumes normal distribution)
+Result "bench.flat.SingleBench.serializeWriteStringNotInlined":
+  346.651 ±(99.9%) 17.026 ns/op [Average]
+  (min, avg, max) = (339.543, 346.651, 403.513), stdev = 15.926
+  CI (99.9%): [329.624, 363.677] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:CPI":
-  0.184 ±(99.9%) 0.009 clks/insn [Average]
-  (min, avg, max) = (0.184, 0.184, 0.185), stdev = 0.001
-  CI (99.9%): [0.175, 0.194] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:CPI":
+  0.187 ±(99.9%) 0.057 clks/insn [Average]
+  (min, avg, max) = (0.185, 0.187, 0.190), stdev = 0.003
+  CI (99.9%): [0.130, 0.244] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:IPC":
-  5.427 ±(99.9%) 0.276 insns/clk [Average]
-  (min, avg, max) = (5.409, 5.427, 5.437), stdev = 0.015
-  CI (99.9%): [5.151, 5.703] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:IPC":
+  5.353 ±(99.9%) 1.612 insns/clk [Average]
+  (min, avg, max) = (5.251, 5.353, 5.409), stdev = 0.088
+  CI (99.9%): [3.740, 6.965] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:L1-dcache-load-misses":
-  28.357 ±(99.9%) 17.812 #/op [Average]
-  (min, avg, max) = (27.561, 28.357, 29.447), stdev = 0.976
-  CI (99.9%): [10.545, 46.170] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:L1-dcache-load-misses":
+  10.407 ±(99.9%) 45.597 #/op [Average]
+  (min, avg, max) = (7.588, 10.407, 12.351), stdev = 2.499
+  CI (99.9%): [≈ 0, 56.004] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:L1-dcache-loads":
-  20597.501 ±(99.9%) 182.056 #/op [Average]
-  (min, avg, max) = (20586.006, 20597.501, 20603.938), stdev = 9.979
-  CI (99.9%): [20415.445, 20779.557] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:L1-dcache-loads":
+  2620.058 ±(99.9%) 301.819 #/op [Average]
+  (min, avg, max) = (2601.526, 2620.058, 2633.338), stdev = 16.544
+  CI (99.9%): [2318.239, 2921.877] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:L1-icache-load-misses":
-  0.203 ±(99.9%) 0.238 #/op [Average]
-  (min, avg, max) = (0.195, 0.203, 0.218), stdev = 0.013
-  CI (99.9%): [≈ 0, 0.441] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:L1-icache-load-misses":
+  0.012 ±(99.9%) 0.064 #/op [Average]
+  (min, avg, max) = (0.008, 0.012, 0.015), stdev = 0.003
+  CI (99.9%): [≈ 0, 0.076] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:L1-icache-loads":
-  135.871 ±(99.9%) 792.639 #/op [Average]
-  (min, avg, max) = (96.041, 135.871, 182.202), stdev = 43.447
-  CI (99.9%): [≈ 0, 928.509] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:L1-icache-loads":
+  4.108 ±(99.9%) 8.267 #/op [Average]
+  (min, avg, max) = (3.612, 4.108, 4.501), stdev = 0.453
+  CI (99.9%): [≈ 0, 12.375] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:branch-misses":
-  6.371 ±(99.9%) 6.591 #/op [Average]
-  (min, avg, max) = (6.030, 6.371, 6.749), stdev = 0.361
-  CI (99.9%): [≈ 0, 12.962] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:branch-misses":
+  0.345 ±(99.9%) 0.457 #/op [Average]
+  (min, avg, max) = (0.320, 0.345, 0.370), stdev = 0.025
+  CI (99.9%): [≈ 0, 0.803] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:branches":
-  14814.636 ±(99.9%) 215.019 #/op [Average]
-  (min, avg, max) = (14807.130, 14814.636, 14828.220), stdev = 11.786
-  CI (99.9%): [14599.617, 15029.655] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:branches":
+  1701.036 ±(99.9%) 78.200 #/op [Average]
+  (min, avg, max) = (1696.785, 1701.036, 1705.357), stdev = 4.286
+  CI (99.9%): [1622.836, 1779.236] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:cycles":
-  12639.244 ±(99.9%) 678.908 #/op [Average]
-  (min, avg, max) = (12607.304, 12639.244, 12680.108), stdev = 37.213
-  CI (99.9%): [11960.335, 13318.152] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:cycles":
+  1477.463 ±(99.9%) 448.783 #/op [Average]
+  (min, avg, max) = (1459.636, 1477.463, 1505.528), stdev = 24.599
+  CI (99.9%): [1028.680, 1926.246] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:dTLB-load-misses":
-  0.192 ±(99.9%) 0.103 #/op [Average]
-  (min, avg, max) = (0.186, 0.192, 0.197), stdev = 0.006
-  CI (99.9%): [0.089, 0.296] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:dTLB-load-misses":
+  0.109 ±(99.9%) 0.027 #/op [Average]
+  (min, avg, max) = (0.107, 0.109, 0.110), stdev = 0.001
+  CI (99.9%): [0.082, 0.135] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:dTLB-loads":
-  1.714 ±(99.9%) 3.499 #/op [Average]
-  (min, avg, max) = (1.493, 1.714, 1.830), stdev = 0.192
-  CI (99.9%): [≈ 0, 5.214] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:dTLB-loads":
+  0.168 ±(99.9%) 0.165 #/op [Average]
+  (min, avg, max) = (0.159, 0.168, 0.178), stdev = 0.009
+  CI (99.9%): [0.003, 0.334] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:iTLB-load-misses":
-  0.143 ±(99.9%) 0.198 #/op [Average]
-  (min, avg, max) = (0.134, 0.143, 0.155), stdev = 0.011
-  CI (99.9%): [≈ 0, 0.341] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:iTLB-load-misses":
+  0.005 ±(99.9%) 0.013 #/op [Average]
+  (min, avg, max) = (0.004, 0.005, 0.005), stdev = 0.001
+  CI (99.9%): [≈ 0, 0.017] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:iTLB-loads":
-  0.040 ±(99.9%) 0.308 #/op [Average]
-  (min, avg, max) = (0.021, 0.040, 0.054), stdev = 0.017
-  CI (99.9%): [≈ 0, 0.348] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:iTLB-loads":
+  0.008 ±(99.9%) 0.004 #/op [Average]
+  (min, avg, max) = (0.008, 0.008, 0.009), stdev = 0.001
+  CI (99.9%): [0.004, 0.013] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:instructions":
-  68590.927 ±(99.9%) 818.643 #/op [Average]
-  (min, avg, max) = (68545.421, 68590.927, 68635.138), stdev = 44.873
-  CI (99.9%): [67772.285, 69409.570] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:instructions":
+  7907.036 ±(99.9%) 513.375 #/op [Average]
+  (min, avg, max) = (7879.805, 7907.036, 7936.004), stdev = 28.140
+  CI (99.9%): [7393.661, 8420.411] (assumes normal distribution)
 
-Secondary result "bench.WriteStringSpillBench.serializerNotInlinedWriteString:stalled-cycles-frontend":
-  194.895 ±(99.9%) 198.611 #/op [Average]
-  (min, avg, max) = (185.980, 194.895, 207.028), stdev = 10.887
-  CI (99.9%): [≈ 0, 393.506] (assumes normal distribution)
+Secondary result "bench.flat.SingleBench.serializeWriteStringNotInlined:stalled-cycles-frontend":
+  13.567 ±(99.9%) 29.933 #/op [Average]
+  (min, avg, max) = (11.902, 13.567, 15.183), stdev = 1.641
+  CI (99.9%): [≈ 0, 43.501] (assumes normal distribution)
 
 
 # Run complete. Total time: 00:01:06
@@ -303,36 +305,36 @@ works, and factor in a small probability of new VM bugs. Additionally, while com
 different JVMs are already problematic, the performance difference caused by different Blackhole
 modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
 
-Benchmark                                                                      Mode  Cnt      Score       Error      Units
-WriteStringSpillBench.serializer                                               avgt   15   4264.415 ±   156.736      ns/op
-WriteStringSpillBench.serializer:CPI                                           avgt    3      0.226 ±     0.144  clks/insn
-WriteStringSpillBench.serializer:IPC                                           avgt    3      4.437 ±     2.774  insns/clk
-WriteStringSpillBench.serializer:L1-dcache-load-misses                         avgt    3     65.850 ±   637.975       #/op
-WriteStringSpillBench.serializer:L1-dcache-loads                               avgt    3  27570.444 ± 20236.931       #/op
-WriteStringSpillBench.serializer:L1-icache-load-misses                         avgt    3      1.614 ±     6.203       #/op
-WriteStringSpillBench.serializer:L1-icache-loads                               avgt    3    383.282 ±    29.863       #/op
-WriteStringSpillBench.serializer:branch-misses                                 avgt    3     11.085 ±    11.274       #/op
-WriteStringSpillBench.serializer:branches                                      avgt    3  14536.270 ±   623.986       #/op
-WriteStringSpillBench.serializer:cycles                                        avgt    3  18165.683 ±  9428.524       #/op
-WriteStringSpillBench.serializer:dTLB-load-misses                              avgt    3      0.304 ±     0.207       #/op
-WriteStringSpillBench.serializer:dTLB-loads                                    avgt    3      4.445 ±     3.531       #/op
-WriteStringSpillBench.serializer:iTLB-load-misses                              avgt    3      0.276 ±     0.125       #/op
-WriteStringSpillBench.serializer:iTLB-loads                                    avgt    3      0.142 ±     0.442       #/op
-WriteStringSpillBench.serializer:instructions                                  avgt    3  80545.716 ±  9497.464       #/op
-WriteStringSpillBench.serializer:stalled-cycles-frontend                       avgt    3    473.354 ±   800.592       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString                          avgt   15   2963.728 ±    73.692      ns/op
-WriteStringSpillBench.serializerNotInlinedWriteString:CPI                      avgt    3      0.184 ±     0.009  clks/insn
-WriteStringSpillBench.serializerNotInlinedWriteString:IPC                      avgt    3      5.427 ±     0.276  insns/clk
-WriteStringSpillBench.serializerNotInlinedWriteString:L1-dcache-load-misses    avgt    3     28.357 ±    17.812       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:L1-dcache-loads          avgt    3  20597.501 ±   182.056       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:L1-icache-load-misses    avgt    3      0.203 ±     0.238       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:L1-icache-loads          avgt    3    135.871 ±   792.639       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:branch-misses            avgt    3      6.371 ±     6.591       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:branches                 avgt    3  14814.636 ±   215.019       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:cycles                   avgt    3  12639.244 ±   678.908       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:dTLB-load-misses         avgt    3      0.192 ±     0.103       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:dTLB-loads               avgt    3      1.714 ±     3.499       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:iTLB-load-misses         avgt    3      0.143 ±     0.198       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:iTLB-loads               avgt    3      0.040 ±     0.308       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:instructions             avgt    3  68590.927 ±   818.643       #/op
-WriteStringSpillBench.serializerNotInlinedWriteString:stalled-cycles-frontend  avgt    3    194.895 ±   198.611       #/op
+Benchmark                                                           (size)  Mode  Cnt     Score     Error      Units
+SingleBench.serialize                                                   10  avgt   15   419.455 ±   6.672      ns/op
+SingleBench.serialize:CPI                                               10  avgt    3     0.205 ±   0.023  clks/insn
+SingleBench.serialize:IPC                                               10  avgt    3     4.884 ±   0.540  insns/clk
+SingleBench.serialize:L1-dcache-load-misses                             10  avgt    3     8.196 ±   6.413       #/op
+SingleBench.serialize:L1-dcache-loads                                   10  avgt    3  3021.661 ± 153.196       #/op
+SingleBench.serialize:L1-icache-load-misses                             10  avgt    3     0.017 ±   0.058       #/op
+SingleBench.serialize:L1-icache-loads                                   10  avgt    3     7.314 ±   6.964       #/op
+SingleBench.serialize:branch-misses                                     10  avgt    3     0.443 ±   1.013       #/op
+SingleBench.serialize:branches                                          10  avgt    3  1664.143 ±  52.435       #/op
+SingleBench.serialize:cycles                                            10  avgt    3  1790.590 ± 260.454       #/op
+SingleBench.serialize:dTLB-load-misses                                  10  avgt    3     0.112 ±   0.024       #/op
+SingleBench.serialize:dTLB-loads                                        10  avgt    3     0.198 ±   0.095       #/op
+SingleBench.serialize:iTLB-load-misses                                  10  avgt    3     0.010 ±   0.009       #/op
+SingleBench.serialize:iTLB-loads                                        10  avgt    3     0.015 ±   0.150       #/op
+SingleBench.serialize:instructions                                      10  avgt    3  8745.790 ± 352.823       #/op
+SingleBench.serialize:stalled-cycles-frontend                           10  avgt    3    16.904 ±  15.654       #/op
+SingleBench.serializeWriteStringNotInlined                              10  avgt   15   346.651 ±  17.026      ns/op
+SingleBench.serializeWriteStringNotInlined:CPI                          10  avgt    3     0.187 ±   0.057  clks/insn
+SingleBench.serializeWriteStringNotInlined:IPC                          10  avgt    3     5.353 ±   1.612  insns/clk
+SingleBench.serializeWriteStringNotInlined:L1-dcache-load-misses        10  avgt    3    10.407 ±  45.597       #/op
+SingleBench.serializeWriteStringNotInlined:L1-dcache-loads              10  avgt    3  2620.058 ± 301.819       #/op
+SingleBench.serializeWriteStringNotInlined:L1-icache-load-misses        10  avgt    3     0.012 ±   0.064       #/op
+SingleBench.serializeWriteStringNotInlined:L1-icache-loads              10  avgt    3     4.108 ±   8.267       #/op
+SingleBench.serializeWriteStringNotInlined:branch-misses                10  avgt    3     0.345 ±   0.457       #/op
+SingleBench.serializeWriteStringNotInlined:branches                     10  avgt    3  1701.036 ±  78.200       #/op
+SingleBench.serializeWriteStringNotInlined:cycles                       10  avgt    3  1477.463 ± 448.783       #/op
+SingleBench.serializeWriteStringNotInlined:dTLB-load-misses             10  avgt    3     0.109 ±   0.027       #/op
+SingleBench.serializeWriteStringNotInlined:dTLB-loads                   10  avgt    3     0.168 ±   0.165       #/op
+SingleBench.serializeWriteStringNotInlined:iTLB-load-misses             10  avgt    3     0.005 ±   0.013       #/op
+SingleBench.serializeWriteStringNotInlined:iTLB-loads                   10  avgt    3     0.008 ±   0.004       #/op
+SingleBench.serializeWriteStringNotInlined:instructions                 10  avgt    3  7907.036 ± 513.375       #/op
+SingleBench.serializeWriteStringNotInlined:stalled-cycles-frontend      10  avgt    3    13.567 ±  29.933       #/op

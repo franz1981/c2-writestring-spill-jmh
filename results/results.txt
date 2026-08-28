@@ -12,7 +12,8 @@ WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: bench.WriteStringSpillBench.serializer
+# Benchmark: bench.flat.SingleBench.serialize
+# Parameters: (size = 10)
 
 # Run progress: 0.00% complete, ETA 00:01:00
 # Fork: 1 of 3
@@ -20,16 +21,16 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 4398.528 ns/op
-# Warmup Iteration   2: 4262.647 ns/op
-# Warmup Iteration   3: 4288.382 ns/op
-# Warmup Iteration   4: 4086.624 ns/op
-# Warmup Iteration   5: 4146.579 ns/op
-Iteration   1: 4238.593 ns/op
-Iteration   2: 4252.744 ns/op
-Iteration   3: 4233.859 ns/op
-Iteration   4: 4194.926 ns/op
-Iteration   5: 4179.727 ns/op
+# Warmup Iteration   1: 557.235 ns/op
+# Warmup Iteration   2: 466.478 ns/op
+# Warmup Iteration   3: 450.245 ns/op
+# Warmup Iteration   4: 417.331 ns/op
+# Warmup Iteration   5: 415.414 ns/op
+Iteration   1: 413.560 ns/op
+Iteration   2: 416.412 ns/op
+Iteration   3: 413.523 ns/op
+Iteration   4: 413.488 ns/op
+Iteration   5: 413.417 ns/op
 
 # Run progress: 16.67% complete, ETA 00:00:51
 # Fork: 2 of 3
@@ -37,16 +38,16 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 4401.329 ns/op
-# Warmup Iteration   2: 4216.387 ns/op
-# Warmup Iteration   3: 4208.048 ns/op
-# Warmup Iteration   4: 4067.304 ns/op
-# Warmup Iteration   5: 4059.754 ns/op
-Iteration   1: 4224.871 ns/op
-Iteration   2: 4243.827 ns/op
-Iteration   3: 4241.791 ns/op
-Iteration   4: 4162.857 ns/op
-Iteration   5: 4154.668 ns/op
+# Warmup Iteration   1: 555.633 ns/op
+# Warmup Iteration   2: 464.389 ns/op
+# Warmup Iteration   3: 450.796 ns/op
+# Warmup Iteration   4: 419.482 ns/op
+# Warmup Iteration   5: 418.190 ns/op
+Iteration   1: 415.778 ns/op
+Iteration   2: 417.865 ns/op
+Iteration   3: 415.273 ns/op
+Iteration   4: 417.989 ns/op
+Iteration   5: 424.891 ns/op
 
 # Run progress: 33.33% complete, ETA 00:00:41
 # Fork: 3 of 3
@@ -54,22 +55,22 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 4461.019 ns/op
-# Warmup Iteration   2: 4274.450 ns/op
-# Warmup Iteration   3: 4199.148 ns/op
-# Warmup Iteration   4: 4050.160 ns/op
-# Warmup Iteration   5: 4209.461 ns/op
-Iteration   1: 4238.666 ns/op
-Iteration   2: 4253.309 ns/op
-Iteration   3: 4178.569 ns/op
-Iteration   4: 4173.787 ns/op
-Iteration   5: 4186.105 ns/op
+# Warmup Iteration   1: 725.736 ns/op
+# Warmup Iteration   2: 553.821 ns/op
+# Warmup Iteration   3: 423.013 ns/op
+# Warmup Iteration   4: 412.686 ns/op
+# Warmup Iteration   5: 414.380 ns/op
+Iteration   1: 418.834 ns/op
+Iteration   2: 414.154 ns/op
+Iteration   3: 412.780 ns/op
+Iteration   4: 413.884 ns/op
+Iteration   5: 435.524 ns/op
 
 
-Result "bench.WriteStringSpillBench.serializer":
-  4210.553 ±(99.9%) 37.884 ns/op [Average]
-  (min, avg, max) = (4154.668, 4210.553, 4253.309), stdev = 35.437
-  CI (99.9%): [4172.669, 4248.437] (assumes normal distribution)
+Result "bench.flat.SingleBench.serialize":
+  417.158 ±(99.9%) 6.387 ns/op [Average]
+  (min, avg, max) = (412.780, 417.158, 435.524), stdev = 5.974
+  CI (99.9%): [410.771, 423.545] (assumes normal distribution)
 
 
 # JMH version: 1.37
@@ -82,7 +83,8 @@ Result "bench.WriteStringSpillBench.serializer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: bench.WriteStringSpillBench.serializerNotInlinedWriteString
+# Benchmark: bench.flat.SingleBench.serializeWriteStringNotInlined
+# Parameters: (size = 10)
 
 # Run progress: 50.00% complete, ETA 00:00:30
 # Fork: 1 of 3
@@ -91,16 +93,16 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 3236.496 ns/op
-# Warmup Iteration   2: 3095.518 ns/op
-# Warmup Iteration   3: 3016.194 ns/op
-# Warmup Iteration   4: 2963.926 ns/op
-# Warmup Iteration   5: 3084.163 ns/op
-Iteration   1: 3082.312 ns/op
-Iteration   2: 2933.392 ns/op
-Iteration   3: 2921.163 ns/op
-Iteration   4: 2919.299 ns/op
-Iteration   5: 3015.824 ns/op
+# Warmup Iteration   1: 488.289 ns/op
+# Warmup Iteration   2: 374.171 ns/op
+# Warmup Iteration   3: 369.293 ns/op
+# Warmup Iteration   4: 343.548 ns/op
+# Warmup Iteration   5: 340.273 ns/op
+Iteration   1: 341.892 ns/op
+Iteration   2: 343.419 ns/op
+Iteration   3: 344.082 ns/op
+Iteration   4: 339.657 ns/op
+Iteration   5: 339.659 ns/op
 
 # Run progress: 66.67% complete, ETA 00:00:20
 # Fork: 2 of 3
@@ -109,16 +111,16 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 3225.667 ns/op
-# Warmup Iteration   2: 3107.642 ns/op
-# Warmup Iteration   3: 2973.770 ns/op
-# Warmup Iteration   4: 2970.903 ns/op
-# Warmup Iteration   5: 3074.243 ns/op
-Iteration   1: 3079.610 ns/op
-Iteration   2: 2937.497 ns/op
-Iteration   3: 2933.922 ns/op
-Iteration   4: 2936.346 ns/op
-Iteration   5: 3023.218 ns/op
+# Warmup Iteration   1: 492.357 ns/op
+# Warmup Iteration   2: 373.490 ns/op
+# Warmup Iteration   3: 368.966 ns/op
+# Warmup Iteration   4: 344.338 ns/op
+# Warmup Iteration   5: 341.897 ns/op
+Iteration   1: 342.852 ns/op
+Iteration   2: 344.202 ns/op
+Iteration   3: 343.499 ns/op
+Iteration   4: 339.003 ns/op
+Iteration   5: 338.900 ns/op
 
 # Run progress: 83.33% complete, ETA 00:00:10
 # Fork: 3 of 3
@@ -127,22 +129,22 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
 WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 3240.671 ns/op
-# Warmup Iteration   2: 3053.979 ns/op
-# Warmup Iteration   3: 2995.406 ns/op
-# Warmup Iteration   4: 3102.240 ns/op
-# Warmup Iteration   5: 3101.786 ns/op
-Iteration   1: 2986.857 ns/op
-Iteration   2: 2947.475 ns/op
-Iteration   3: 2921.756 ns/op
-Iteration   4: 3008.821 ns/op
-Iteration   5: 2955.110 ns/op
+# Warmup Iteration   1: 486.462 ns/op
+# Warmup Iteration   2: 373.545 ns/op
+# Warmup Iteration   3: 369.146 ns/op
+# Warmup Iteration   4: 344.626 ns/op
+# Warmup Iteration   5: 345.073 ns/op
+Iteration   1: 344.911 ns/op
+Iteration   2: 343.896 ns/op
+Iteration   3: 347.635 ns/op
+Iteration   4: 339.681 ns/op
+Iteration   5: 339.526 ns/op
 
 
-Result "bench.WriteStringSpillBench.serializerNotInlinedWriteString":
-  2973.507 ±(99.9%) 59.940 ns/op [Average]
-  (min, avg, max) = (2919.299, 2973.507, 3082.312), stdev = 56.068
-  CI (99.9%): [2913.567, 3033.446] (assumes normal distribution)
+Result "bench.flat.SingleBench.serializeWriteStringNotInlined":
+  342.188 ±(99.9%) 2.836 ns/op [Average]
+  (min, avg, max) = (338.900, 342.188, 347.635), stdev = 2.653
+  CI (99.9%): [339.352, 345.024] (assumes normal distribution)
 
 
 # Run complete. Total time: 00:01:01
@@ -159,6 +161,6 @@ works, and factor in a small probability of new VM bugs. Additionally, while com
 different JVMs are already problematic, the performance difference caused by different Blackhole
 modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
 
-Benchmark                                              Mode  Cnt     Score    Error  Units
-WriteStringSpillBench.serializer                       avgt   15  4210.553 ± 37.884  ns/op
-WriteStringSpillBench.serializerNotInlinedWriteString  avgt   15  2973.507 ± 59.940  ns/op
+Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
+SingleBench.serialize                           10  avgt   15  417.158 ± 6.387  ns/op
+SingleBench.serializeWriteStringNotInlined      10  avgt   15  342.188 ± 2.836  ns/op

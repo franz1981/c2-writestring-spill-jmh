@@ -1,27 +1,21 @@
-# C2 spills a hot copy loop when it is inlined into a large method
+# C2 spills the copy loop of `UTF8JsonGenerator._writeStringSegment` when it is inlined
 
-Serializing the same object graph to JSON costs **42 % more** when C2 inlines
-`UTF8JsonGenerator.writeString` into the caller than when it does not. The extra cost is register
-allocation inside `UTF8JsonGenerator._writeStringSegment`'s ASCII copy loop.
+Writing JSON strings costs about 20 % more when C2 inlines `UTF8JsonGenerator.writeString` into the caller
+than when it does not, because the ASCII copy loop inside `_writeStringSegment` loses its registers.
 
 ## What is observed
 
-Two benchmarks run identical Java code over identical data and produce identical bytes. They differ
-only in one JVM flag: the second excludes `UTF8JsonGenerator.writeString` from inlining.
+The benchmark serializes a `List<Flat>` with a hand-written serializer that makes one `writeString` call per
+element. Two runs, the same code and the same output, differing only in whether `writeString` is inlined.
 
-In the first, C2 inlines the whole serializer tree - the collection loop, the three bean serializers,
-`writeString` and `_writeStringSegment` - into a single ~50 KB nmethod
-(`CollectionSerializer::serializeContents`), which ends up holding one copy of the ASCII copy loop per
-string property. In those copies the loop is **33-35 instructions with 14-15 stack operands per
-iteration**: the loop counter is written to the stack and read back within the same iteration, and the
-loop invariants (output buffer, escape table, end index) are re-loaded from the stack on every
-iteration.
+When it is inlined, the copy loop is **33 instructions, 13 of which address `(%rsp)`**: the loop counter is
+written to the stack and read back within the same iteration, and the loop invariants - output buffer, escape
+table, end index - are re-loaded from the stack on every iteration.
 
-Compiled on its own, the same loop is **22 instructions with 2 stack operands** and keeps those values
-in registers.
+When it is not, the same loop is **23 instructions with 2 stack operands**, and the counter, buffer and escape
+table stay in registers.
 
-The loop's own live set does not change between the two: it is the same Java, with the same locals,
-already written so that the fields are hoisted by hand:
+The loop gives C2 nothing to struggle with; Jackson already hoists the fields into locals:
 
 ```java
 int outputPtr = _outputTail;
@@ -36,128 +30,110 @@ while (offset < len) {
 }
 ```
 
-## Results
-
-Time for one serialization of a `List<Person>` (20 objects, 9 properties each, 3021 bytes of JSON),
-3 forks x 5 iterations, no profiler attached:
-
-| benchmark | ns/op |
-|---|---:|
-| `serializer` — `writeString` inlined | **4210.6 ± 37.9** |
-| `serializerNotInlinedWriteString` — `writeString` not inlined | **2973.5 ± 59.9** |
-
-Excluding the method from inlining is worth **1237 ns/op**.
-
-The instruction count barely moves; the retirement rate does:
-
-| benchmark | instructions/op | cycles/op | IPC |
-|---|---:|---:|---:|
-| `serializer` | 80,546 | 18,166 | **4.44** |
-| `serializerNotInlinedWriteString` | 68,591 | 12,639 | **5.43** |
-
-## The loop, both ways
-
-Inlined into `CollectionSerializer::serializeContents` (~50 KB nmethod), back edge
-`0x7f65f40f8f79 -> 0x7f65f40f8ec0`, 35 instructions of which 15 address `(%rsp)` (elisions marked):
-
-```
-  0x7f65f40f8ec6:  add    0x24(%rsp),%r10d
-  0x7f65f40f8ecb:  mov    %r10d,0x74(%rsp)
-  0x7f65f40f8ed3:  mov    %r10,0x88(%rsp)
-  0x7f65f40f8edb:  mov    0x74(%rsp),%r11d
-  0x7f65f40f8ee3:  mov    %r11d,0x90(%rsp)
-  ...
-  0x7f65f40f8f13:  mov    0x88(%rsp),%r11
-  0x7f65f40f8f1b:  movzbl 0x10(%r10,%r11,1),%eax      ; charAt
-  0x7f65f40f8f21:  mov    %r8d,0x94(%rsp)             ; store the counter
-  ...
-  0x7f65f40f8f3c:  mov    0x80(%rsp),%r10             ; reload the escape table
-  0x7f65f40f8f44:  mov    0x10(%r10,%rax,4),%r8d
-  0x7f65f40f8f52:  mov    0x78(%rsp),%r10             ; reload the output buffer
-  0x7f65f40f8f57:  add    0x88(%rsp),%r10             ; reload the offset
-  0x7f65f40f8f5f:  mov    0x10(%rsp),%r11
-  0x7f65f40f8f64:  mov    %al,0x11(%r11,%r10,1)       ; the one useful store
-  0x7f65f40f8f69:  mov    0x94(%rsp),%r9d             ; reload the counter, same iteration
-  0x7f65f40f8f71:  inc    %r9d
-  0x7f65f40f8f74:  cmp    0x20(%rsp),%r9d             ; limit, from the stack
-  0x7f65f40f8f79:  jl     0x00007f65f40f8ec0
-```
-
-Compiled as its own nmethod (~1.6 KB), back edge `0x7f9d800f0faf -> 0x7f9d800f0f50`, 22 instructions of
-which 2 address `(%rsp)` - the counter, the buffer and the escape table stay in registers:
-
-```
-  0x7f9d800f0f7d:  movzbl 0x10(%rdx,%rsi,1),%edx      ; charAt
-  0x7f9d800f0f82:  cmp    $0x7f,%edx
-  0x7f9d800f0f85:  jg     0x00007f9d800f1154
-  0x7f9d800f0f8b:  cmp    0x48(%rsp),%edx
-  0x7f9d800f0f8f:  jae    0x00007f9d800f10db
-  0x7f9d800f0f95:  mov    0x10(%rdi,%rdx,4),%ebp      ; escape table, in %rdi
-  0x7f9d800f0f99:  test   %ebp,%ebp
-  0x7f9d800f0f9b:  jne    0x00007f9d800f1180
-  0x7f9d800f0fa1:  lea    (%rbx,%rsi,1),%rbp
-  0x7f9d800f0fa5:  mov    %dl,0x11(%rcx,%rbp,1)       ; store, buffer in %rcx
-  0x7f9d800f0fa9:  inc    %r9d                        ; counter, in %r9d
-  0x7f9d800f0fac:  cmp    %r11d,%r9d
-  0x7f9d800f0faf:  jl     0x00007f9d800f0f50
-```
-
-Three copies of the loop are hot enough to appear in the dump, at 33/14, 34/15 and 35/15
-instructions / `(%rsp)` operands.
-
-## It is the loop body, not instruction fetch
-
-`perfasm` attributes 11.11 % of all cycles to this single copy of the loop, and 6.04 % of all cycles to
-instructions inside it that address `(%rsp)`. The hottest instruction of the body is the reload of the
-induction variable:
-
-```
-   0.40%   0x…8f21:  mov    %r8d,0x94(%rsp)     ; store the counter
-   4.53%   0x…8f69:  mov    0x94(%rsp),%r9d     ; reload it, same iteration
-```
-
-The frontend is not where the difference is. Per op, against a gap of 5,526 cycles:
-
-| | `serializer` | `serializerNotInlinedWriteString` | delta |
-|---|---:|---:|---:|
-| L1-icache-load-misses | 1.61 | 0.20 | +1.4 |
-| stalled-cycles-frontend | 473 | 195 | +278 |
-| L1-dcache-loads | 27,570 | 20,597 | **+6,973** |
-
-Instruction-fetch effects account for a few percent of the difference; the extra work is data loads. The
-count matches the loop: about 7 more loads per iteration, and about 1,000 iterations per operation
-(~1,000 string characters per 3021-byte document).
-
-## Build and run
+## Run it
 
 ```bash
 mvn clean package
+java -jar target/benchmarks.jar
+```
 
-java -jar target/benchmarks.jar                                                  # results.txt
-java -jar target/benchmarks.jar -prof perfnorm                                   # perfnorm.txt
+```
+Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
+SingleBench.serialize                           10  avgt   15  417.158 ± 6.387  ns/op
+SingleBench.serializeWriteStringNotInlined      10  avgt   15  342.188 ± 2.836  ns/op
+```
+
+The second benchmark adds
+`-XX:CompileCommand=dontinline,com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString` through
+`@Fork`. It is the only JVM flag in the project, and it exists only because `writeString` is Jackson's method
+and cannot be annotated.
+
+Counters and disassembly:
+
+```bash
+java -jar target/benchmarks.jar -prof perfnorm
 java -jar target/benchmarks.jar -f 1 -prof 'perfasm:hotThreshold=0.02;tooBigThreshold=4000'
 ```
 
-`tooBigThreshold` matters: with the default, the ~50 KB nmethod is skipped and the spilling loop never
-appears in the output. Run the two benchmarks separately for the perfasm one - dumping both in a single
-JVM crashed it here (`<forked VM failed with exit code 134>`).
+## Where the time goes
 
-The only dependency is `jackson-databind`. `bench.proto.ProtoSerializers` is hand-written, in the shape
-a per-bean serializer generator produces; nothing here is generated at build time.
+| per op | inlined | not inlined |
+|---|---:|---:|
+| cycles | 1790.6 | 1477.5 |
+| instructions | 8745.8 | 7907.0 |
+| IPC | **4.88** | **5.35** |
+| L1-dcache-loads | 3021.7 | 2620.1 |
+| L1-icache-load-misses | 0.017 | 0.012 |
+
+The inlined version does not execute much more work, it retires it more slowly. Instruction fetch is not
+involved - 0.005 more i-cache misses per operation against a gap of 313 cycles - while data loads are 400
+higher per operation, which is the stack traffic in the loop.
+
+## The loop, both ways
+
+Inlined, back edge `0x7fea8c0f6544 -> 0x7fea8c0f64b0`, 33 instructions, 13 touching `(%rsp)`:
+
+```
+  0x7fea8c0f64b5:  mov    0x34(%rsp),%ecx
+  0x7fea8c0f64c0:  mov    %r10,(%rsp)
+  0x7fea8c0f64c8:  mov    %r9d,0x8(%rsp)
+  0x7fea8c0f64de:  mov    0x34(%rsp),%r10d
+  0x7fea8c0f64f0:  mov    (%rsp),%r8
+  0x7fea8c0f64f4:  movzbl 0x10(%r10,%r8,1),%r10d      ; charAt
+  0x7fea8c0f650d:  mov    0x50(%rsp),%r8              ; reload the escape table
+  0x7fea8c0f6512:  mov    0x10(%r8,%r10,4),%ebp
+  0x7fea8c0f651f:  mov    0x48(%rsp),%r8              ; reload the output buffer
+  0x7fea8c0f6524:  add    (%rsp),%r8
+  0x7fea8c0f6528:  mov    0x38(%rsp),%r9
+  0x7fea8c0f652d:  mov    %r10b,0x11(%r9,%r8,1)       ; the one useful store
+  0x7fea8c0f6532:  mov    0x34(%rsp),%r8d             ; reload the counter
+  0x7fea8c0f6537:  inc    %r8d
+  0x7fea8c0f653a:  mov    %r8d,0x34(%rsp)             ; store it back
+  0x7fea8c0f653f:  cmp    0x40(%rsp),%r8d             ; limit, from the stack
+  0x7fea8c0f6544:  jl     0x00007fea8c0f64b0
+```
+
+Not inlined, back edge `0x7f57fc0f69cf -> 0x7f57fc0f6970`, 23 instructions, 2 touching `(%rsp)`:
+
+```
+  0x7f57fc0f699d:  movzbl 0x10(%rdx,%rsi,1),%edx      ; charAt
+  0x7f57fc0f69a2:  cmp    $0x7f,%edx
+  0x7f57fc0f69a5:  jg     0x00007f57fc0f6b5c
+  0x7f57fc0f69ab:  cmp    0x48(%rsp),%edx
+  0x7f57fc0f69af:  jae    0x00007f57fc0f6ae3
+  0x7f57fc0f69b5:  mov    0x10(%rdi,%rdx,4),%ebp      ; escape table, in %rdi
+  0x7f57fc0f69b9:  test   %ebp,%ebp
+  0x7f57fc0f69bb:  jne    0x00007f57fc0f6b88
+  0x7f57fc0f69c1:  lea    (%rbx,%rsi,1),%rbp
+  0x7f57fc0f69c5:  mov    %dl,0x11(%rcx,%rbp,1)       ; store, buffer in %rcx
+  0x7f57fc0f69c9:  inc    %r9d                        ; counter, in %r9d
+  0x7f57fc0f69cc:  cmp    %r11d,%r9d
+  0x7f57fc0f69cf:  jl     0x00007f57fc0f6970
+```
+
+## Notes
+
+`FlatSer.serialize` is annotated `@CompilerControl(DONT_INLINE)` so that the copy loop appears in that method
+instead of inside `CollectionSerializer::serializeContents`, which keeps the perfasm output readable. It does
+not change the result: the two benchmarks differ by the same amount with or without it, and the spill is there
+either way.
+
+The spill appears with a single `writeString` call site. Adding more string properties to `Flat`, or raising
+`-p size=`, makes the difference more pronounced, because more of the run is spent inside the loop.
 
 ## Environment
 
 ```
 JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
-AMD Ryzen 9 7950X 16-Core Processor, 2 NUMA nodes
-hsdis: /usr/lib64/hsdis-amd64.so (on the default library path, not under $JAVA_HOME)
+AMD Ryzen 9 7950X 16-Core Processor
+hsdis: /usr/lib64/hsdis-amd64.so (default library path, not under $JAVA_HOME)
 perf with kernel.perf_event_paranoid = -1; benchmarks pinned with taskset -c 0,1
 ```
 
 ## Files
 
 ```
-results/results.txt    the two timings, no profiler
+results/results.txt    the two timings
 results/perfnorm.txt   instructions, cycles, IPC per op
 results/perfasm.txt    the disassembly both loops were read from
 ```
