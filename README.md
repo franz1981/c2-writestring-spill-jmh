@@ -111,6 +111,136 @@ Not inlined, back edge `0x7f57fc0f69cf -> 0x7f57fc0f6970`, 23 instructions, 2 to
   0x7f57fc0f69cf:  jl     0x00007f57fc0f6970
 ```
 
+## Why it spills
+
+`Matcher::int_pressure_limit()` is 13 on x86-64. The blocks that make up the copy loop carry 14-15
+simultaneously live integer-class values, so they are one over.
+
+`TraceSpilling` shows the decisions. It is a `product DIAGNOSTIC` flag, so a stock JDK accepts it,
+but every print site is inside `#ifndef PRODUCT` - it needs a fastdebug build:
+
+```bash
+java -jar target/benchmarks.jar 'SingleBench.serialize$' -f 1 -wi 2 -i 2 \
+     -jvm /path/to/fastdebug/bin/java \
+     -jvmArgsAppend "-XX:+UnlockDiagnosticVMOptions -XX:CompileCommand=option,bench/flat/FlatSer.serialize,TraceSpilling"
+```
+
+That prints one `New Split DOWN DEF of Spill Idx N` line per live range it pushes to the stack - 37
+of them here, naming the values, including the loop's induction variable and the loaded character.
+
+The block pressure behind those decisions is not printed. One line added to
+`PhaseChaitin::is_high_pressure` (`opto/reg_split.cpp`) exposes it:
+
+```cpp
+  if (trace_spilling()) {
+    tty->print_cr("HRP B%d freq=%g block_pres=%d lrg_pres=%d int_limit=%d -> %s",
+                  b->_pre_order, b->_freq, block_pres, lrg_pres,
+                  Matcher::int_pressure_limit(), (block_pres >= lrg_pres) ? "HIGH" : "low");
+  }
+  return block_pres >= lrg_pres;
+```
+
+and then every query in the loop's block reports the same thing:
+
+```
+HRP B134 freq=9.99926 block_pres=14 lrg_pres=13 int_limit=13 -> HIGH
+```
+
+With either fix applied, no block at loop frequency is ever queried as high pressure.
+
+`reg_split` then does what its own comment says - *"DEFS: If the DEF is in a High Register Pressure
+(HRP) Block, split there"*. Of the 37 live ranges it splits, 18 are object references belonging to
+the enclosing serializer frame (`JsonWriteContext`, `UTF8JsonGenerator`, the bean, the serializer)
+that stay live across the loop, and 16 are integers - among them the loop's own counter
+(`incI_rReg`) and the loaded character (`loadUB` from `StringLatin1::charAt`).
+
+So the loop does not spill because it is complicated. It spills because the block it lands in is one
+register over the limit, and the allocator's response is to put the induction variable in memory.
+
+## Two ways back under the limit
+
+Both are changes to Jackson, not to C2, and both produce byte-identical JSON. They are listed here
+because they bracket the problem: the loop needs exactly one register more than it can have.
+
+The loop as it ships in jackson-core 2.22.0, `UTF8JsonGenerator._writeStringSegment(String,int,int)`:
+
+```java
+        int outputPtr = _outputTail;
+        final byte[] outputBuffer = _outputBuffer;
+        final int[] escCodes = _outputEscapes;
+
+        while (offset < len) {
+            int ch = text.charAt(offset);
+            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
+            if (ch > 0x7F || escCodes[ch] != 0) {
+                break;
+            }
+            outputBuffer[outputPtr++] = (byte) ch;
+            ++offset;
+        }
+        _outputTail = outputPtr;
+```
+
+**1. Stop hoisting the fields into locals.** The two `final` locals are the conventional way to help
+a JIT, and here they are what costs the registers: two live ranges held across the whole loop.
+Reading the fields inside the loop instead lets C2 rematerialize them from `this`, which is one live
+value.
+
+```java
+        int outputPtr = _outputTail;
+
+        while (offset < len) {
+            int ch = text.charAt(offset);
+            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
+            if (ch > 0x7F || _outputEscapes[ch] != 0) {
+                break;
+            }
+            _outputBuffer[outputPtr++] = (byte) ch;
+            ++offset;
+        }
+        _outputTail = outputPtr;
+```
+
+**2. Remove the escape-table access.** For the standard escape table the test is expressible with
+constants, which removes the table's base pointer, its length and the load itself. The custom-table
+case keeps the original test, so escaping behaviour is unchanged; C2 unswitches the loop on the flag.
+
+```java
+        int outputPtr = _outputTail;
+        final byte[] outputBuffer = _outputBuffer;
+        final int[] escCodes = _outputEscapes;
+        final boolean stdEsc = (escCodes == CharTypes.get7BitOutputEscapes());
+
+        while (offset < len) {
+            int ch = text.charAt(offset);
+            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
+            if (stdEsc ? (ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\')
+                    : (ch > 0x7F || escCodes[ch] != 0)) {
+                break;
+            }
+            outputBuffer[outputPtr++] = (byte) ch;
+            ++offset;
+        }
+        _outputTail = outputPtr;
+```
+
+Measured, same benchmark, 3 forks:
+
+```
+                                              ns/op        loop     (%rsp)
+stock                                     415.2 +- 3.0   33 insns     13
+1. fields not hoisted                     342.6 +- 3.3   31 insns      0
+2. escape test as constants               323.3 +- 3.8   23 insns      0
+```
+
+Option 1 deletes three lines, changes no escaping semantics, and recovers 73 of the 92 ns - all of
+the register-pressure cost. The remaining 19 ns is the table load and its bounds check, which only
+option 2 removes.
+
+Neither is a fix for the underlying behaviour: a nine-instruction loop that needs six registers ends
+up with its counter in memory because unrelated values in the enclosing frame put the block one over
+`int_pressure_limit`. They are included to show how narrow the margin is.
+
 ## Notes
 
 `FlatSer.serialize` is annotated `@CompilerControl(DONT_INLINE)` so that the copy loop appears in that method
