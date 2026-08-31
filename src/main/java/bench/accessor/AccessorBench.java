@@ -149,7 +149,6 @@ public class AccessorBench {
         str5s = new ArrayList<>(size);
         int5s = new ArrayList<>(size);
         bool5s = new ArrayList<>(size);
-        exts = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Str1 a = new Str1();
             a.p0 = "a" + pad;
@@ -159,10 +158,14 @@ public class AccessorBench {
             str5s.add(b);
             int5s.add(new Int5());
             bool5s.add(new Bool5());
-            exts.add(new ExtPerson("John" + pad, "Doe" + pad, 30,
-                    new Address("Milano" + pad, "Via Roma" + pad),
-                    new Car("Fiat" + pad, "500" + pad)));
         }
+        // the app returns Collections.nCopies(20, ONE instance): the same object 20 times, with the
+        // nested Address and Car shared across all elements. Distinct instances change locality and
+        // escape analysis, so mirror it exactly.
+        exts = java.util.Collections.nCopies(size,
+                new ExtPerson("John" + pad, "Doe" + pad, 30,
+                        new Address("Milano" + pad, "Via Roma" + pad),
+                        new Car("Fiat" + pad, "500" + pad)));
         out = new Sink(1024 * 1024);
     }
 
