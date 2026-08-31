@@ -1,6 +1,8 @@
 package bench.accessor;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectWriter;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -83,6 +86,38 @@ public class AccessorBench {
     private List<ExtPerson> exts;
     private Sink out;
 
+    // ---- the per-request path Quarkus actually runs -------------------------------------------
+    // BasicServerJacksonMessageBodyWriter.getWriter(genericType, value):
+    //   JacksonMapperUtil.getGenericRootType -> defaultWriter.getTypeFactory().constructType(genericType)
+    //   rootType.isTypeOrSuperTypeOf(value.getClass())
+    //   genericWriters.get(rootType)            (ConcurrentHashMap, populated on first use)
+    //   writer.writeValue(stream, value)
+    // The type construction and the map lookup happen on EVERY request; hoisting them into @Setup
+    // (as this benchmark did originally) hides the serializer-cache and TypeFactory work that shows
+    // up in the app's profile - PrivateMaxEntriesMap, LinkedDeque, TypeFactory, TypeBindings.
+    private Type extGenericType;
+    private ObjectWriter extDefaultAcc;
+    private ObjectWriter extDefaultRefl;
+    private final ConcurrentHashMap<JavaType, ObjectWriter> accWriters = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<JavaType, ObjectWriter> reflWriters = new ConcurrentHashMap<>();
+
+    private static List<ExtPerson> genericTypeCarrier() {
+        return null;
+    }
+
+    private ObjectWriter quarkusWriter(ObjectWriter defaultWriter,
+            ConcurrentHashMap<JavaType, ObjectWriter> cache, Object value) {
+        JavaType rootType = defaultWriter.getTypeFactory().constructType(extGenericType);
+        if (rootType != null && rootType.isTypeOrSuperTypeOf(value.getClass())) {
+            ObjectWriter w = cache.get(rootType);
+            if (w == null) {
+                w = cache.computeIfAbsent(rootType, defaultWriter::forType);
+            }
+            return w;
+        }
+        return defaultWriter;
+    }
+
     private static ObjectWriter reflective(TypeReference<?> listType) {
         return JsonMapper.builder().build().writer().forType(listType);
     }
@@ -144,6 +179,27 @@ public class AccessorBench {
         extAcc = extPersonAccessor(te);
         extRefl = reflective(te);
 
+        try {
+            extGenericType = AccessorBench.class.getDeclaredMethod("genericTypeCarrier")
+                    .getGenericReturnType();
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+        // default writers WITHOUT forType, exactly as Quarkus's defaultWriter is built
+        Map<Class<?>, PropertyAccessor> qAcc = new HashMap<>();
+        qAcc.put(ExtPerson.class, new Accessors.ExtPersonAccessor());
+        qAcc.put(Address.class, new Accessors.AddressAccessor());
+        qAcc.put(Car.class, new Accessors.CarAccessor());
+        Map<Class<?>, int[]> qKinds = new HashMap<>();
+        qKinds.put(ExtPerson.class, new int[] { AccessorWriters.KIND_STRING, AccessorWriters.KIND_STRING,
+                AccessorWriters.KIND_INT, AccessorWriters.KIND_OBJECT, AccessorWriters.KIND_OBJECT });
+        qKinds.put(Address.class, all(AccessorWriters.KIND_STRING, 2));
+        qKinds.put(Car.class, all(AccessorWriters.KIND_STRING, 2));
+        SimpleModule qm = new SimpleModule("accessor-quarkus-path");
+        qm.setSerializerModifier(new AccessorModifier(qAcc, qKinds));
+        extDefaultAcc = JsonMapper.builder().addModule(qm).build().writer();
+        extDefaultRefl = JsonMapper.builder().build().writer();
+
         String pad = "x".repeat(Math.max(0, len - 1));
         str1s = new ArrayList<>(size);
         str5s = new ArrayList<>(size);
@@ -195,4 +251,19 @@ public class AccessorBench {
     /** The end-to-end bean: nested Address and Car, whose serializers are inlined into this frame. */
     @Benchmark public long extPerson_accessor()   { return write(extAcc, exts); }
     @Benchmark public long extPerson_reflection() { return write(extRefl, exts); }
+
+    /** Same, but through the per-request path Quarkus runs: constructType + writer-cache lookup. */
+    @Benchmark
+    public long extPerson_accessor_quarkusPath() {
+        out.reset();
+        quarkusWriter(extDefaultAcc, accWriters, exts).writeValue(out, exts);
+        return out.count();
+    }
+
+    @Benchmark
+    public long extPerson_reflection_quarkusPath() {
+        out.reset();
+        quarkusWriter(extDefaultRefl, reflWriters, exts).writeValue(out, exts);
+        return out.count();
+    }
 }
