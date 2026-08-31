@@ -27,7 +27,10 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import bench.Sink;
+import bench.paths.beans.Address;
 import bench.paths.beans.Bool5;
+import bench.paths.beans.Car;
+import bench.paths.beans.ExtPerson;
 import bench.paths.beans.Int5;
 import bench.paths.beans.Str1;
 import bench.paths.beans.Str5;
@@ -72,11 +75,12 @@ public class AccessorBench {
     public int len;
 
     private ObjectWriter str1Acc, str1Refl, str5Acc, str5Refl;
-    private ObjectWriter int5Acc, int5Refl, bool5Acc, bool5Refl;
+    private ObjectWriter int5Acc, int5Refl, bool5Acc, bool5Refl, extAcc, extRefl;
     private List<Str1> str1s;
     private List<Str5> str5s;
     private List<Int5> int5s;
     private List<Bool5> bool5s;
+    private List<ExtPerson> exts;
     private Sink out;
 
     private static ObjectWriter reflective(TypeReference<?> listType) {
@@ -90,6 +94,22 @@ public class AccessorBench {
         Map<Class<?>, int[]> k = new HashMap<>();
         k.put(bean, kinds);
         SimpleModule m = new SimpleModule("accessor-" + bean.getSimpleName());
+        m.setSerializerModifier(new AccessorModifier(a, k));
+        return JsonMapper.builder().addModule(m).build().writer().forType(listType);
+    }
+
+    /** The end-to-end case needs accessors for the bean and both nested beans. */
+    private static ObjectWriter extPersonAccessor(TypeReference<?> listType) {
+        Map<Class<?>, PropertyAccessor> a = new HashMap<>();
+        a.put(ExtPerson.class, new Accessors.ExtPersonAccessor());
+        a.put(Address.class, new Accessors.AddressAccessor());
+        a.put(Car.class, new Accessors.CarAccessor());
+        Map<Class<?>, int[]> k = new HashMap<>();
+        k.put(ExtPerson.class, new int[] { AccessorWriters.KIND_STRING, AccessorWriters.KIND_STRING,
+                AccessorWriters.KIND_INT, AccessorWriters.KIND_OBJECT, AccessorWriters.KIND_OBJECT });
+        k.put(Address.class, all(AccessorWriters.KIND_STRING, 2));
+        k.put(Car.class, all(AccessorWriters.KIND_STRING, 2));
+        SimpleModule m = new SimpleModule("accessor-ExtPerson");
         m.setSerializerModifier(new AccessorModifier(a, k));
         return JsonMapper.builder().addModule(m).build().writer().forType(listType);
     }
@@ -120,11 +140,16 @@ public class AccessorBench {
                 all(AccessorWriters.KIND_BOOLEAN, 5), tb);
         bool5Refl = reflective(tb);
 
+        TypeReference<List<ExtPerson>> te = new TypeReference<>() {};
+        extAcc = extPersonAccessor(te);
+        extRefl = reflective(te);
+
         String pad = "x".repeat(Math.max(0, len - 1));
         str1s = new ArrayList<>(size);
         str5s = new ArrayList<>(size);
         int5s = new ArrayList<>(size);
         bool5s = new ArrayList<>(size);
+        exts = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Str1 a = new Str1();
             a.p0 = "a" + pad;
@@ -134,6 +159,9 @@ public class AccessorBench {
             str5s.add(b);
             int5s.add(new Int5());
             bool5s.add(new Bool5());
+            exts.add(new ExtPerson("John" + pad, "Doe" + pad, 30,
+                    new Address("Milano" + pad, "Via Roma" + pad),
+                    new Car("Fiat" + pad, "500" + pad)));
         }
         out = new Sink(1024 * 1024);
     }
@@ -160,4 +188,8 @@ public class AccessorBench {
 
     @Benchmark public long bool5_accessor()   { return write(bool5Acc, bool5s); }
     @Benchmark public long bool5_reflection() { return write(bool5Refl, bool5s); }
+
+    /** The end-to-end bean: nested Address and Car, whose serializers are inlined into this frame. */
+    @Benchmark public long extPerson_accessor()   { return write(extAcc, exts); }
+    @Benchmark public long extPerson_reflection() { return write(extRefl, exts); }
 }

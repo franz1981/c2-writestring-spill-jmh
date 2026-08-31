@@ -169,10 +169,32 @@ public final class AccessorWriters {
         }
     }
 
+    /** Nested beans go through the fallback, exactly as the generated ObjectWriter does. */
+    public static final class ObjectWriter extends GeneratedPropertyWriter {
+        ObjectWriter(BeanPropertyWriter base, PropertyAccessor accessor, int index) {
+            super(base, accessor, index);
+        }
+
+        private ObjectWriter(ObjectWriter base, PropertyName name) {
+            super(base, name);
+        }
+
+        @Override
+        protected BeanPropertyWriter _new(PropertyName newName) {
+            return new ObjectWriter(this, newName);
+        }
+
+        @Override
+        public void serializeAsProperty(Object bean, JsonGenerator gen, SerializationContext prov) throws Exception {
+            writeValue(bean, accessor.objectGetter(bean, index), gen, prov);
+        }
+    }
+
     /** Kind tags, as the generated register uses. */
     public static final int KIND_STRING = 0;
     public static final int KIND_INT = 1;
     public static final int KIND_BOOLEAN = 2;
+    public static final int KIND_OBJECT = 3;
 
     public static BeanPropertyWriter create(BeanPropertyWriter base, PropertyAccessor accessor, int index, int kind) {
         switch (kind) {
@@ -182,6 +204,8 @@ public final class AccessorWriters {
                 return new IntWriter(base, accessor, index);
             case KIND_BOOLEAN:
                 return new BooleanWriter(base, accessor, index);
+            case KIND_OBJECT:
+                return new ObjectWriter(base, accessor, index);
             default:
                 return base;
         }

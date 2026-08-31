@@ -1,6 +1,9 @@
 package bench.accessor;
 
+import bench.paths.beans.Address;
 import bench.paths.beans.Bool5;
+import bench.paths.beans.Car;
+import bench.paths.beans.ExtPerson;
 import bench.paths.beans.Int5;
 import bench.paths.beans.Str1;
 import bench.paths.beans.Str5;
@@ -106,6 +109,92 @@ public final class Accessors {
                 case "p2": return 2;
                 case "p3": return 3;
                 case "p4": return 4;
+                default: return -1;
+            }
+        }
+    }
+
+    /** The end-to-end bean: two Strings, an int, and two nested beans. */
+    public static final class ExtPersonAccessor extends PropertyAccessor {
+        @Override
+        public String stringGetter(Object bean, int index) {
+            ExtPerson b = (ExtPerson) bean;
+            switch (index) {
+                case 0: return b.firstName;
+                case 1: return b.lastName;
+                default: throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public int intGetter(Object bean, int index) {
+            ExtPerson b = (ExtPerson) bean;
+            if (index == 2) {
+                return b.age;
+            }
+            throw new IllegalArgumentException();
+        }
+
+        @Override
+        public Object objectGetter(Object bean, int index) {
+            ExtPerson b = (ExtPerson) bean;
+            switch (index) {
+                case 3: return b.address;
+                case 4: return b.car;
+                default: throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public int indexOf(String memberName) {
+            switch (memberName) {
+                case "firstName": return 0;
+                case "lastName": return 1;
+                case "age": return 2;
+                case "address": return 3;
+                case "car": return 4;
+                default: return -1;
+            }
+        }
+    }
+
+    public static final class AddressAccessor extends PropertyAccessor {
+        @Override
+        public String stringGetter(Object bean, int index) {
+            Address b = (Address) bean;
+            switch (index) {
+                case 0: return b.city;
+                case 1: return b.street;
+                default: throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public int indexOf(String memberName) {
+            switch (memberName) {
+                case "city": return 0;
+                case "street": return 1;
+                default: return -1;
+            }
+        }
+    }
+
+    public static final class CarAccessor extends PropertyAccessor {
+        @Override
+        public String stringGetter(Object bean, int index) {
+            Car b = (Car) bean;
+            switch (index) {
+                case 0: return b.brand;
+                case 1: return b.model;
+                default: throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public int indexOf(String memberName) {
+            switch (memberName) {
+                case "brand": return 0;
+                case "model": return 1;
                 default: return -1;
             }
         }

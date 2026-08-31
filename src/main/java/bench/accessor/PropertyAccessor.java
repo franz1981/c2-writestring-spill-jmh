@@ -19,6 +19,10 @@ public abstract class PropertyAccessor {
         throw new UnsupportedOperationException();
     }
 
+    public Object objectGetter(Object bean, int index) {
+        throw new UnsupportedOperationException();
+    }
+
     /** -1 when this accessor does not handle the property, as the generated one does. */
     public abstract int indexOf(String memberName);
 }
