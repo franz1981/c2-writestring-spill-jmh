@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -30,7 +30,7 @@ import bench.Sink;
 /**
  * Serializes a {@code List<Flat>} with a hand-written serializer making one {@code writeString} call per
  * element. Run it twice: once as is, and once with
- * {@code -XX:CompileCommand=dontinline,com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString}.
+ * {@code -XX:CompileCommand=dontinline,tools/jackson/core/json/UTF8JsonGenerator.writeString}.
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -52,7 +52,7 @@ public class SingleBench {
     public void setup() {
         SimpleModule module = new SimpleModule("flat");
         module.addSerializer(Flat.class, new FlatSer());
-        writer = new ObjectMapper().registerModule(module).writer()
+        writer = JsonMapper.builder().addModule(module).build().writer()
                 .forType(new TypeReference<List<Flat>>() {
                 });
         values = new ArrayList<>(size);
@@ -80,7 +80,7 @@ public class SingleBench {
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     @Fork(value = 3, jvmArgsAppend = "-XX:CompileCommand=dontinline,"
-            + "com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString")
+            + "tools/jackson/core/json/UTF8JsonGenerator.writeString")
     public long serializeWriteStringNotInlined() throws IOException {
         out.reset();
         writer.writeValue(out, values);

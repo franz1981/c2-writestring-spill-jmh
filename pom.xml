@@ -11,7 +11,7 @@
 
     <properties>
         <jmh.version>1.37</jmh.version>
-        <jackson.version>2.22.0</jackson.version>
+        <jackson.version>3.1.5</jackson.version>
         <!-- measured on JDK 25; the sources use no language feature above Java 14, lower this if needed -->
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,7 +31,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>

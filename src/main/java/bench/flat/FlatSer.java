@@ -1,11 +1,9 @@
 package bench.flat;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.io.SerializedString;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.io.SerializedString;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 import org.openjdk.jmh.annotations.CompilerControl;
 
@@ -23,14 +21,13 @@ public final class FlatSer extends StdSerializer<Flat> {
 
     /**
      * Kept out of its caller so that the copy loop shows up in this method instead of being buried inside
-     * CollectionSerializer::serializeContents, which makes the perfasm output readable. It does not change
-     * the result - the spill and the gap are there with or without it.
+     * the collection serializer, which makes the perfasm output readable. It does not change the result.
      */
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     @Override
-    public void serialize(Flat v, JsonGenerator g, SerializerProvider p) throws IOException {
+    public void serialize(Flat v, JsonGenerator g, SerializationContext ctxt) {
         g.writeStartObject();
-        g.writeFieldName(S0);
+        g.writeName(S0);
         g.writeString(v.s0);
         g.writeEndObject();
     }
