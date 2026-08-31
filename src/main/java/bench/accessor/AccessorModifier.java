@@ -20,9 +20,18 @@ public final class AccessorModifier extends ValueSerializerModifier {
     private final Map<Class<?>, PropertyAccessor> accessors;
     private final Map<Class<?>, int[]> kinds;
 
+    private final boolean singleWriterClass;
+
     public AccessorModifier(Map<Class<?>, PropertyAccessor> accessors, Map<Class<?>, int[]> kinds) {
+        this(accessors, kinds, false);
+    }
+
+    /** singleWriterClass=true uses one SwitchWriter for every kind, keeping the call site monomorphic. */
+    public AccessorModifier(Map<Class<?>, PropertyAccessor> accessors, Map<Class<?>, int[]> kinds,
+            boolean singleWriterClass) {
         this.accessors = accessors;
         this.kinds = kinds;
+        this.singleWriterClass = singleWriterClass;
     }
 
     @Override
@@ -48,7 +57,9 @@ public final class AccessorModifier extends ValueSerializerModifier {
             if (index < 0) {
                 continue;
             }
-            beanProperties.set(i, AccessorWriters.create(writer, accessor, index, kind[index]));
+            beanProperties.set(i, singleWriterClass
+                    ? AccessorWriters.createSwitch(writer, accessor, index, kind[index])
+                    : AccessorWriters.create(writer, accessor, index, kind[index]));
         }
         return beanProperties;
     }

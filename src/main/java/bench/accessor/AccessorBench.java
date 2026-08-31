@@ -78,7 +78,7 @@ public class AccessorBench {
     public int len;
 
     private ObjectWriter str1Acc, str1Refl, str5Acc, str5Refl;
-    private ObjectWriter int5Acc, int5Refl, bool5Acc, bool5Refl, extAcc, extRefl;
+    private ObjectWriter int5Acc, int5Refl, bool5Acc, bool5Refl, extAcc, extRefl, extSwitch;
     private List<Str1> str1s;
     private List<Str5> str5s;
     private List<Int5> int5s;
@@ -135,6 +135,10 @@ public class AccessorBench {
 
     /** The end-to-end case needs accessors for the bean and both nested beans. */
     private static ObjectWriter extPersonAccessor(TypeReference<?> listType) {
+        return extPersonAccessor(listType, false);
+    }
+
+    private static ObjectWriter extPersonAccessor(TypeReference<?> listType, boolean singleWriterClass) {
         Map<Class<?>, PropertyAccessor> a = new HashMap<>();
         a.put(ExtPerson.class, new Accessors.ExtPersonAccessor());
         a.put(Address.class, new Accessors.AddressAccessor());
@@ -144,8 +148,8 @@ public class AccessorBench {
                 AccessorWriters.KIND_INT, AccessorWriters.KIND_OBJECT, AccessorWriters.KIND_OBJECT });
         k.put(Address.class, all(AccessorWriters.KIND_STRING, 2));
         k.put(Car.class, all(AccessorWriters.KIND_STRING, 2));
-        SimpleModule m = new SimpleModule("accessor-ExtPerson");
-        m.setSerializerModifier(new AccessorModifier(a, k));
+        SimpleModule m = new SimpleModule("accessor-ExtPerson-" + singleWriterClass);
+        m.setSerializerModifier(new AccessorModifier(a, k, singleWriterClass));
         return JsonMapper.builder().addModule(m).build().writer().forType(listType);
     }
 
@@ -178,6 +182,7 @@ public class AccessorBench {
         TypeReference<List<ExtPerson>> te = new TypeReference<>() {};
         extAcc = extPersonAccessor(te);
         extRefl = reflective(te);
+        extSwitch = extPersonAccessor(te, true);
 
         try {
             extGenericType = AccessorBench.class.getDeclaredMethod("genericTypeCarrier")
@@ -251,6 +256,9 @@ public class AccessorBench {
     /** The end-to-end bean: nested Address and Car, whose serializers are inlined into this frame. */
     @Benchmark public long extPerson_accessor()   { return write(extAcc, exts); }
     @Benchmark public long extPerson_reflection() { return write(extRefl, exts); }
+
+    /** One writer class for all kinds: monomorphic call site, fatter inlined body. */
+    @Benchmark public long extPerson_switchWriter() { return write(extSwitch, exts); }
 
     /** Same, but through the per-request path Quarkus runs: constructType + writer-cache lookup. */
     @Benchmark

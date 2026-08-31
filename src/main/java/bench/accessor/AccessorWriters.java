@@ -169,6 +169,73 @@ public final class AccessorWriters {
         }
     }
 
+    /**
+     * ONE writer class for every property kind, switching on a final int instead of relying on the
+     * receiver's type. The point is the call site in UnrolledBeanSerializer: with per-kind classes it
+     * sees StringWriter, IntWriter and ObjectWriter (three receivers, so C2 guards and inlines several
+     * bodies); with this it sees one class, monomorphic, exactly like reflection's BeanPropertyWriter.
+     *
+     * The trade: this method's body carries every kind, and the switch profile is per-method (shared by
+     * all call sites), so the arms cannot be pruned per site. Whether the monomorphic site is worth the
+     * fatter body is the thing to measure.
+     */
+    public static final class SwitchWriter extends GeneratedPropertyWriter {
+        private final int kind;
+
+        SwitchWriter(BeanPropertyWriter base, PropertyAccessor accessor, int index, int kind) {
+            super(base, accessor, index);
+            this.kind = kind;
+        }
+
+        private SwitchWriter(SwitchWriter base, PropertyName name) {
+            super(base, name);
+            this.kind = base.kind;
+        }
+
+        @Override
+        protected BeanPropertyWriter _new(PropertyName newName) {
+            return new SwitchWriter(this, newName);
+        }
+
+        @Override
+        public void serializeAsProperty(Object bean, JsonGenerator gen, SerializationContext prov) throws Exception {
+            switch (kind) {
+                case KIND_STRING: {
+                    String value = accessor.stringGetter(bean, index);
+                    if (value == null || !plain(StringSerializer.class)) {
+                        writeValue(bean, value, gen, prov);
+                        return;
+                    }
+                    gen.writeName(_name);
+                    gen.writeString(value);
+                    return;
+                }
+                case KIND_INT: {
+                    int value = accessor.intGetter(bean, index);
+                    if (!plain(NumberSerializers.IntegerSerializer.class)) {
+                        writeValue(bean, value, gen, prov);
+                        return;
+                    }
+                    gen.writeName(_name);
+                    gen.writeNumber(value);
+                    return;
+                }
+                case KIND_BOOLEAN: {
+                    boolean value = accessor.booleanGetter(bean, index);
+                    if (!plain(BooleanSerializer.class)) {
+                        writeValue(bean, value, gen, prov);
+                        return;
+                    }
+                    gen.writeName(_name);
+                    gen.writeBoolean(value);
+                    return;
+                }
+                default:
+                    writeValue(bean, accessor.objectGetter(bean, index), gen, prov);
+            }
+        }
+    }
+
     /** Nested beans go through the fallback, exactly as the generated ObjectWriter does. */
     public static final class ObjectWriter extends GeneratedPropertyWriter {
         ObjectWriter(BeanPropertyWriter base, PropertyAccessor accessor, int index) {
@@ -195,6 +262,12 @@ public final class AccessorWriters {
     public static final int KIND_INT = 1;
     public static final int KIND_BOOLEAN = 2;
     public static final int KIND_OBJECT = 3;
+
+    /** One class for all kinds - monomorphic call site. */
+    public static BeanPropertyWriter createSwitch(BeanPropertyWriter base, PropertyAccessor accessor,
+            int index, int kind) {
+        return new SwitchWriter(base, accessor, index, kind);
+    }
 
     public static BeanPropertyWriter create(BeanPropertyWriter base, PropertyAccessor accessor, int index, int kind) {
         switch (kind) {
