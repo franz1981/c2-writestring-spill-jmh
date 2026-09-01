@@ -7,8 +7,9 @@ than when it does not, because the ASCII copy loop inside `_writeStringSegment` 
 > The pressure comes from a cold `StringUTF16.charAt` call that C2 is forced to keep inside the
 > loop, because **one** `String.charAt` call on a UTF-16 string - made by Jackson's own
 > `StdDateFormat.<clinit>` - poisoned the process-wide branch profile of `String.charAt`.
-> Removing that one call takes `SingleBench.serialize` from **438 to 340 ns/op** and the copy loop
-> from **33 instructions / 13 stack operands per character** to **15.5 / 2**.
+> Removing that one call takes `SingleBench.serialize` from **426.7 to 331.9 ns/op** and lets C2
+> unroll the copy loop at all (**x1 -> x2**); adding the escape-constant change on top gives
+> **318.6 ns/op** and **x4**. Stack traffic per character goes **13 -> 2 -> 1**.
 > See [What actually caused it](#what-actually-caused-it) below.
 
 ## What is observed
@@ -295,87 +296,124 @@ With that patch the census goes from 1 UTF-16 `charAt` to **0**, in every worklo
 
 ### How much it matters
 
-Stock JDK 25, `-f 3 -wi 5 -i 5`, same jar with only `StdDateFormat` replaced:
+Stock JDK 25, `-f 3 -wi 5 -i 5`, pinned with `taskset -c 0,1`, `SingleBench.serialize`. Same jar
+throughout; only the named classes are replaced.
+
+| | Jackson 2.22.0 | Jackson 3.1.5 |
+|---|---|---|
+| vanilla | 426.679 +/- 7.447 | 444.184 +/- 5.638 |
+| + no UTF-16 pollution (`StdDateFormat` holder) | 331.855 +/- 5.197 | 356.490 +/- 6.441 |
+| + escape-constant `_writeStringSegment` as well | **318.631 +/- 3.557** | **347.533 +/- 4.108** |
+
+Removing the pollution alone is worth **-22.2 %** (Jackson 2) and **-19.7 %** (Jackson 3). Adding the
+escape-constant change on top is worth a further **-4.0 %** and **-2.5 %**. Jackson 3 behaves the same
+as Jackson 2 throughout.
+
+That second number corrects this repository's own earlier claim. The escape-constant change was
+originally measured at 416.9 -> 318.9 ns/op, about -23 %, but that was measured *with the pollution
+present*: most of what it appeared to buy was undoing the pollution's damage, not removing the table
+load. With the profile clean it is worth a few percent.
+
+The `dontinline` workaround also stops mattering. Before the fix, excluding `writeString` from
+inlining was worth 22 %; after it, the two benchmarks are the same within error:
 
 | | `serialize` | `serializeWriteStringNotInlined` | gap |
 |---|---|---|---|
-| Jackson 2.22.0, before | 438.382 +/- 35.582 | 359.354 +/- 14.991 | 22.0 % |
-| Jackson 2.22.0, after  | **340.246 +/- 29.950** | 343.737 +/- 26.326 | -1.0 % |
-| Jackson 3.1.5, before  | 463.941 +/- 48.005 | 377.486 +/- 19.270 | 22.9 % |
-| Jackson 3.1.5, after   | **365.411 +/- 30.237** | 358.228 +/- 13.180 | 2.0 % |
+| Jackson 2, vanilla | 438.382 +/- 35.582 | 359.354 +/- 14.991 | 22.0 % |
+| Jackson 2, no pollution | 340.246 +/- 29.950 | 343.737 +/- 26.326 | -1.0 % |
+| Jackson 3, vanilla | 463.941 +/- 48.005 | 377.486 +/- 19.270 | 22.9 % |
+| Jackson 3, no pollution | 365.411 +/- 30.237 | 358.228 +/- 13.180 | 2.0 % |
 
-**-22.4 % (Jackson 2) and -21.2 % (Jackson 3).** Jackson 3 behaves identically to Jackson 2.
-
-The second column is the point of this repository: forcing `writeString` not to inline used to be
-worth 22 %. After the patch it is worth nothing - the two benchmarks are the same within error. The
-workaround this repository documents stops being necessary.
-
-End to end it is smaller, because a real request spends most of its time elsewhere. A Quarkus REST
-endpoint serializing a list of beans, stock JDK 25, 3 interleaved reps of 30 s:
-
-| | mean req/s | sd | min | max |
-|---|---|---|---|---|
-| before | 125 967 | 1 348 | 124 915 | 127 486 |
-| after  | **130 768** | 2 303 | 129 269 | 133 420 |
-
-**+3.8 %**, ranges not overlapping.
+End to end the effect is smaller, because a real request spends most of its time elsewhere. A Quarkus
+REST endpoint serializing a list of beans, stock JDK 25, 3 interleaved reps of 30 s:
+125 967 -> 130 768 req/s, **+3.8 %**, ranges not overlapping.
 
 ### The loop, after
 
-Measured the same way as above, `-prof 'perfasm:hotThreshold=0.02;tooBigThreshold=4000'`:
+`-prof 'perfasm:hotThreshold=0.01;tooBigThreshold=6000'`, innermost loop containing the byte load.
+The unroll factor is counted as the number of `value[]` byte loads in the loop body.
 
-| | instructions | `(%rsp)` operands | chars / iteration | per character |
-|---|---|---|---|---|
-| inlined, before | 33 | 13 | 1 | 33 insns, 13 stack |
-| not inlined, before | 23 | 2 | 1 | 23 insns, 2 stack |
-| **inlined, after** | **31** | **4** | **2** | **15.5 insns, 2 stack** |
+| | insns | `(%rsp)` | unroll | insns / char | stack ops / char |
+|---|---|---|---|---|---|
+| vanilla | 33 | 13 | **x1** | 33.0 | **13.0** |
+| + no UTF-16 pollution | 31 | 4 | **x2** | 15.5 | **2.0** |
+| + escape-constant as well | 55 | 4 | **x4** | 13.8 | **1.0** |
 
-plus an 18-instruction post loop - C2 now builds pre/main/post, which it could not do before.
+C2 could not split the loop at all while the profile was polluted: the surviving cold
+`StringUTF16.charAt` call set `IdealLoopTree::_has_call`, and `iteration_split_impl` was skipped.
+Removing the pollution enables pre/main/post and unrolling by 2; the escape-constant change then
+removes the per-character table load, shortens the body, and C2 unrolls by 4.
 
-Before, per character:
+Vanilla, one character per iteration:
 
 ```
-    0.04%  movslq 0x34(%rsp),%r10        <<< induction variable in memory
-    3.61%  mov    %r10,(%rsp)
-    0.00%  cmpb   $0x0,0x10(%r12,%r11,8) <<< isLatin1 test, kept by the polluted profile
-    0.38%  jne    ...                    <<< to the cold StringUTF16.charAt call
-    0.15%  mov    0xc(%r12,%r8,8),%ebp   <<< array length, bounds check not eliminated
-   12.98%  cmp    $0x7f,%r10d
+    0.03%  movslq 0x34(%rsp),%r10        <<< induction variable in memory
+    4.03%  mov    %r10,(%rsp)
+    0.08%  cmpb   $0x0,0x10(%r12,%r11,8) <<< isLatin1 test, kept alive by the polluted profile
+    0.22%  jne    ...                    <<< to the cold StringUTF16.charAt call
+    0.05%  mov    0xc(%r12,%r8,8),%ebp   <<< array length: bounds check not eliminated
+    6.11%  cmp    $0x7f,%r10d
     0.00%  mov    0x50(%rsp),%r8         <<< escape table reloaded from the stack
     0.00%  mov    0x48(%rsp),%r8
-    0.23%  mov    0x38(%rsp),%r9         <<< output buffer reloaded from the stack
-    2.28%  mov    0x34(%rsp),%r8d
-    0.11%  mov    %r8d,0x34(%rsp)        <<< counter written back every iteration
+    0.30%  mov    0x38(%rsp),%r9         <<< output buffer reloaded from the stack
+    5.56%  mov    0x34(%rsp),%r8d
+    0.08%  mov    %r8d,0x34(%rsp)        <<< counter written back every iteration
 ```
 
-After, two characters per iteration:
+With both changes, four characters per iteration and no table load:
 
 ```
-    0.07%  movsbl 0x10(%rsi,%r13,1),%r10d  <<< charAt inlined, no isLatin1 test, no bounds check
-    0.26%  cmp    $0x7f,%edx
-    0.00%  mov    0x10(%r11,%rdx,4),%edx   <<< escape table in a register
-    0.26%  mov    %r10b,0x11(%r9,%rbp,1)   <<< output buffer in a register
-    0.00%  movsbl 0x11(%rsi,%r13,1),%r10d  <<< second character, same iteration
-    ...
-    0.26%  mov    %r10d,(%rsp)             <<< counter still round-trips, once per two chars
+    mov    (%rsp),%r9d                   <<< the only value still in memory: the counter
+    movslq (%rsp),%rax
+    movsbl 0x10(%rdx,%rax,1),%r8d        <<< charAt inlined; no isLatin1 test, no bounds check
+    lea    -0x20(%rcx),%r10d
+    cmp    $0x60,%r10d                   <<< escape test with constants
+    cmp    $0x22,%ecx
+    cmp    $0x5c,%ecx
+    mov    %r8b,0x11(%rbx,%rdi,1)
+    ... three more characters, entirely in registers ...
+    mov    (%rsp),%r10d
+    add    $0x4,%r10d
+    mov    %r10d,(%rsp)
 ```
 
-The `isLatin1` test, the array bounds check, and the reloads of the escape table and output buffer
-are gone. The induction variable **still** round-trips through the stack, now once per two
-characters instead of once per character - so the spill is largely resolved, not eliminated.
+The `isLatin1` test, the array bounds check and the reloads of the escape table and output buffer are
+gone. The induction variable still round-trips through the stack, but once per four characters
+instead of once per character.
+
+### Where the remaining spill lives depends on JVM flags
+
+In this benchmark under its default flags the leftover traffic is stack-based: the loop body contains
+`(%rsp)` operands and no XMM at all. In a Quarkus application, and in this benchmark when run with
+that application's flags (`-Xmx1g -Xms1g -XX:+UseParallelGC`), C2 instead parks the loop-invariants in
+vector registers just before the loop and reads them back inside:
+
+```
+  0x...fe16:   vmovd  %edx,%xmm5
+  0x...fe1e:   vmovd  %r11d,%xmm4
+  0x...fe23:   vmovd  %eax,%xmm1
+  0x...fe27:   vmovd  %r8d,%xmm2
+  0x...fe2c:   vmovq  %rbx,%xmm0
+```
+
+All five stores sit before the loop head; inside the loop body there are four XMM-to-GPR reloads and
+**zero** `(%rsp)` operands (12 reloads across the whole compiled method). The unpatched build of the
+same method has no XMM instructions anywhere. Which of the two the allocator
+picks is not something this repository has explained; it is recorded here only as an observation.
 
 ### What is not verified
 
-The block pressure numbers in *Why it spills* were **not** re-measured after the patch;
-`TraceSpilling` and the `is_high_pressure` instrumentation need a fastdebug build. The claim here is
-what was measured: timings, the census going 1 -> 0, and the loop shape. Whether `block_pres` now
-comes in at or below `int_pressure_limit` is untested.
+The block pressure figures in *Why it spills* were **not** re-measured after the fix; `TraceSpilling`
+and the `is_high_pressure` instrumentation need a fastdebug build. What is measured here is timings,
+the census going 1 -> 0, the unroll factors and the loop shape. Whether `block_pres` now comes in at
+or below `int_pressure_limit` is untested, and so is the reason C2 chooses XMM slots in one
+configuration and stack slots in another.
 
-Both fixes below are also only deferrals rather than cures: an application that really does parse
-RFC1123 dates still pollutes the profile, just later. The unconditional fix is in the JDK -
-`DecimalFormatSymbols.findNonFormatChar` should not use `String.charAt` - and, underneath that, the
-JVM behaviour itself: one interpreter-era call should not permanently de-optimize every `charAt` loop
-in the process. A minimal reproducer for that is `CharAtProfilePollution`.
+The Jackson fix is a deferral, not a cure: an application that really does parse RFC1123 dates still
+pollutes the profile, just later. The unconditional fix is in the JDK - `DecimalFormatSymbols`
+`findNonFormatChar` should not use `String.charAt` - and underneath that, in the JVM itself: one
+interpreter-era call should not permanently de-optimize every `charAt` loop in the process. A minimal
+reproducer for that is `CharAtProfilePollution`.
 
 ## Notes
 
