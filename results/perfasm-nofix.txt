@@ -1,0 +1,1208 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/j2-base.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25.0.2, OpenJDK 64-Bit Server VM, 25.0.2+10-LTS
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25.0.2-tem/bin/java
+# VM options: <none>
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.flat.SingleBench.serialize
+# Parameters: (size = 10)
+
+# Run progress: 0.00% complete, ETA 00:00:10
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfAsmProfiler 
+# Profilers consume stdout and stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 25501.187 ns/op
+# Warmup Iteration   2: 504.078 ns/op
+# Warmup Iteration   3: 476.307 ns/op
+# Warmup Iteration   4: 601.342 ns/op
+# Warmup Iteration   5: 520.974 ns/op
+Iteration   1: 413.347 ns/op
+Iteration   2: 415.764 ns/op
+Iteration   3: 430.352 ns/op
+Iteration   4: 443.675 ns/op
+Iteration   5: 457.970 ns/op
+# Processing profiler results: LinuxPerfAsmProfiler 
+
+
+Result "bench.flat.SingleBench.serialize":
+  432.222 ±(99.9%) 72.673 ns/op [Average]
+  (min, avg, max) = (413.347, 432.222, 457.970), stdev = 18.873
+  CI (99.9%): [359.549, 504.894] (assumes normal distribution)
+
+Secondary result "bench.flat.SingleBench.serialize:asm":
+PrintAssembly processed: 400181 total address lines.
+Perf output processed (skipped 11.274 seconds):
+ Column 1: cycles (4959 events)
+
+Hottest code regions (>2.00% "cycles" events):
+ Event counts are percents of total event count.
+
+....[Hottest Region 1]..............................................................................
+c2, level 4, bench.flat.FlatSer::serialize, version 2, compile id 1288 
+
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802ae65:   mov    0x10(%r12,%r9,8),%edx        ;*getfield _index {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@24 (line 274)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.44%     0x00007f84e802ae6a:   lea    0x1(%rdx),%r10d
+             0x00007f84e802ae6e:   cmp    $0x2,%esi
+   0.02%     0x00007f84e802ae71:   jne    0x00007f84e802b13f           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@5 (line 269)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802ae77:   movzbl 0x18(%r12,%r9,8),%ebp        ;*getfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@9 (line 270)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.20%     0x00007f84e802ae7d:   test   %ebp,%ebp
+   0.06%     0x00007f84e802ae7f:   je     0x00007f84e802b93c           ;*ifne {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@12 (line 270)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802ae85:   mov    %r10d,0x10(%r12,%r9,8)       ;*putfield _index {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@29 (line 274)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.02%     0x00007f84e802ae8a:   mov    %r12b,0x18(%r12,%r9,8)       ;*putfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeValue@19 (line 273)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.12%     0x00007f84e802ae8f:   mov    $0x2,%edx                    ;*invokevirtual writeValue {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.02%     0x00007f84e802ae94:   mov    0xc(%rdi),%ebp               ;*getfield _cfgPrettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@9 (line 1159)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802ae97:   test   %ebp,%ebp
+             0x00007f84e802ae99:   jne    0x00007f84e802b7b8           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@12 (line 1159)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802ae9f:   cmp    $0x2,%edx
+   0.30%     0x00007f84e802aea2:   jne    0x00007f84e802b12c           ;*tableswitch {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@23 (line 1165)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802aea8:   mov    $0x3a,%edx                   ;*goto {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@64 (line 1171)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802aead:   mov    %r14d,%r9d
+             0x00007f84e802aeb0:   cmp    %eax,%r9d
+             0x00007f84e802aeb3:   jge    0x00007f84e802b8ec           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@118 (line 1187)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802aeb9:   add    $0x2,%ecx
+   0.12%     0x00007f84e802aebc:   mov    %rdi,%r10
+   0.02%     0x00007f84e802aebf:   mov    %ecx,0x48(%rdi)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@137 (line 1190)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.04%     0x00007f84e802aec2:   cmp    %r8d,%r9d
+             0x00007f84e802aec5:   jae    0x00007f84e802b5f8
+             0x00007f84e802aecb:   vmovq  %xmm0,%rdi
+             0x00007f84e802aed0:   mov    %dl,0x11(%rdi,%rbx,1)        ;*invokevirtual _verifyValueWrite {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 514)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.10%     0x00007f84e802aed4:   mov    0x14(%r12,%r11,8),%ecx       ; implicit exception: dispatches to 0x00007f84e802bb34
+                                                                       ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - java.lang.String::length@1 (line 1583)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@16 (line 520)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.54%     0x00007f84e802aed9:   mov    0xc(%r12,%rcx,8),%r9d        ; implicit exception: dispatches to 0x00007f84e802baa0
+                                                                       ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - java.lang.String::length@4 (line 1583)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@16 (line 520)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.12%     0x00007f84e802aede:   movsbl 0x10(%r12,%r11,8),%edx       ;*getfield coder {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - java.lang.String::coder@7 (line 4885)
+                                                                       ; - java.lang.String::length@6 (line 1583)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@16 (line 520)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802aee4:   mov    0x50(%r10),%ecx              ;*getfield _outputMaxContiguous {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@22 (line 521)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.14%     0x00007f84e802aee8:   sarx   %edx,%r9d,%r9d               ;*ishr {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - java.lang.String::length@9 (line 1583)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@16 (line 520)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.02%     0x00007f84e802aeed:   cmp    %ecx,%r9d
+   0.04%     0x00007f84e802aef0:   jg     0x00007f84e802b7e0           ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@25 (line 521)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+                                                                       ;   {other}
+             0x00007f84e802aef6:   mov    0x48(%r10),%ebx              ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@36 (line 525)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.48%     0x00007f84e802aefa:   lea    (%r9,%rbx,1),%ebp
+   0.69%     0x00007f84e802aefe:   cmp    %eax,%ebp
+             0x00007f84e802af00:   jge    0x00007f84e802b808           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@45 (line 525)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802af06:   lea    0x1(%rbx),%ecx
+   0.46%     0x00007f84e802af09:   mov    %ecx,0x48(%r10)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@64 (line 528)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802af0d:   cmp    %r8d,%ebx
+             0x00007f84e802af10:   jae    0x00007f84e802b4a8
+             0x00007f84e802af16:   mov    %r13b,0x10(%rdi,%rbx,1)      ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@71 (line 528)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   1.53%     0x00007f84e802af1b:   test   %r9d,%r9d
+   0.18%     0x00007f84e802af1e:   jle    0x00007f84e802b294           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1468)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802af24:   mov    0x2c(%r10),%edx              ;*getfield _outputEscapes {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@17 (line 1466)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802af28:   mov    0xc(%r12,%rdx,8),%esi        ; implicit exception: dispatches to 0x00007f84e802b5a4
+                                                                       ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1471)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.02%     0x00007f84e802af2d:   cmp    %r8d,%ecx
+             0x00007f84e802af30:   jae    0x00007f84e802b5a4
+             0x00007f84e802af36:   movslq %ecx,%rax
+             0x00007f84e802af39:   movslq %r8d,%rbp
+   0.04%     0x00007f84e802af3c:   movslq %r9d,%r8
+   0.20%     0x00007f84e802af3f:   lea    -0x1(%rax,%r8,1),%r8
+   0.34%     0x00007f84e802af44:   cmp    %rbp,%r8
+             0x00007f84e802af47:   jae    0x00007f84e802b5a4
+             0x00007f84e802af4d:   movslq %ebx,%rcx
+   0.10%     0x00007f84e802af50:   lea    (%r12,%rdx,8),%rax
+             0x00007f84e802af54:   xor    %r8d,%r8d
+             0x00007f84e802af57:   mov    %r10,0x20(%rsp)
+   0.04%     0x00007f84e802af5c:   mov    %r8d,0x34(%rsp)
+   0.12%     0x00007f84e802af61:   mov    %rdi,0x38(%rsp)
+   0.20%     0x00007f84e802af66:   mov    %r9d,0x40(%rsp)
+   0.28%     0x00007f84e802af6b:   mov    %edx,0x44(%rsp)
+   0.20%     0x00007f84e802af6f:   mov    %rcx,0x48(%rsp)
+   0.52%     0x00007f84e802af74:   mov    %rax,0x50(%rsp)
+   0.38%     0x00007f84e802af79:   nopl   0x0(%rax)                    ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1469)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+          ↗  0x00007f84e802af80:   mov    0x14(%r12,%r11,8),%r8d       ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@8 (line 1624)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1469)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+          │  0x00007f84e802af85:   mov    0x34(%rsp),%ecx
+   0.02%  │  0x00007f84e802af89:   add    %ebx,%ecx                    ;*iadd {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@63 (line 528)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.04%  │  0x00007f84e802af8b:   movslq 0x34(%rsp),%r10              ;*baload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.StringLatin1::charAt@8 (line 46)
+          │                                                            ; - java.lang.String::charAt@12 (line 1624)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1469)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+   2.92%  │  0x00007f84e802af90:   mov    %r10,(%rsp)
+   0.08%  │  0x00007f84e802af94:   lea    0x1(%rcx),%r9d
+   0.04%  │  0x00007f84e802af98:   mov    %r9d,0x8(%rsp)
+   0.28%  │  0x00007f84e802af9d:   cmpb   $0x0,0x10(%r12,%r11,8)
+   0.06%  │  0x00007f84e802afa3:   jne    0x00007f84e802b2da           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@4 (line 1623)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1469)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+          │  0x00007f84e802afa9:   mov    0xc(%r12,%r8,8),%ebp         ; implicit exception: dispatches to 0x00007f84e802b9dc
+          │                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.StringLatin1::charAt@2 (line 45)
+          │                                                            ; - java.lang.String::charAt@12 (line 1624)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1469)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.08%  │  0x00007f84e802afae:   mov    0x34(%rsp),%r10d
+          │  0x00007f84e802afb3:   cmp    %ebp,%r10d
+          │  0x00007f84e802afb6:   jae    0x00007f84e802b36c
+          │  0x00007f84e802afbc:   lea    (%r12,%r8,8),%r10
+   2.24%  │  0x00007f84e802afc0:   mov    (%rsp),%r8
+   0.04%  │  0x00007f84e802afc4:   movzbl 0x10(%r10,%r8,1),%r10d       ;*invokevirtual charAt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1469)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+  11.41%  │  0x00007f84e802afca:   cmp    $0x7f,%r10d
+   2.20%  │  0x00007f84e802afce:   jg     0x00007f84e802b3cd           ;*if_icmpgt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@38 (line 1471)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+          │  0x00007f84e802afd4:   cmp    %esi,%r10d
+          │  0x00007f84e802afd7:   jae    0x00007f84e802b325
+          │  0x00007f84e802afdd:   mov    0x50(%rsp),%r8
+          │  0x00007f84e802afe2:   mov    0x10(%r8,%r10,4),%ebp        ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1471)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.77%  │  0x00007f84e802afe7:   test   %ebp,%ebp
+          │  0x00007f84e802afe9:   jne    0x00007f84e802b404           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@46 (line 1471)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+          │  0x00007f84e802afef:   mov    0x48(%rsp),%r8               ;   {other}
+          │  0x00007f84e802aff4:   add    (%rsp),%r8
+   0.18%  │  0x00007f84e802aff8:   mov    0x38(%rsp),%r9
+          │  0x00007f84e802affd:   mov    %r10b,0x11(%r9,%r8,1)        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@62 (line 1474)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+   3.61%  │  0x00007f84e802b002:   mov    0x34(%rsp),%r8d
+   0.04%  │  0x00007f84e802b007:   inc    %r8d                         ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@63 (line 1475)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+          │                                                            ; - bench.flat.FlatSer::serialize@16 (line 34)
+          │  0x00007f84e802b00a:   mov    %r8d,0x34(%rsp)
+   0.02%  │  0x00007f84e802b00f:   cmp    0x40(%rsp),%r8d
+   0.04%  ╰  0x00007f84e802b014:   jl     0x00007f84e802af80           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1468)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802b01a:   add    $0x2,%ecx                    ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@56 (line 1474)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802b01d:   mov    0x20(%rsp),%r10
+   0.04%     0x00007f84e802b022:   mov    %r8d,%ebx
+             0x00007f84e802b025:   mov    0x40(%rsp),%r9d              ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1468)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+   0.10%     0x00007f84e802b02a:   mov    %ecx,0x48(%r10)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@72 (line 1477)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeString@76 (line 529)
+                                                                       ; - bench.flat.FlatSer::serialize@16 (line 34)
+             0x00007f84e802b02e:   cmp    %r9d,%ebx
+             0x00007f84e802b031:   jl     0x00007f84e802b830           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+....................................................................................................
+  32.37%  <total for region 1>
+
+....[Hottest Region 2]..............................................................................
+c2, level 4, bench.flat.FlatSer::serialize, version 2, compile id 1288 
+
+            0x00007f84e802ab7a:   mov    $0x2,%r9d                    ;*invokevirtual writeValue {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1158)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ab80:   mov    0xc(%r10),%ebp               ;*getfield _cfgPrettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@9 (line 1159)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.46%    0x00007f84e802ab84:   test   %ebp,%ebp
+            0x00007f84e802ab86:   jne    0x00007f84e802b668           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@12 (line 1159)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ab8c:   cmp    $0x2,%r9d
+   0.28%    0x00007f84e802ab90:   jne    0x00007f84e802b15f           ;*tableswitch {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@23 (line 1165)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ab96:   mov    $0x3a,%r8d                   ;*goto {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@64 (line 1171)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ab9c:   mov    0x4c(%r10),%r11d             ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@115 (line 1187)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.14%    0x00007f84e802aba0:   mov    0x48(%r10),%r9d              ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@111 (line 1187)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.30%    0x00007f84e802aba4:   cmp    %r11d,%r9d
+   0.08%    0x00007f84e802aba7:   jge    0x00007f84e802b8b8           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@118 (line 1187)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802abad:   mov    0x3c(%r10),%ebp              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@126 (line 1190)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.30%    0x00007f84e802abb1:   lea    0x1(%r9),%r11d
+            0x00007f84e802abb5:   mov    %r11d,0x48(%r10)             ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@137 (line 1190)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.40%    0x00007f84e802abb9:   mov    0xc(%r12,%rbp,8),%ecx        ; implicit exception: dispatches to 0x00007f84e802baec
+   0.04%    0x00007f84e802abbe:   cmp    %ecx,%r9d
+            0x00007f84e802abc1:   jae    0x00007f84e802b5d4
+            0x00007f84e802abc7:   lea    (%r12,%rbp,8),%r11
+            0x00007f84e802abcb:   mov    %r8b,0x10(%r11,%r9,1)        ;*invokevirtual _verifyValueWrite {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@3 (line 378)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   3.61%    0x00007f84e802abd0:   mov    0x24(%r12,%rbx,8),%r8d       ;*getfield _child {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@1 (line 193)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802abd5:   test   %r8d,%r8d
+            0x00007f84e802abd8:   je     0x00007f84e802b197           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@6 (line 194)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802abde:   movl   $0x2,0xc(%r12,%r8,8)         ;*putfield _type {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@2 (line 103)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.77%    0x00007f84e802abe7:   mov    0x20(%r12,%r8,8),%ebp        ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@26 (line 108)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.20%    0x00007f84e802abec:   movl   $0xffffffff,0x10(%r12,%r8,8) ;*putfield _index {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@7 (line 104)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.56%    0x00007f84e802abf5:   mov    %r12b,0x18(%r12,%r8,8)       ;*putfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@17 (line 106)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.12%    0x00007f84e802abfa:   xor    %rdi,%rdi
+   0.02%    0x00007f84e802abfd:   lea    0x2c(%r12,%r8,8),%rcx
+   0.34%    0x00007f84e802ac02:   cmpb   $0x0,0x48(%r15)
+            0x00007f84e802ac07:   jne    0x00007f84e802bb6e
+            0x00007f84e802ac0d:   mov    %edi,(%rcx)                  ;*putfield _currentValue {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@22 (line 107)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.81%    0x00007f84e802ac0f:   lea    0x28(%r12,%r8,8),%rcx
+            0x00007f84e802ac14:   cmpb   $0x0,0x48(%r15)
+            0x00007f84e802ac19:   jne    0x00007f84e802bbf4
+   0.34%    0x00007f84e802ac1f:   mov    %edi,(%rcx)                  ;*putfield _currentName {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@12 (line 105)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.14%    0x00007f84e802ac21:   test   %ebp,%ebp
+            0x00007f84e802ac23:   jne    0x00007f84e802b628           ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::reset@26 (line 108)
+                                                                      ; - com.fasterxml.jackson.core.json.JsonWriteContext::createChildObjectContext@46 (line 199)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ac29:   lea    (%r12,%r8,8),%rdi            ;*invokevirtual createChildObjectContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@11 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+            0x00007f84e802ac2d:   mov    0x28(%r10),%ecx              ;*getfield _streamWriteConstraints {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.JsonGeneratorImpl::streamWriteConstraints@1 (line 153)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@18 (line 380)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.42%    0x00007f84e802ac31:   mov    0x14(%rdi),%ebx              ;*getfield _nestingDepth {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.JsonStreamContext::getNestingDepth@1 (line 140)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@25 (line 380)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.02%    0x00007f84e802ac34:   lea    0x18(%r10),%r9               ;   {other}
+            0x00007f84e802ac38:   cmpb   $0x0,0x48(%r15)
+            0x00007f84e802ac3d:   jne    0x00007f84e802bc67
+   0.22%    0x00007f84e802ac43:   mov    %r8d,(%r9)
+   0.14%    0x00007f84e802ac46:   mov    %r8d,%edx
+            0x00007f84e802ac49:   shl    $0x3,%rdx
+            0x00007f84e802ac4d:   mov    %r9,%r11
+            0x00007f84e802ac50:   xor    %rdx,%r11
+   0.34%    0x00007f84e802ac53:   shr    $0x17,%r11
+   0.12%    0x00007f84e802ac57:   je     0x00007f84e802ac7b
+            0x00007f84e802ac5d:   mov    %r9,%r11
+            0x00007f84e802ac60:   shr    $0x9,%r11
+            0x00007f84e802ac64:   movabs $0x7f84da4b0000,%rdx
+            0x00007f84e802ac6e:   add    %rdx,%r11
+            0x00007f84e802ac71:   cmpb   $0x2,(%r11)
+            0x00007f84e802ac75:   jne    0x00007f84e802bce6           ;*putfield _writeContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@14 (line 379)
+                                                                      ; - bench.flat.FlatSer::serialize@1 (line 32)
+....................................................................................................
+  10.20%  <total for region 2>
+
+....[Hottest Region 3]..............................................................................
+c2, level 4, bench.flat.FlatSer::serialize, version 2, compile id 1288 
+
+              0x00007f84e802ac75:   jne    0x00007f84e802bce6           ;*putfield _writeContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@14 (line 379)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802ac7b:   mov    0xc(%r12,%rcx,8),%ebp        ; implicit exception: dispatches to 0x00007f84e802ba24
+                                                                        ;*getfield _maxNestingDepth {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.StreamWriteConstraints::validateNestingDepth@2 (line 161)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@28 (line 380)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.02%      0x00007f84e802ac80:   cmp    %ebp,%ebx
+   0.20%      0x00007f84e802ac82:   jg     0x00007f84e802b68c           ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.StreamWriteConstraints::validateNestingDepth@5 (line 161)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@28 (line 380)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802ac88:   mov    0xc(%r10),%ebp               ;*getfield _cfgPrettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@32 (line 381)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.04%      0x00007f84e802ac8c:   test   %ebp,%ebp
+              0x00007f84e802ac8e:   jne    0x00007f84e802b6b0           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@35 (line 381)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802ac94:   mov    0x48(%r10),%r8d              ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@52 (line 384)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802ac98:   mov    0x4c(%r10),%r11d             ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@56 (line 384)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.30%      0x00007f84e802ac9c:   cmp    %r11d,%r8d
+              0x00007f84e802ac9f:   jge    0x00007f84e802b6cc           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@59 (line 384)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802aca5:   mov    0x3c(%r10),%r9d              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@67 (line 387)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.24%      0x00007f84e802aca9:   lea    0x1(%r8),%ecx
+   0.02%      0x00007f84e802acad:   mov    %ecx,0x48(%r10)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@78 (line 387)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.04%      0x00007f84e802acb1:   mov    0xc(%r12,%r9,8),%edx         ; implicit exception: dispatches to 0x00007f84e802ba3c
+                                                                        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@83 (line 387)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.10%      0x00007f84e802acb6:   cmp    %edx,%r8d
+              0x00007f84e802acb9:   jae    0x00007f84e802b428
+              0x00007f84e802acbf:   mov    0xc(%rdi),%ebp               ;*getfield _type {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@1 (line 250)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.10%      0x00007f84e802acc2:   lea    (%r12,%r9,8),%rbx            ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@67 (line 387)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+              0x00007f84e802acc6:   movb   $0x7b,0x10(%rbx,%r8,1)       ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeStartObject@83 (line 387)
+                                                                        ; - bench.flat.FlatSer::serialize@1 (line 32)
+   0.16%      0x00007f84e802accc:   cmp    $0x2,%ebp
+   0.48%      0x00007f84e802accf:   jne    0x00007f84e802b64c           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@5 (line 250)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802acd5:   movzbl 0x18(%rdi),%ebp              ;*getfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@9 (line 250)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   2.36%      0x00007f84e802acd9:   test   %ebp,%ebp
+              0x00007f84e802acdb:   jne    0x00007f84e802b6f4           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@12 (line 250)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ace1:   movb   $0x1,0x18(%rdi)              ;*putfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@19 (line 253)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ace5:   mov    0x20(%rdi),%eax              ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@28 (line 255)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.02%      0x00007f84e802ace8:   vmovd  %eax,%xmm1
+   0.06%      0x00007f84e802acec:   mov    %rdi,%rax
+              0x00007f84e802acef:   movabs $0x4538f9570,%rsi            ;   {oop(a &apos;com/fasterxml/jackson/core/io/SerializedString&apos;{0x00000004538f9570})}
+              0x00007f84e802acf9:   mov    0xc(%rsi),%ebp               ;*getfield _value {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.io.SerializedString::getValue@1 (line 89)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@18 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802acfc:   lea    0x28(%rax),%rdi
+   0.02%      0x00007f84e802ad00:   cmpb   $0x0,0x48(%r15)
+   0.12%      0x00007f84e802ad05:   jne    0x00007f84e802bd54
+   1.05%      0x00007f84e802ad0b:   mov    %ebp,(%rdi)
+              0x00007f84e802ad0d:   mov    %ebp,%r13d
+              0x00007f84e802ad10:   shl    $0x3,%r13
+              0x00007f84e802ad14:   mov    %rdi,%r14
+   0.02%      0x00007f84e802ad17:   xor    %r13,%r14
+              0x00007f84e802ad1a:   shr    $0x17,%r14
+   0.02%  ╭   0x00007f84e802ad1e:   je     0x00007f84e802ad4c
+   0.02%  │   0x00007f84e802ad24:   cmp    $0x0,%r13
+   0.08%  │╭  0x00007f84e802ad28:   je     0x00007f84e802ad4c
+          ││  0x00007f84e802ad2e:   mov    %rdi,%r14
+   0.02%  ││  0x00007f84e802ad31:   shr    $0x9,%r14
+   0.75%  ││  0x00007f84e802ad35:   movabs $0x7f84da4b0000,%r13
+          ││  0x00007f84e802ad3f:   add    %r13,%r14
+          ││  0x00007f84e802ad42:   cmpb   $0x2,(%r14)
+          ││  0x00007f84e802ad46:   jne    0x00007f84e802be05           ;*putfield _currentName {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@24 (line 254)
+          ││                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+          ││                                                            ; - bench.flat.FlatSer::serialize@8 (line 33)
+          ↘↘  0x00007f84e802ad4c:   vmovd  %xmm1,%edi
+              0x00007f84e802ad50:   test   %edi,%edi
+   0.50%      0x00007f84e802ad52:   jne    0x00007f84e802b538           ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@28 (line 255)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ad58:   mov    0x10(%rax),%ebp              ;*getfield _index {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@44 (line 256)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.02%      0x00007f84e802ad5b:   test   %ebp,%ebp
+              0x00007f84e802ad5d:   jge    0x00007f84e802b710           ;*ifge {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.JsonWriteContext::writeFieldName@47 (line 256)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@23 (line 265)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ad63:   mov    %r10,%rdi
+   0.06%      0x00007f84e802ad66:   movzbl 0x22(%r10),%ebp              ;*getfield _cfgUnqNames {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@77 (line 275)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   1.17%      0x00007f84e802ad6b:   test   %ebp,%ebp
+              0x00007f84e802ad6d:   jne    0x00007f84e802b72c           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@80 (line 275)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ad73:   mov    %ecx,%r10d
+   0.04%      0x00007f84e802ad76:   cmp    %r11d,%ecx
+              0x00007f84e802ad79:   jge    0x00007f84e802b748           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@97 (line 279)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ad7f:   movsbl 0x58(%rdi),%ecx              ;*getfield _quoteChar {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@120 (line 282)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ad83:   lea    0x2(%r8),%r11d
+              0x00007f84e802ad87:   mov    %r11d,0x48(%rdi)             ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@116 (line 282)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.04%      0x00007f84e802ad8b:   cmp    %edx,%r10d
+              0x00007f84e802ad8e:   jae    0x00007f84e802b450
+              0x00007f84e802ad94:   mov    0x10(%rsi),%eax
+   0.04%      0x00007f84e802ad97:   movslq %r8d,%r10
+              0x00007f84e802ad9a:   mov    %rbx,%rsi
+   0.02%      0x00007f84e802ad9d:   add    %r10,%rsi
+              0x00007f84e802ada0:   mov    %cl,0x11(%rsi)               ;*getfield _quotedUTF8Ref {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.io.SerializedString::appendQuotedUTF8@1 (line 159)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@133 (line 283)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.97%      0x00007f84e802ada3:   mov    0xc(%r12,%rax,8),%ecx        ; implicit exception: dispatches to 0x00007f84e802bb08
+                                                                        ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.io.SerializedString::appendQuotedUTF8@26 (line 163)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@133 (line 283)
+                                                                        ; - bench.flat.FlatSer::serialize@8 (line 33)
+              0x00007f84e802ada8:   lea    0x2(%r8,%rcx,1),%ebp         ;*iadd {reexecute=0 rethrow=0 return_oop=0}
+....................................................................................................
+   9.11%  <total for region 3>
+
+....[Hottest Region 4]..............................................................................
+c2, level 4, com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose, version 2, compile id 1316 
+
+              0x00007f84e8036290:   mov    $0x1,%r9d                    ;*ifne {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@206 (line 157)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.06%   ↗  0x00007f84e8036296:   mov    0x30(%r15),%r10
+   0.40%   │  0x00007f84e803629a:   mov    0x40(%rsp),%r8d
+   0.02%   │  0x00007f84e803629f:   inc    %r8d                         ; ImmutableOopMap {rcx=Oop [4]=NarrowOop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [72]=Oop }
+           │                                                            ;*ifne {reexecute=1 rethrow=0 return_oop=0}
+           │                                                            ; - (reexecute) com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@206 (line 157)
+           │                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+           │                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+           │                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+           │                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+           │                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+           │                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.04%   │  0x00007f84e80362a2:   test   %eax,(%r10)                  ;   {poll}
+   0.14%   │  0x00007f84e80362a5:   cmp    %r11d,%edi
+          ╭│  0x00007f84e80362a8:   je     0x00007f84e80363cc           ;*ifne {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@206 (line 157)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362ae:   mov    %rcx,%r10
+   0.02%  ││  0x00007f84e80362b1:   mov    0xc(%r10),%ecx               ;*getfield modCount {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::checkForComodification@4 (line 1095)
+          ││                                                            ; - java.util.ArrayList$Itr::next@1 (line 1050)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362b5:   mov    0x8(%rsp),%edx
+          ││  0x00007f84e80362b9:   mov    %edi,%r11d
+          ││  0x00007f84e80362bc:   mov    0x30(%rsp),%r14
+   0.36%  ││  0x00007f84e80362c1:   mov    (%rsp),%esi
+          ││  0x00007f84e80362c4:   mov    0x4(%rsp),%ebx
+   0.02%  ││  0x00007f84e80362c8:   mov    0xc(%rsp),%r9d
+          ││  0x00007f84e80362cd:   mov    0x38(%rsp),%rax              ;*aload {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@76 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.02%  ││  0x00007f84e80362d2:   cmp    %r9d,%ecx
+          ││  0x00007f84e80362d5:   jne    0x00007f84e8036a18           ;*if_icmpeq {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::checkForComodification@11 (line 1095)
+          ││                                                            ; - java.util.ArrayList$Itr::next@1 (line 1050)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362db:   mov    0x10(%r10),%ebp              ;*getfield size {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@14 (line 1052)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362df:   cmp    %ebp,%r11d
+          ││  0x00007f84e80362e2:   jge    0x00007f84e8036a50           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@17 (line 1052)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362e8:   mov    0x14(%r10),%ecx              ;*getfield elementData {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@32 (line 1054)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362ec:   mov    0xc(%r12,%rcx,8),%edi        ; implicit exception: dispatches to 0x00007f84e8037420
+          ││                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@38 (line 1055)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.14%  ││  0x00007f84e80362f1:   cmp    %edi,%r11d
+          ││  0x00007f84e80362f4:   jge    0x00007f84e8036a8c           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@39 (line 1055)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80362fa:   lea    0x1(%r11),%edx
+   0.48%  ││  0x00007f84e80362fe:   cmp    %edi,%r11d
+   0.02%  ││  0x00007f84e8036301:   jae    0x00007f84e8036958
+          ││  0x00007f84e8036307:   shl    $0x3,%rcx
+   0.06%  ││  0x00007f84e803630b:   mov    0x10(%rcx,%r11,4),%ecx       ;*aaload {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@64 (line 1058)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e8036310:   mov    0x8(%r12,%rcx,8),%edi        ; implicit exception: dispatches to 0x00007f84e803748c
+   0.42%  ││  0x00007f84e8036315:   mov    $0x3c000000,%ebp
+          ││  0x00007f84e803631a:   add    %rdi,%rbp
+   0.14%  ││  0x00007f84e803631d:   mov    0x70(%rbp),%rdi
+   0.54%  ││  0x00007f84e8036321:   mov    (%rdi),%r13                  ;*invokevirtual getClass {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@100 (line 139)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   1.15%  ││  0x00007f84e8036324:   mov    0x8(%r12,%rbx,8),%edi        ; implicit exception: dispatches to 0x00007f84e8037454
+   0.10%  ││  0x00007f84e8036329:   cmp    $0x10d1c38,%edi              ;   {metadata(&apos;com/fasterxml/jackson/databind/ser/impl/PropertySerializerMap$Single&apos;)}
+   0.04%  ││  0x00007f84e803632f:   jne    0x00007f84e8036990
+          ││  0x00007f84e8036335:   mov    %edx,0x44(%rsp)
+          ││  0x00007f84e8036339:   mov    %r8d,0x40(%rsp)
+   0.02%  ││  0x00007f84e803633e:   mov    %r11d,0x8(%rsp)
+   0.02%  ││  0x00007f84e8036343:   mov    %r9d,0xc(%rsp)
+          ││  0x00007f84e8036348:   mov    %ebx,0x4(%rsp)
+   0.04%  ││  0x00007f84e803634c:   mov    %esi,(%rsp)
+   0.26%  ││  0x00007f84e803634f:   mov    %r14,0x30(%rsp)
+   0.22%  ││  0x00007f84e8036354:   mov    %r10,0x10(%rsp)
+   0.08%  ││  0x00007f84e8036359:   mov    %rax,0x38(%rsp)              ;*invokevirtual serializerFor {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@109 (line 140)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.06%  ││  0x00007f84e803635e:   mov    %rax,0x48(%rsp)
+          ││  0x00007f84e8036363:   mov    0x10(%rax),%ebp              ;*getfield _type {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single::serializerFor@2 (line 271)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@109 (line 140)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e8036366:   mov    %rbp,%r10
+          ││  0x00007f84e8036369:   shl    $0x3,%r10
+          ││  0x00007f84e803636d:   cmp    %r10,%r13
+          ││  0x00007f84e8036370:   jne    0x00007f84e80369f0           ;*if_acmpne {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single::serializerFor@5 (line 271)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@109 (line 140)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e8036376:   mov    0x14(%rax),%ebp              ;*getfield _serializer {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single::serializerFor@9 (line 272)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@109 (line 140)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.24%  ││  0x00007f84e8036379:   mov    0x8(%r12,%rbp,8),%r11d       ; implicit exception: dispatches to 0x00007f84e80374c4
+   0.30%  ││  0x00007f84e803637e:   cmp    $0x1064c48,%r11d             ;   {metadata(&apos;bench/flat/FlatSer&apos;)}
+   0.10%  ││  0x00007f84e8036385:   jne    0x00007f84e80369cc           ;*ifnonnull {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@116 (line 141)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e803638b:   lea    (%r12,%rcx,8),%rdx           ;*aaload {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::next@64 (line 1058)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@78 (line 135)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e803638f:   lea    (%r12,%rbp,8),%rsi
+          ││  0x00007f84e8036393:   mov    %r14,%rcx
+          ││  0x00007f84e8036396:   mov    0x20(%rsp),%r8
+          ││  0x00007f84e803639b:   mov    0x10(%rsp),%rbp
+          ││  0x00007f84e80363a0:   vzeroupper 
+   0.14%  ││  0x00007f84e80363a3:   call   0x00007f84e802a810           ; ImmutableOopMap {rbp=Oop [4]=NarrowOop [16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [72]=Oop }
+          ││                                                            ;*invokevirtual serialize {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@179 (line 151)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││                                                            ;   {optimized virtual_call}
+          ││  0x00007f84e80363a8:   nopl   0x20007a0(%rax,%rax,1)       ;*invokevirtual serialize {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@179 (line 151)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││                                                            ;   {post_call_nop}
+   0.02%  ││  0x00007f84e80363b0:   mov    %rbp,%rcx
+   0.06%  ││  0x00007f84e80363b3:   mov    0x10(%rcx),%r11d             ;*getfield size {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::hasNext@8 (line 1045)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@201 (line 157)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.10%  ││  0x00007f84e80363b7:   mov    0x44(%rsp),%edi
+          ││  0x00007f84e80363bb:   cmp    %r11d,%edi
+          ││  0x00007f84e80363be:   jne    0x00007f84e8036290           ;*if_icmpeq {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.util.ArrayList$Itr::hasNext@11 (line 1045)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serializeContents@201 (line 157)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@60 (line 111)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+          ││                                                            ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+          ││                                                            ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+          ││  0x00007f84e80363c4:   xor    %r9d,%r9d
+   0.08%  │╰  0x00007f84e80363c7:   jmp    0x00007f84e8036296
+          ↘   0x00007f84e80363cc:   mov    0x30(%rsp),%r9
+              0x00007f84e80363d1:   mov    0x18(%r9),%ebx               ;*getfield _writeContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@1 (line 361)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.12%      0x00007f84e80363d5:   mov    0xc(%r12,%rbx,8),%r10d       ; implicit exception: dispatches to 0x00007f84e8037654
+                                                                        ;*getfield _type {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.JsonStreamContext::inArray@1 (line 112)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@4 (line 361)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.34%      0x00007f84e80363da:   cmp    $0x1,%r10d
+              0x00007f84e80363de:   jne    0x00007f84e8036ca0           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.JsonStreamContext::inArray@5 (line 112)
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@4 (line 361)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e80363e4:   mov    0xc(%r9),%ebp                ;*getfield _cfgPrettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@40 (line 364)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e80363e8:   test   %ebp,%ebp
+   0.02%      0x00007f84e80363ea:   jne    0x00007f84e80370f0           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@43 (line 364)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e80363f0:   mov    0x4c(%r9),%r11d              ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@71 (line 367)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e80363f4:   mov    0x48(%r9),%r8d               ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@67 (line 367)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.02%      0x00007f84e80363f8:   cmp    %r11d,%r8d
+              0x00007f84e80363fb:   jge    0x00007f84e8037110           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@74 (line 367)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e8036401:   mov    0x3c(%r9),%r10d              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@82 (line 370)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e8036405:   lea    0x1(%r8),%edx
+              0x00007f84e8036409:   mov    %edx,0x48(%r9)               ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@93 (line 370)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+              0x00007f84e803640d:   mov    0xc(%r12,%r10,8),%ecx        ; implicit exception: dispatches to 0x00007f84e8037670
+                                                                        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeEndArray@98 (line 370)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@64 (line 112)
+                                                                        ; - com.fasterxml.jackson.databind.ser.std.CollectionSerializer::serialize@7 (line 25)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::_serialize@4 (line 503)
+                                                                        ; - com.fasterxml.jackson.databind.ser.DefaultSerializerProvider::serializeValue@143 (line 423)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter$Prefetch::serialize@46 (line 1583)
+                                                                        ; - com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose@37 (line 1289)
+   0.04%      0x00007f84e8036412:   cmp    %ecx,%r8d
+....................................................................................................
+   6.49%  <total for region 4>
+
+....[Hottest Region 5]..............................................................................
+c2, level 4, bench.flat.FlatSer::serialize, version 2, compile id 1288 
+
+             0x00007f84e802adb8:   jl     0x00007f84e802b55c
+             0x00007f84e802adbe:   cmp    %ebp,%edx
+             0x00007f84e802adc0:   jb     0x00007f84e802b55c           ;*invokestatic arraycopy {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.io.SerializedString::appendQuotedUTF8@46 (line 167)
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@133 (line 283)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+             0x00007f84e802adc6:   movslq %ecx,%r14
+             0x00007f84e802adc9:   test   %ecx,%ecx
+   0.04%  ╭  0x00007f84e802adcb:   jbe    0x00007f84e802ae01
+          │  0x00007f84e802adcd:   mov    %ecx,%r13d
+   0.79%  │  0x00007f84e802add0:   mov    %rdi,%rbp
+   0.06%  │  0x00007f84e802add3:   add    $0x12,%rsi
+   0.04%  │  0x00007f84e802add7:   lea    (%r12,%rax,8),%r10           ;*getfield _quotedUTF8Ref {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.io.SerializedString::appendQuotedUTF8@1 (line 159)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@133 (line 283)
+          │                                                            ; - bench.flat.FlatSer::serialize@8 (line 33)
+          │  0x00007f84e802addb:   lea    0x10(%r12,%rax,8),%rdi
+   0.04%  │  0x00007f84e802ade0:   mov    %r14,%rdx
+          │  0x00007f84e802ade3:   vzeroupper 
+   0.08%  │  0x00007f84e802ade6:   movabs $0x7f84e7849440,%r10         ;   {runtime_call Stub::jbyte_arraycopy}
+   0.18%  │  0x00007f84e802adf0:   call   *%r10
+   1.01%  │  0x00007f84e802adf3:   nopl   0x0(%rax,%rax,1)             ;   {post_call_nop}
+          │  0x00007f84e802adfb:   mov    %rbp,%rdi
+          │  0x00007f84e802adfe:   mov    %r13d,%ecx                   ;*invokestatic arraycopy {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - com.fasterxml.jackson.core.io.SerializedString::appendQuotedUTF8@46 (line 167)
+          │                                                            ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@133 (line 283)
+          │                                                            ; - bench.flat.FlatSer::serialize@8 (line 33)
+          ↘  0x00007f84e802ae01:   mov    0x48(%rdi),%r11d             ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@158 (line 287)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   2.38%     0x00007f84e802ae05:   mov    0x4c(%rdi),%r9d              ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@171 (line 289)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.06%     0x00007f84e802ae09:   add    %r11d,%ecx                   ;*iadd {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@162 (line 287)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.24%     0x00007f84e802ae0c:   mov    %ecx,0x48(%rdi)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@163 (line 287)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.08%     0x00007f84e802ae0f:   cmp    %r9d,%ecx
+             0x00007f84e802ae12:   jge    0x00007f84e802b790           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@174 (line 289)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+             0x00007f84e802ae18:   movsbl 0x58(%rdi),%r13d             ;*getfield _quoteChar {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@197 (line 292)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.46%     0x00007f84e802ae1d:   mov    0x3c(%rdi),%r10d             ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@182 (line 292)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.02%     0x00007f84e802ae21:   lea    0x1(%rcx),%edx
+             0x00007f84e802ae24:   mov    %edx,0x48(%rdi)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@193 (line 292)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.04%     0x00007f84e802ae27:   mov    0xc(%r12,%r10,8),%r8d        ; implicit exception: dispatches to 0x00007f84e802ba54
+   0.04%     0x00007f84e802ae2c:   cmp    %r8d,%ecx
+             0x00007f84e802ae2f:   jae    0x00007f84e802b47c
+             0x00007f84e802ae35:   movslq %r11d,%rbx
+             0x00007f84e802ae38:   add    %r14,%rbx
+   0.02%     0x00007f84e802ae3b:   lea    (%r12,%r10,8),%rsi
+             0x00007f84e802ae3f:   mov    %r13b,0x10(%rsi,%rbx,1)      ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::writeFieldName@200 (line 292)
+                                                                       ; - bench.flat.FlatSer::serialize@8 (line 33)
+   0.85%     0x00007f84e802ae44:   mov    (%rsp),%r11
+             0x00007f84e802ae48:   mov    0xc(%r11),%r11d              ; implicit exception: dispatches to 0x00007f84e802ba70
+                                                                       ;*getfield s0 {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - bench.flat.FlatSer::serialize@13 (line 34)
+             0x00007f84e802ae4c:   vmovq  %rsi,%xmm0
+             0x00007f84e802ae51:   mov    %edx,%r14d
+             0x00007f84e802ae54:   mov    %r10d,0x18(%rsp)
+....................................................................................................
+   6.43%  <total for region 5>
+
+....[Hottest Region 6]..............................................................................
+runtime stub, StubRoutines::jbyte_disjoint_arraycopy 
+
+           --------------------------------------------------------------------------------
+           ----------------------------------------------------------------------
+           - - - [BEGIN] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           StubRoutines::jbyte_disjoint_arraycopy [0x00007f84e7848c60, 0x00007f84e784943b] (2011 bytes)
+           --------------------------------------------------------------------------------
+             0x00007f84e7848c60:   push   %rbp
+             0x00007f84e7848c61:   mov    %rsp,%rbp
+             0x00007f84e7848c64:   movabs $0x0,%rcx
+   0.16%     0x00007f84e7848c6e:   mov    %rdx,%r8
+   0.10%     0x00007f84e7848c71:   cmp    $0x0,%r8
+   0.04%     0x00007f84e7848c75:   jle    0x00007f84e78491fa
+             0x00007f84e7848c7b:   cmp    $0x20,%r8
+   0.38%  ╭  0x00007f84e7848c7f:   jg     0x00007f84e7848ca8
+          │  0x00007f84e7848c81:   movabs $0xffffffffffffffff,%rax
+   0.06%  │  0x00007f84e7848c8b:   bzhi   %r8,%rax,%rax
+   0.04%  │  0x00007f84e7848c90:   kmovq  %rax,%k2
+   0.06%  │  0x00007f84e7848c95:   vmovdqu8 (%rdi,%rcx,1),%ymm1{%k2}{z}
+   0.44%  │  0x00007f84e7848c9c:   vmovdqu8 %ymm1,(%rsi,%rcx,1){%k2}
+   1.25%  │  0x00007f84e7848ca3:   jmp    0x00007f84e78491fa
+          ↘  0x00007f84e7848ca8:   cmp    $0x40,%r8
+   0.02%     0x00007f84e7848cac:   jg     0x00007f84e7848ce5
+             0x00007f84e7848cae:   vmovdqu (%rdi,%rcx,1),%ymm1
+             0x00007f84e7848cb3:   vmovdqu %ymm1,(%rsi,%rcx,1)
+             0x00007f84e7848cb8:   sub    $0x20,%r8
+             0x00007f84e7848cbc:   movabs $0xffffffffffffffff,%rax
+             0x00007f84e7848cc6:   bzhi   %r8,%rax,%rax
+             0x00007f84e7848ccb:   kmovq  %rax,%k2
+             0x00007f84e7848cd0:   vmovdqu8 0x20(%rdi,%rcx,1),%ymm1{%k2}{z}
+             0x00007f84e7848cd8:   vmovdqu8 %ymm1,0x20(%rsi,%rcx,1){%k2}
+....................................................................................................
+   2.56%  <total for region 6>
+
+....[Hottest Region 7]..............................................................................
+c2, level 4, com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator, version 2, compile id 1323 
+
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+            0x00007f84e8049edd:   test   %ecx,%ecx
+            0x00007f84e8049edf:   jne    0x00007f84e804a4d0           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@41 (line 126)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+            0x00007f84e8049ee5:   movb   $0x1,0x59(%r10)              ;*putfield _bufferRecyclable {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@57 (line 129)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+   0.02%    0x00007f84e8049eea:   mov    0x28(%rsp),%r11
+            0x00007f84e8049eef:   mov    0x30(%r11),%ebp              ;*getfield _writeEncodingBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@2 (line 340)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+   0.56%    0x00007f84e8049ef3:   test   %ebp,%ebp
+            0x00007f84e8049ef5:   jne    0x00007f84e804a4e8           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::_verifyAlloc@1 (line 475)
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@5 (line 340)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+            0x00007f84e8049efb:   mov    0x1c(%r11),%ecx              ;*getfield _bufferRecycler {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@10 (line 341)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+   0.02%    0x00007f84e8049eff:   mov    0xc(%r12,%rcx,8),%r11d       ; implicit exception: dispatches to 0x00007f84e804a690
+                                                                      ;*getfield _byteBuffers {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@14 (line 164)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@3 (line 156)
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@14 (line 341)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+   0.73%    0x00007f84e8049f04:   movabs $0x451830800,%r8             ;   {oop([I{0x0000000451830800})}
+            0x00007f84e8049f0e:   mov    0x14(%r8),%r8d               ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::byteBufferLength@4 (line 218)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@2 (line 160)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@3 (line 156)
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@14 (line 341)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+            0x00007f84e8049f12:   test   %r8d,%r8d
+            0x00007f84e8049f15:   jle    0x00007f84e804a334           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@8 (line 161)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@3 (line 156)
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@14 (line 341)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+            0x00007f84e8049f1b:   mov    0xc(%r12,%r11,8),%edi        ; implicit exception: dispatches to 0x00007f84e804a6a4
+                                                                      ;*getfield array {reexecute=0 rethrow=0 return_oop=0}
+                                                                      ; - java.util.concurrent.atomic.AtomicReferenceArray::getAndSet@4 (line 140)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@19 (line 164)
+                                                                      ; - com.fasterxml.jackson.core.util.BufferRecycler::allocByteBuffer@3 (line 156)
+                                                                      ; - com.fasterxml.jackson.core.io.IOContext::allocWriteEncodingBuffer@14 (line 341)
+                                                                      ; - com.fasterxml.jackson.core.json.UTF8JsonGenerator::&lt;init&gt;@62 (line 130)
+                                                                      ; - com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator@18 (line 2074)
+   1.03%    0x00007f84e8049f20:   mov    0xc(%r12,%rdi,8),%ebp        ; implicit exception: dispatches to 0x00007f84e804a6b8
+                                                                      ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+....................................................................................................
+   2.36%  <total for region 7>
+
+....[Hottest Regions]...............................................................................
+  32.37%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+  10.20%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+   9.11%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+   6.49%         c2, level 4  com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose, version 2, compile id 1316 
+   6.43%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+   2.56%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy 
+   2.36%         c2, level 4  com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator, version 2, compile id 1323 
+   1.92%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy 
+   1.71%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy 
+   1.35%         c2, level 4  com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose, version 2, compile id 1316 
+   1.33%   [kernel.kallsyms]  __perf_event_task_sched_in 
+   1.31%   [kernel.kallsyms]  perf_ctx_unlock 
+   1.27%   [kernel.kallsyms]  __rcu_read_unlock 
+   1.07%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1286 
+   1.03%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+   0.87%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy 
+   0.83%         c2, level 4  com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose, version 2, compile id 1316 
+   0.81%         c2, level 4  com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator, version 2, compile id 1323 
+   0.67%   [kernel.kallsyms]  finish_task_switch.isra.0 
+   0.65%   [kernel.kallsyms]  finish_task_switch.isra.0 
+  15.63%  <...other 231 warm regions...>
+....................................................................................................
+  99.96%  <totals>
+
+....[Hottest Methods (after inlining)]..............................................................
+  60.58%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1288 
+  11.19%         c2, level 4  com.fasterxml.jackson.databind.ObjectWriter::_writeValueAndClose, version 2, compile id 1316 
+   7.62%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy 
+   4.36%         c2, level 4  com.fasterxml.jackson.core.JsonFactory::_createUTF8Generator, version 2, compile id 1323 
+   1.79%   [kernel.kallsyms]  finish_task_switch.isra.0 
+   1.33%   [kernel.kallsyms]  __perf_event_task_sched_in 
+   1.31%   [kernel.kallsyms]  perf_ctx_unlock 
+   1.27%   [kernel.kallsyms]  __rcu_read_unlock 
+   1.07%         c2, level 4  bench.flat.FlatSer::serialize, version 2, compile id 1286 
+   0.69%                      <unknown> 
+   0.69%         c2, level 4  com.fasterxml.jackson.core.JsonFactory::createGenerator, version 4, compile id 1361 
+   0.69%         c2, level 4  com.fasterxml.jackson.core.json.JsonWriteContext::&lt;init&gt;, version 2, compile id 1300 
+   0.56%   [kernel.kallsyms]  _raw_spin_unlock 
+   0.32%        runtime stub  StubRoutines::jbyte_arraycopy 
+   0.26%   [kernel.kallsyms]  asm_exc_page_fault 
+   0.22%   [kernel.kallsyms]  srso_alias_return_thunk 
+   0.22%           libjvm.so  G1ParScanThreadState::steal_and_trim_queue(GenericTaskQueueSet<OverflowTaskQueue<ScannerTask, (MemTag)5, 131072u>, (MemTag)5>*) 
+   0.20%           libjvm.so  G1ParScanThreadState::trim_queue_to_threshold(unsigned int) 
+   0.18%   [kernel.kallsyms]  __irqentry_text_end 
+   0.18%         c1, level 1  com.fasterxml.jackson.databind.cfg.MapperConfigBase::getFullRootName, version 1, compile id 1193 
+   5.22%  <...other 118 warm methods...>
+....................................................................................................
+  99.96%  <totals>
+
+....[Distribution by Source]........................................................................
+  78.58%         c2, level 4
+  11.31%   [kernel.kallsyms]
+   7.95%        runtime stub
+   0.97%           libjvm.so
+   0.69%                    
+   0.24%           libc.so.6
+   0.18%         c1, level 1
+   0.04%      hsdis-amd64.so
+....................................................................................................
+  99.96%  <totals>
+
+
+
+# Run complete. Total time: 00:00:18
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                  (size)  Mode  Cnt    Score    Error  Units
+SingleBench.serialize          10  avgt    5  432.222 ± 72.673  ns/op
+SingleBench.serialize:asm      10  avgt           NaN             ---

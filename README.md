@@ -1,36 +1,9 @@
-# C2 spills the copy loop of `UTF8JsonGenerator._writeStringSegment` when it is inlined
+# Two problems in the `UTF8JsonGenerator` ASCII copy loop
 
-Writing JSON strings costs about 20 % more when C2 inlines `UTF8JsonGenerator.writeString` into the caller
-than when it does not, because the ASCII copy loop inside `_writeStringSegment` loses its registers.
-
-> **Update (2026-09-01): the loop no longer spills, and the fix is not in the loop.**
-> The pressure comes from a cold `StringUTF16.charAt` call that C2 is forced to keep inside the
-> loop, because **one** `String.charAt` call on a UTF-16 string - made by Jackson's own
-> `StdDateFormat.<clinit>` - poisoned the process-wide branch profile of `String.charAt`.
-> Removing that one call takes `SingleBench.serialize` from **426.7 to 331.9 ns/op** and lets C2
-> unroll the copy loop at all (**x1 -> x2**); adding the escape-constant change on top gives
-> **318.6 ns/op** and **x4**. Stack traffic per character goes **13 -> 2 -> 1**.
-> See [What actually caused it](#what-actually-caused-it) below.
-
-## What is observed
-
-The benchmark serializes a `List<Flat>` with a hand-written serializer that makes one `writeString` call per
-element. Two runs, the same code and the same output, differing only in whether `writeString` is inlined.
-
-When it is inlined, the copy loop is **33 instructions, 13 of which address `(%rsp)`**: the loop counter is
-written to the stack and read back within the same iteration, and the loop invariants - output buffer, escape
-table, end index - are re-loaded from the stack on every iteration.
-
-When it is not, the same loop is **23 instructions with 2 stack operands**, and the counter, buffer and escape
-table stay in registers.
-
-The loop gives C2 nothing to struggle with; Jackson already hoists the fields into locals:
+JMH reproducer. Measured on **Jackson 2.22.0, Temurin 25.0.2+10, x86-64**.
 
 ```java
-int outputPtr = _outputTail;
-final byte[] outputBuffer = _outputBuffer;
-final int[] escCodes = _outputEscapes;
-
+// UTF8JsonGenerator._writeStringSegment
 while (offset < len) {
     int ch = text.charAt(offset);
     if (ch > 0x7F || escCodes[ch] != 0) break;
@@ -39,248 +12,95 @@ while (offset < len) {
 }
 ```
 
+Two independent problems. Both are visible only in the compiled code, and both make the loop
+markedly worse when C2 inlines `writeString` into the caller.
+
+## Problem 1 - the loop does not unroll, and spills
+
+Compiled, the loop does **one character per iteration** with **13 stack loads and stores per
+character**. The string, the index, the output buffer and the loop limit all live on the stack and
+are re-read every iteration.
+
+Cause: `String.charAt` has a single process-wide MethodData. `StdDateFormat.<clinit>` builds a
+`SimpleDateFormat`, which reaches `DecimalFormatSymbols` and calls `String.charAt` on a UTF-16
+string. That single call leaves a non-zero count on the non-LATIN1 branch, so in every ASCII
+`charAt` loop compiled afterwards C2 cannot prune that branch and keeps an out-of-line call for it.
+
+The LATIN1 case is still inlined to a byte load, and the call **never executes** - it collects no
+profiler samples. The damage is indirect: C2 does not unroll a loop containing a call, and the
+allocator must keep values live across it.
+
+This is why the inlined case starts out **22.8 % slower** than the not-inlined one
+(429.697 vs 349.969 ns/op) - a gap that inlining does not cause and that disappears once this is fixed.
+
+**Fixed by** [jackson-databind#6182](https://github.com/FasterXML/jackson-databind/issues/6182) / [PR #6183](https://github.com/FasterXML/jackson-databind/pull/6183): build the RFC1123
+blueprint lazily instead of in `<clinit>`.
+
+*Scope:* this defers the `SimpleDateFormat` construction rather than removing it. An application
+that actually parses or formats an RFC1123 date will build it, and by the mechanism above should
+re-pollute the profile. Not measured here.
+
+## Problem 2 - a table load per character
+
+`escCodes[ch]` is a heap load plus a bounds check for every character.
+
+**Fixed by** [jackson-core#1680](https://github.com/FasterXML/jackson-core/issues/1680) / [PR #1681](https://github.com/FasterXML/jackson-core/pull/1681): for the standard
+escape table the test is expressible with constants
+(`ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\'`), so both the load and the bounds check go.
+
+## Results
+
+`SingleBench`, ns/op, 10 forks, lower is better. `serialize` has `writeString` inlined and is the
+case to fix; `serializeWriteStringNotInlined` is the control. Raw output in [`results/`](results/).
+
+| | no fix | + #6183 | + #6183 + #1681 |
+|---|---:|---:|---:|
+| **inlined** | 429.697 ± 13.714 | 335.944 ± 4.299 (-21.8%) | 318.395 ± 2.513 (-5.2%) |
+| not inlined | 349.969 ± 3.751 | 332.166 ± 2.334 (-5.1%) | 325.318 ± 2.374 (-2.1%) |
+
+Total on the inlined case **-25.9%**, and nothing regresses at any step. After #6183 the two are within 1.1 % of each other - the inlining gap is gone.
+
+On this branch most of the not-inlined gain comes from #6183; #1681 adds a little more.
+
+## The loop, compiled
+
+Hot method is `bench.flat.FlatSer::serialize` with `writeString` inlined, identified by
+`-prof perfasm` sample attribution; loop bounded by the branch that targets its head.
+
+| | chars per iteration | stack accesses per char | `escCodes[]` loads per char | instructions per char |
+|---|---:|---:|---:|---:|
+| no fix | 1 | 13 | 1 | 33.0 |
+| + #6183 | 2 | 2 | 1 | 15.5 |
+| + #6183 + #1681 | 4 | 1 | 0 | 13.5 |
+
 ## Run it
 
 ```bash
 mvn clean package
-java -jar target/benchmarks.jar
+java -jar target/benchmarks.jar                      # released jars = the "no fix" column
+java -jar target/benchmarks.jar  -f 10               # fixed builds are bimodal, use 10 forks
+java -jar target/benchmarks.jar SingleBench.serialize -f 1 -prof perfasm
 ```
 
-```
-Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
-SingleBench.serialize                           10  avgt   15  417.158 ± 6.387  ns/op
-SingleBench.serializeWriteStringNotInlined      10  avgt   15  342.188 ± 2.836  ns/op
-```
+## Reproducing the fixed builds
 
-The second benchmark adds
-`-XX:CompileCommand=dontinline,com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString` through
-`@Fork`. It is the only JVM flag in the project, and it exists only because `writeString` is Jackson's method
-and cannot be annotated.
-
-Counters and disassembly:
+The released jars are shaded into `target/benchmarks.jar`, so the simplest route is to patch the
+two classes and replace them inside that jar.
 
 ```bash
-java -jar target/benchmarks.jar -prof perfnorm
-java -jar target/benchmarks.jar -f 1 -prof 'perfasm:hotThreshold=0.02;tooBigThreshold=4000'
+V=2.22.0
+mvn -q dependency:copy -Dartifact=com.fasterxml.jackson.core:jackson-core:$V:jar:sources -DoutputDirectory=.
+mvn -q dependency:copy -Dartifact=com.fasterxml.jackson.core:jackson-databind:$V:jar:sources -DoutputDirectory=.
+unzip -o jackson-core-$V-sources.jar     'com/fasterxml/jackson/core/json/UTF8JsonGenerator.java' -d src
+unzip -o jackson-databind-$V-sources.jar 'com/fasterxml/jackson/databind/util/StdDateFormat.java' -d src
+# apply the two edits below to src/, then:
+javac -cp target/benchmarks.jar -d out $(find src -name '*.java')
+(cd out && jar uf ../target/benchmarks.jar .)
 ```
 
-## Where the time goes
-
-| per op | inlined | not inlined |
-|---|---:|---:|
-| cycles | 1790.6 | 1477.5 |
-| instructions | 8745.8 | 7907.0 |
-| IPC | **4.88** | **5.35** |
-| L1-dcache-loads | 3021.7 | 2620.1 |
-| L1-icache-load-misses | 0.017 | 0.012 |
-
-The inlined version does not execute much more work, it retires it more slowly. Instruction fetch is not
-involved - 0.005 more i-cache misses per operation against a gap of 313 cycles - while data loads are 400
-higher per operation, which is the stack traffic in the loop.
-
-## The loop, both ways
-
-Inlined, back edge `0x7fea8c0f6544 -> 0x7fea8c0f64b0`, 33 instructions, 13 touching `(%rsp)`:
-
-```
-  0x7fea8c0f64b5:  mov    0x34(%rsp),%ecx
-  0x7fea8c0f64c0:  mov    %r10,(%rsp)
-  0x7fea8c0f64c8:  mov    %r9d,0x8(%rsp)
-  0x7fea8c0f64de:  mov    0x34(%rsp),%r10d
-  0x7fea8c0f64f0:  mov    (%rsp),%r8
-  0x7fea8c0f64f4:  movzbl 0x10(%r10,%r8,1),%r10d      ; charAt
-  0x7fea8c0f650d:  mov    0x50(%rsp),%r8              ; reload the escape table
-  0x7fea8c0f6512:  mov    0x10(%r8,%r10,4),%ebp
-  0x7fea8c0f651f:  mov    0x48(%rsp),%r8              ; reload the output buffer
-  0x7fea8c0f6524:  add    (%rsp),%r8
-  0x7fea8c0f6528:  mov    0x38(%rsp),%r9
-  0x7fea8c0f652d:  mov    %r10b,0x11(%r9,%r8,1)       ; the one useful store
-  0x7fea8c0f6532:  mov    0x34(%rsp),%r8d             ; reload the counter
-  0x7fea8c0f6537:  inc    %r8d
-  0x7fea8c0f653a:  mov    %r8d,0x34(%rsp)             ; store it back
-  0x7fea8c0f653f:  cmp    0x40(%rsp),%r8d             ; limit, from the stack
-  0x7fea8c0f6544:  jl     0x00007fea8c0f64b0
-```
-
-Not inlined, back edge `0x7f57fc0f69cf -> 0x7f57fc0f6970`, 23 instructions, 2 touching `(%rsp)`:
-
-```
-  0x7f57fc0f699d:  movzbl 0x10(%rdx,%rsi,1),%edx      ; charAt
-  0x7f57fc0f69a2:  cmp    $0x7f,%edx
-  0x7f57fc0f69a5:  jg     0x00007f57fc0f6b5c
-  0x7f57fc0f69ab:  cmp    0x48(%rsp),%edx
-  0x7f57fc0f69af:  jae    0x00007f57fc0f6ae3
-  0x7f57fc0f69b5:  mov    0x10(%rdi,%rdx,4),%ebp      ; escape table, in %rdi
-  0x7f57fc0f69b9:  test   %ebp,%ebp
-  0x7f57fc0f69bb:  jne    0x00007f57fc0f6b88
-  0x7f57fc0f69c1:  lea    (%rbx,%rsi,1),%rbp
-  0x7f57fc0f69c5:  mov    %dl,0x11(%rcx,%rbp,1)       ; store, buffer in %rcx
-  0x7f57fc0f69c9:  inc    %r9d                        ; counter, in %r9d
-  0x7f57fc0f69cc:  cmp    %r11d,%r9d
-  0x7f57fc0f69cf:  jl     0x00007f57fc0f6970
-```
-
-## Why it spills
-
-`Matcher::int_pressure_limit()` is 13 on x86-64. The blocks that make up the copy loop carry 14-15
-simultaneously live integer-class values, so they are one over.
-
-`TraceSpilling` shows the decisions. It is a `product DIAGNOSTIC` flag, so a stock JDK accepts it,
-but every print site is inside `#ifndef PRODUCT` - it needs a fastdebug build:
-
-```bash
-java -jar target/benchmarks.jar 'SingleBench.serialize$' -f 1 -wi 2 -i 2 \
-     -jvm /path/to/fastdebug/bin/java \
-     -jvmArgsAppend "-XX:+UnlockDiagnosticVMOptions -XX:CompileCommand=option,bench/flat/FlatSer.serialize,TraceSpilling"
-```
-
-That prints one `New Split DOWN DEF of Spill Idx N` line per live range it pushes to the stack - 37
-of them here, naming the values, including the loop's induction variable and the loaded character.
-
-The block pressure behind those decisions is not printed. One line added to
-`PhaseChaitin::is_high_pressure` (`opto/reg_split.cpp`) exposes it:
-
-```cpp
-  if (trace_spilling()) {
-    tty->print_cr("HRP B%d freq=%g block_pres=%d lrg_pres=%d int_limit=%d -> %s",
-                  b->_pre_order, b->_freq, block_pres, lrg_pres,
-                  Matcher::int_pressure_limit(), (block_pres >= lrg_pres) ? "HIGH" : "low");
-  }
-  return block_pres >= lrg_pres;
-```
-
-and then every query in the loop's block reports the same thing:
-
-```
-HRP B134 freq=9.99926 block_pres=14 lrg_pres=13 int_limit=13 -> HIGH
-```
-
-With either fix applied, no block at loop frequency is ever queried as high pressure.
-
-`reg_split` then does what its own comment says - *"DEFS: If the DEF is in a High Register Pressure
-(HRP) Block, split there"*. Of the 37 live ranges it splits, 18 are object references belonging to
-the enclosing serializer frame (`JsonWriteContext`, `UTF8JsonGenerator`, the bean, the serializer)
-that stay live across the loop, and 16 are integers - among them the loop's own counter
-(`incI_rReg`) and the loaded character (`loadUB` from `StringLatin1::charAt`).
-
-So the loop does not spill because it is complicated. It spills because the block it lands in is one
-register over the limit, and the allocator's response is to put the induction variable in memory.
-
-## Two ways back under the limit
-
-Both are changes to Jackson, not to C2, and both produce byte-identical JSON. They are listed here
-because they bracket the problem: the loop needs exactly one register more than it can have.
-
-The loop as it ships in jackson-core 2.22.0, `UTF8JsonGenerator._writeStringSegment(String,int,int)`:
-
-```java
-        int outputPtr = _outputTail;
-        final byte[] outputBuffer = _outputBuffer;
-        final int[] escCodes = _outputEscapes;
-
-        while (offset < len) {
-            int ch = text.charAt(offset);
-            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
-            if (ch > 0x7F || escCodes[ch] != 0) {
-                break;
-            }
-            outputBuffer[outputPtr++] = (byte) ch;
-            ++offset;
-        }
-        _outputTail = outputPtr;
-```
-
-**1. Stop hoisting the fields into locals.** The two `final` locals are the conventional way to help
-a JIT, and here they are what costs the registers: two live ranges held across the whole loop.
-Reading the fields inside the loop instead lets C2 rematerialize them from `this`, which is one live
-value.
-
-```java
-        int outputPtr = _outputTail;
-
-        while (offset < len) {
-            int ch = text.charAt(offset);
-            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
-            if (ch > 0x7F || _outputEscapes[ch] != 0) {
-                break;
-            }
-            _outputBuffer[outputPtr++] = (byte) ch;
-            ++offset;
-        }
-        _outputTail = outputPtr;
-```
-
-**2. Remove the escape-table access.** For the standard escape table the test is expressible with
-constants, which removes the table's base pointer, its length and the load itself. The custom-table
-case keeps the original test, so escaping behaviour is unchanged; C2 unswitches the loop on the flag.
-
-```java
-        int outputPtr = _outputTail;
-        final byte[] outputBuffer = _outputBuffer;
-        final int[] escCodes = _outputEscapes;
-        final boolean stdEsc = (escCodes == CharTypes.get7BitOutputEscapes());
-
-        while (offset < len) {
-            int ch = text.charAt(offset);
-            // note: here we know that (ch > 0x7F) will cover case of escaping non-ASCII too:
-            if (stdEsc ? (ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\')
-                    : (ch > 0x7F || escCodes[ch] != 0)) {
-                break;
-            }
-            outputBuffer[outputPtr++] = (byte) ch;
-            ++offset;
-        }
-        _outputTail = outputPtr;
-```
-
-Measured, same benchmark, 3 forks:
-
-```
-                                              ns/op        loop     (%rsp)
-stock                                     415.2 +- 3.0   33 insns     13
-1. fields not hoisted                     342.6 +- 3.3   31 insns      0
-2. escape test as constants               323.3 +- 3.8   23 insns      0
-```
-
-Option 1 deletes three lines, changes no escaping semantics, and recovers 73 of the 92 ns - all of
-the register-pressure cost. The remaining 19 ns is the table load and its bounds check, which only
-option 2 removes.
-
-Neither is a fix for the underlying behaviour: a nine-instruction loop that needs six registers ends
-up with its counter in memory because unrelated values in the enclosing frame put the block one over
-`int_pressure_limit`. They are included to show how narrow the margin is.
-
-## What actually caused it
-
-`java.lang.String.charAt` branches on `isLatin1()`. Its branch profile is a **single process-wide
-MethodData**: C2 uses the *callee's* MDO when it inlines, with no per-call-site refinement, and it
-prunes a branch only when the profiled count is **exactly zero**.
-
-So one UTF-16 `charAt` anywhere in the JVM, before that profile freezes, keeps the UTF-16 path alive
-in every `charAt` loop compiled afterwards. The surviving `StringUTF16.charAt` is too cold to inline,
-so a call node lands in the loop, `IdealLoopTree::_has_call` is set, and `iteration_split_impl` -
-where unrolling, range check elimination and pre/main/post live - is skipped. Everything live across
-that call has to be spillable, which is the pressure the section above measures.
-
-### Who makes the call
-
-Instrumenting `String.charAt` through `--patch-module java.base` to dump a stack trace on the UTF-16
-branch finds **exactly one call site, called exactly once**, in this benchmark, in the Jackson 3
-variant of it, and in a Quarkus REST application. Always the same one-character string:
-
-```
-String.charAt("\u2030")                   <- PER MILLE SIGN, len 1, UTF-16
-  java.text.DecimalFormatSymbols.findNonFormatChar(:864)      <- perMillText
-  java.text.DecimalFormatSymbols.<init> / NumberFormat.getIntegerInstance
-  java.text.SimpleDateFormat.<init>(:631)
-  com.fasterxml.jackson.databind.util.StdDateFormat.<clinit>(:119)
-  com.fasterxml.jackson.databind.ObjectMapper.<clinit>(:412)
-  bench.flat.SingleBench.setup(:55)
-```
-
-Jackson's own static initializer poisons the profile that Jackson's own copy loop then reads.
-`StdDateFormat` builds `DATE_FORMAT_RFC1123` eagerly in `<clinit>`, but that field is only read from
-`parseAsRFC1123`. Moving it into a holder class defers the `SimpleDateFormat` construction:
+**`StdDateFormat`** (#6183) - delete the `protected final static DateFormat DATE_FORMAT_RFC1123`
+field and its `static { }` initialiser, add a holder, and change both
+`_cloneFormat(DATE_FORMAT_RFC1123, ...)` call sites to `RFC1123Holder.DATE_FORMAT_RFC1123`:
 
 ```java
 private static final class RFC1123Holder {
@@ -292,152 +112,34 @@ private static final class RFC1123Holder {
 }
 ```
 
-With that patch the census goes from 1 UTF-16 `charAt` to **0**, in every workload tested.
+**`UTF8JsonGenerator`** (#1681) - in **both** `_writeStringSegment` overloads (one reads
+`cbuf[offset]`, the other `text.charAt(offset)`; leave that line as it is):
 
-### How much it matters
-
-Stock JDK 25, `-f 3 -wi 5 -i 5`, pinned with `taskset -c 0,1`, `SingleBench.serialize`. Same jar
-throughout; only the named classes are replaced.
-
-| | Jackson 2.22.0 | Jackson 3.1.5 |
-|---|---|---|
-| vanilla | 426.679 +/- 7.447 | 444.184 +/- 5.638 |
-| + no UTF-16 pollution (`StdDateFormat` holder) | 331.855 +/- 5.197 | 356.490 +/- 6.441 |
-| + escape-constant `_writeStringSegment` as well | **318.631 +/- 3.557** | **347.533 +/- 4.108** |
-
-Removing the pollution alone is worth **-22.2 %** (Jackson 2) and **-19.7 %** (Jackson 3). Adding the
-escape-constant change on top is worth a further **-4.0 %** and **-2.5 %**. Jackson 3 behaves the same
-as Jackson 2 throughout.
-
-That second number corrects this repository's own earlier claim. The escape-constant change was
-originally measured at 416.9 -> 318.9 ns/op, about -23 %, but that was measured *with the pollution
-present*: most of what it appeared to buy was undoing the pollution's damage, not removing the table
-load. With the profile clean it is worth a few percent.
-
-The `dontinline` workaround also stops mattering. Before the fix, excluding `writeString` from
-inlining was worth 22 %; after it, the two benchmarks are the same within error:
-
-| | `serialize` | `serializeWriteStringNotInlined` | gap |
-|---|---|---|---|
-| Jackson 2, vanilla | 438.382 +/- 35.582 | 359.354 +/- 14.991 | 22.0 % |
-| Jackson 2, no pollution | 340.246 +/- 29.950 | 343.737 +/- 26.326 | -1.0 % |
-| Jackson 3, vanilla | 463.941 +/- 48.005 | 377.486 +/- 19.270 | 22.9 % |
-| Jackson 3, no pollution | 365.411 +/- 30.237 | 358.228 +/- 13.180 | 2.0 % |
-
-End to end the effect is smaller, because a real request spends most of its time elsewhere. A Quarkus
-REST endpoint serializing a list of beans, stock JDK 25, 3 interleaved reps of 30 s:
-125 967 -> 130 768 req/s, **+3.8 %**, ranges not overlapping.
-
-### The loop, after
-
-`-prof 'perfasm:hotThreshold=0.01;tooBigThreshold=6000'`, innermost loop containing the byte load.
-The unroll factor is counted as the number of `value[]` byte loads in the loop body.
-
-| | insns | `(%rsp)` | unroll | insns / char | stack ops / char |
-|---|---|---|---|---|---|
-| vanilla | 33 | 13 | **x1** | 33.0 | **13.0** |
-| + no UTF-16 pollution | 31 | 4 | **x2** | 15.5 | **2.0** |
-| + escape-constant as well | 55 | 4 | **x4** | 13.8 | **1.0** |
-
-C2 could not split the loop at all while the profile was polluted: the surviving cold
-`StringUTF16.charAt` call set `IdealLoopTree::_has_call`, and `iteration_split_impl` was skipped.
-Removing the pollution enables pre/main/post and unrolling by 2; the escape-constant change then
-removes the per-character table load, shortens the body, and C2 unrolls by 4.
-
-Vanilla, one character per iteration:
-
-```
-    0.03%  movslq 0x34(%rsp),%r10        <<< induction variable in memory
-    4.03%  mov    %r10,(%rsp)
-    0.08%  cmpb   $0x0,0x10(%r12,%r11,8) <<< isLatin1 test, kept alive by the polluted profile
-    0.22%  jne    ...                    <<< to the cold StringUTF16.charAt call
-    0.05%  mov    0xc(%r12,%r8,8),%ebp   <<< array length: bounds check not eliminated
-    6.11%  cmp    $0x7f,%r10d
-    0.00%  mov    0x50(%rsp),%r8         <<< escape table reloaded from the stack
-    0.00%  mov    0x48(%rsp),%r8
-    0.30%  mov    0x38(%rsp),%r9         <<< output buffer reloaded from the stack
-    5.56%  mov    0x34(%rsp),%r8d
-    0.08%  mov    %r8d,0x34(%rsp)        <<< counter written back every iteration
+```java
+final boolean stdEsc = (escCodes == com.fasterxml.jackson.core.io.CharTypes.get7BitOutputEscapes());
+while (offset < len) {
+    int ch = /* unchanged */;
+    if (stdEsc ? (ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\')
+               : (ch > 0x7F || escCodes[ch] != 0)) {
+        break;
+    }
+    ...
+}
 ```
 
-With both changes, four characters per iteration and no table load:
-
-```
-    mov    (%rsp),%r9d                   <<< the only value still in memory: the counter
-    movslq (%rsp),%rax
-    movsbl 0x10(%rdx,%rax,1),%r8d        <<< charAt inlined; no isLatin1 test, no bounds check
-    lea    -0x20(%rcx),%r10d
-    cmp    $0x60,%r10d                   <<< escape test with constants
-    cmp    $0x22,%ecx
-    cmp    $0x5c,%ecx
-    mov    %r8b,0x11(%rbx,%rdi,1)
-    ... three more characters, entirely in registers ...
-    mov    (%rsp),%r10d
-    add    $0x4,%r10d
-    mov    %r10d,(%rsp)
-```
-
-The `isLatin1` test, the array bounds check and the reloads of the escape table and output buffer are
-gone. The induction variable still round-trips through the stack, but once per four characters
-instead of once per character.
-
-### Where the remaining spill lives depends on JVM flags
-
-In this benchmark under its default flags the leftover traffic is stack-based: the loop body contains
-`(%rsp)` operands and no XMM at all. In a Quarkus application, and in this benchmark when run with
-that application's flags (`-Xmx1g -Xms1g -XX:+UseParallelGC`), C2 instead parks the loop-invariants in
-vector registers just before the loop and reads them back inside:
-
-```
-  0x...fe16:   vmovd  %edx,%xmm5
-  0x...fe1e:   vmovd  %r11d,%xmm4
-  0x...fe23:   vmovd  %eax,%xmm1
-  0x...fe27:   vmovd  %r8d,%xmm2
-  0x...fe2c:   vmovq  %rbx,%xmm0
-```
-
-All five stores sit before the loop head; inside the loop body there are four XMM-to-GPR reloads and
-**zero** `(%rsp)` operands (12 reloads across the whole compiled method). The unpatched build of the
-same method has no XMM instructions anywhere. Which of the two the allocator
-picks is not something this repository has explained; it is recorded here only as an observation.
-
-### What is not verified
-
-The block pressure figures in *Why it spills* were **not** re-measured after the fix; `TraceSpilling`
-and the `is_high_pressure` instrumentation need a fastdebug build. What is measured here is timings,
-the census going 1 -> 0, the unroll factors and the loop shape. Whether `block_pres` now comes in at
-or below `int_pressure_limit` is untested, and so is the reason C2 chooses XMM slots in one
-configuration and stack slots in another.
-
-The Jackson fix is a deferral, not a cure: an application that really does parse RFC1123 dates still
-pollutes the profile, just later. The unconditional fix is in the JDK - `DecimalFormatSymbols`
-`findNonFormatChar` should not use `String.charAt` - and underneath that, in the JVM itself: one
-interpreter-era call should not permanently de-optimize every `charAt` loop in the process. A minimal
-reproducer for that is `CharAtProfilePollution`.
+These are equivalent to the linked PRs, not cherry-picked from them.
 
 ## Notes
 
-`FlatSer.serialize` is annotated `@CompilerControl(DONT_INLINE)` so that the copy loop appears in that method
-instead of inside `CollectionSerializer::serializeContents`, which keeps the perfasm output readable. It does
-not change the result: the two benchmarks differ by the same amount with or without it, and the spill is there
-either way.
+- **The fixed builds are bimodal across forks.** At 3 forks one unlucky fork moves the mean by
+  ~10 %; all numbers here use 10. The baseline is stable, the fixed builds are not. Why, is not
+  understood.
+- The `dontinline` benchmark is a control, not a proposed fix - `writeString` is Jackson's method
+  and cannot be annotated.
 
-The spill appears with a single `writeString` call site. Adding more string properties to `Flat`, or raising
-`-p size=`, makes the difference more pronounced, because more of the run is spent inside the loop.
+## Not verified
 
-## Environment
-
-```
-JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
-AMD Ryzen 9 7950X 16-Core Processor
-hsdis: /usr/lib64/hsdis-amd64.so (default library path, not under $JAVA_HOME)
-perf with kernel.perf_event_paranoid = -1; benchmarks pinned with taskset -c 0,1
-```
-
-## Files
-
-```
-results/results.txt    the two timings
-results/perfnorm.txt   instructions, cycles, IPC per op
-results/perfasm.txt    the disassembly both loops were read from
-```
+- Other JDK versions, JDK vendors, or non-x86 targets.
+- Whether "the table base occupies a register the loop needs" is the reason the unroll factor
+  doubles with #1681. The data shows the two together, not one causing the other.
+- Whether #6183 still helps an application that does use RFC1123 formatting.
