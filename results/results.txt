@@ -1,166 +1,22 @@
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# JMH version: 1.37
-# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
-# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
-# VM options: <none>
-# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
-# Warmup: 5 iterations, 1 s each
-# Measurement: 5 iterations, 1 s each
-# Timeout: 10 min per iteration
-# Threads: 1 thread, will synchronize iterations
-# Benchmark mode: Average time, time/op
-# Benchmark: bench.flat.SingleBench.serialize
-# Parameters: (size = 10)
+SingleBench, Jackson 3.1.5, Temurin 25.0.2+10, AMD Ryzen 9 7950X, 10 forks.
+Produced by: java -jar target/benchmarks.jar SingleBench -f 10
+Three builds: released jars (no fix); + jackson-databind#6183; + that and jackson-core#1681.
 
-# Run progress: 0.00% complete, ETA 00:01:00
-# Fork: 1 of 3
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 557.235 ns/op
-# Warmup Iteration   2: 466.478 ns/op
-# Warmup Iteration   3: 450.245 ns/op
-# Warmup Iteration   4: 417.331 ns/op
-# Warmup Iteration   5: 415.414 ns/op
-Iteration   1: 413.560 ns/op
-Iteration   2: 416.412 ns/op
-Iteration   3: 413.523 ns/op
-Iteration   4: 413.488 ns/op
-Iteration   5: 413.417 ns/op
-
-# Run progress: 16.67% complete, ETA 00:00:51
-# Fork: 2 of 3
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 555.633 ns/op
-# Warmup Iteration   2: 464.389 ns/op
-# Warmup Iteration   3: 450.796 ns/op
-# Warmup Iteration   4: 419.482 ns/op
-# Warmup Iteration   5: 418.190 ns/op
-Iteration   1: 415.778 ns/op
-Iteration   2: 417.865 ns/op
-Iteration   3: 415.273 ns/op
-Iteration   4: 417.989 ns/op
-Iteration   5: 424.891 ns/op
-
-# Run progress: 33.33% complete, ETA 00:00:41
-# Fork: 3 of 3
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 725.736 ns/op
-# Warmup Iteration   2: 553.821 ns/op
-# Warmup Iteration   3: 423.013 ns/op
-# Warmup Iteration   4: 412.686 ns/op
-# Warmup Iteration   5: 414.380 ns/op
-Iteration   1: 418.834 ns/op
-Iteration   2: 414.154 ns/op
-Iteration   3: 412.780 ns/op
-Iteration   4: 413.884 ns/op
-Iteration   5: 435.524 ns/op
-
-
-Result "bench.flat.SingleBench.serialize":
-  417.158 ±(99.9%) 6.387 ns/op [Average]
-  (min, avg, max) = (412.780, 417.158, 435.524), stdev = 5.974
-  CI (99.9%): [410.771, 423.545] (assumes normal distribution)
-
-
-# JMH version: 1.37
-# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
-# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
-# VM options: -XX:CompileCommand=dontinline,com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString
-# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
-# Warmup: 5 iterations, 1 s each
-# Measurement: 5 iterations, 1 s each
-# Timeout: 10 min per iteration
-# Threads: 1 thread, will synchronize iterations
-# Benchmark mode: Average time, time/op
-# Benchmark: bench.flat.SingleBench.serializeWriteStringNotInlined
-# Parameters: (size = 10)
-
-# Run progress: 50.00% complete, ETA 00:00:30
-# Fork: 1 of 3
-CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 488.289 ns/op
-# Warmup Iteration   2: 374.171 ns/op
-# Warmup Iteration   3: 369.293 ns/op
-# Warmup Iteration   4: 343.548 ns/op
-# Warmup Iteration   5: 340.273 ns/op
-Iteration   1: 341.892 ns/op
-Iteration   2: 343.419 ns/op
-Iteration   3: 344.082 ns/op
-Iteration   4: 339.657 ns/op
-Iteration   5: 339.659 ns/op
-
-# Run progress: 66.67% complete, ETA 00:00:20
-# Fork: 2 of 3
-CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 492.357 ns/op
-# Warmup Iteration   2: 373.490 ns/op
-# Warmup Iteration   3: 368.966 ns/op
-# Warmup Iteration   4: 344.338 ns/op
-# Warmup Iteration   5: 341.897 ns/op
-Iteration   1: 342.852 ns/op
-Iteration   2: 344.202 ns/op
-Iteration   3: 343.499 ns/op
-Iteration   4: 339.003 ns/op
-Iteration   5: 338.900 ns/op
-
-# Run progress: 83.33% complete, ETA 00:00:10
-# Fork: 3 of 3
-CompileCommand: dontinline com/fasterxml/jackson/core/json/UTF8JsonGenerator.writeString bool dontinline = true
-WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/target/benchmarks.jar)
-WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
-WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-# Warmup Iteration   1: 486.462 ns/op
-# Warmup Iteration   2: 373.545 ns/op
-# Warmup Iteration   3: 369.146 ns/op
-# Warmup Iteration   4: 344.626 ns/op
-# Warmup Iteration   5: 345.073 ns/op
-Iteration   1: 344.911 ns/op
-Iteration   2: 343.896 ns/op
-Iteration   3: 347.635 ns/op
-Iteration   4: 339.681 ns/op
-Iteration   5: 339.526 ns/op
-
-
-Result "bench.flat.SingleBench.serializeWriteStringNotInlined":
-  342.188 ±(99.9%) 2.836 ns/op [Average]
-  (min, avg, max) = (338.900, 342.188, 347.635), stdev = 2.653
-  CI (99.9%): [339.352, 345.024] (assumes normal distribution)
-
-
-# Run complete. Total time: 00:01:01
-
-REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
-why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
-experiments, perform baseline and negative tests that provide experimental control, make sure
-the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
-Do not assume the numbers tell you what you want them to tell.
-
-NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
-extra caution when trusting the results, look into the generated code to check the benchmark still
-works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
-different JVMs are already problematic, the performance difference caused by different Blackhole
-modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
-
+=== NO FIX (released jars) ===
 Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
-SingleBench.serialize                           10  avgt   15  417.158 ± 6.387  ns/op
-SingleBench.serializeWriteStringNotInlined      10  avgt   15  342.188 ± 2.836  ns/op
+SingleBench.serialize                           10  avgt   50  445.606 ± 3.295  ns/op
+SingleBench.serializeWriteStringNotInlined      10  avgt   50  373.151 ± 4.255  ns/op
+Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-base.json
+
+=== + jackson-databind#6183 ===
+Benchmark                                   (size)  Mode  Cnt    Score    Error  Units
+SingleBench.serialize                           10  avgt   50  356.893 ±  6.613  ns/op
+SingleBench.serializeWriteStringNotInlined      10  avgt   50  371.751 ± 22.680  ns/op
+Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-db.json
+
+=== + jackson-databind#6183 + jackson-core#1681 ===
+Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
+SingleBench.serialize                           10  avgt   50  346.744 ± 3.685  ns/op
+SingleBench.serializeWriteStringNotInlined      10  avgt   50  350.375 ± 7.309  ns/op
+Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-both.json
+
