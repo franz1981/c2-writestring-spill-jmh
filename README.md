@@ -234,6 +234,39 @@ while (offset < len) {
 
 These are equivalent to the linked PRs, not cherry-picked from them.
 
+## Profiling with linux perf instead of async-profiler
+
+`scripts/perfjit.sh` records a benchmark under `perf` with JIT symbols resolved and produces a
+per-instruction cycle annotation of the compiled code, so the assembly and the profile come from
+the same run and can be read side by side:
+
+```
+scripts/perfjit.sh target/benchmarks.jar -p len=128 -p size=20 -s serializeContent
+```
+
+It sets `-XX:+PreserveFramePointer`, loads `libperf-jvmti.so` so the JVM writes a jitdump, records
+with `perf record -k mono` (the jitdump timestamps must share perf's clock), then runs
+`perf inject --jit` and `perf annotate`. Output lands in `perfjit-out/<jar>/`:
+
+| file | |
+|---|---|
+| `jmh.txt` | the JMH score for the run that was profiled |
+| `symbols.txt` | hottest symbols, and which jitted object each came from |
+| `annotate.txt` | per-instruction cycle percentages of the chosen symbol |
+| `perf.jit.data` | for your own `perf report` / `perf annotate` |
+
+Two things to know when reading it. **A Java method has several compilations** - a profiled C1 one
+and a C2 one - and they share a symbol name while living in different `jitted-*.so` objects. Check
+`symbols.txt` for which object carries the cycles before drawing anything from `annotate.txt`; the
+C1 one is recognisable by its MDO counter bumps (`addq $0x1,0x198(%rdi)`). And **read the
+annotation rather than grepping it** - loops here are unrolled, peeled and strip-mined, so a method
+holds several copies of the same source loop and a pattern match cannot tell you which is which.
+
+Give the strings enough length (`-p len=128` and up) that the copy loop dominates; at the
+application's own 3-4 character values it is a small fraction of the profile and nothing separates.
+
+Needs `perf` and `/usr/lib64/libperf-jvmti.so` (the `perf-jvmti` / `linux-tools` package).
+
 ## Notes
 
 - **The fixed builds are bimodal across forks.** At 3 forks one unlucky fork moves the mean by
