@@ -93,13 +93,15 @@ the static reading and the sampled profile agree on which copy is the bad one.
 `GenSerBench`, 20 `Person`s per op, `firstName` fixed at `"John"` so only the *second* copy does
 real work, 5 forks:
 
-| `lastName` length | `writeString` inlined | not inlined | |
+| `lastName` length | `writeString` inlined | not inlined | not inlining is |
 |---|---:|---:|---|
-| 3 (`"Doe"`, the app's data) | 1997.3 ± 12.1 | 1993.1 ± 6.3 | no difference |
-| 256 | 5392.7 ± 140.0 | 5065.8 ± 7.0 | **-6.1 %** |
+| 3 (`"Doe"`, the app's data) | 1878.1 ± 2.9 | 1944.8 ± 10.5 | **3.6 % slower** |
+| 256 | 5392.7 ± 140.0 | 5065.8 ± 7.0 | **6.1 % faster** |
 
-At short strings the spill costs nothing measurable - it needs a loop with real work before it
-shows. The not-inlined arm is also far more reproducible (±7.0 vs ±140.0 ns/op): with one
+The sign flips with string length. At the application's own 3-character values inlining wins, and
+taking `writeString` out of line costs 3.6 % - the spilled counter is not worth a call boundary
+when the loop runs three times. At 256 characters the spill dominates and the call boundary pays
+for itself. The not-inlined arm is also far more reproducible (±7.0 vs ±140.0 ns/op): with one
 out-of-line copy there is no second allocation to get wrong. Per-fork means for the inlined arm at
 256 chars were 5316, 5322, 5325, 5326, 5331, 5399, 5488, 5624 - a tight cluster with a slow tail,
 and even the fastest fork is 4.9 % behind the not-inlined arm.
