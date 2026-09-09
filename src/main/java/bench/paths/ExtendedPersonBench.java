@@ -43,8 +43,9 @@ import bench.paths.sers.ExtendedPersonSer;
  * which is where the nested serializers get inlined - matching the application, where that method
  * holds four copy loops and {@code serializeContent} holds two.
  *
- * <p>Values are the application's own: {@code EXTENDED_DEFAULT_PERSON} as {@code PersonResource}
- * declares it.
+ * <p>The data is declared exactly as {@code PersonResource} declares it - {@code static final}
+ * fields holding {@code Collections.nCopies(20, EXTENDED_DEFAULT_PERSON)} - so that C2 gets the same
+ * constants the application gives it.
  *
  * <p>Run both benchmarks: {@code serialize} has {@code writeString} inlined and is the case to fix,
  * {@code serializeWriteStringNotInlined} is the control.
@@ -58,9 +59,18 @@ import bench.paths.sers.ExtendedPersonSer;
 @Threads(1)
 public class ExtendedPersonBench {
 
-    @Param("20")
-    public int size;
 
+    /**
+     * Not a good practice is made to match what the Quarkus metaprogramming benchmark does
+     */
+    /**
+     * Length of every String property. {@code 0} keeps the application's own values; any other
+     * value replaces all six with the <b>same</b> ASCII String instance of that length, so every
+     * copy loop sees identical input and identical length and anything that differs between the six
+     * is a compiler decision.
+     */
+    @Param("0")
+    public int strLen;
 
     private ObjectWriter writer;
     private List<ExtendedPerson> people;
@@ -75,12 +85,19 @@ public class ExtendedPersonBench {
         writer = JsonMapper.builder().addModule(module).build().writer()
                 .forType(new TypeReference<List<ExtendedPerson>>() {
                 });
-        // the application serves Collections.nCopies(20, EXTENDED_DEFAULT_PERSON) - one instance
-        // repeated, and a CopiesList rather than an ArrayList
-        ExtendedPerson person = new ExtendedPerson("John", "Doe", 30,
-                new Address("Gotham", "123 Main St"),
-                new Car("Toyota", "Camry"));
-        people = Collections.nCopies(size, person);
+        // held as PersonResource holds it: one instance, repeated, in a CopiesList
+        ExtendedPerson person;
+        if (strLen > 0) {
+            String filler = "x".repeat(strLen);
+            person = new ExtendedPerson(filler, filler, 30,
+                    new Address(filler, filler),
+                    new Car(filler, filler));
+        } else {
+            person = new ExtendedPerson("John", "Doe", 30,
+                    new Address("Gotham", "123 Main St"),
+                    new Car("Toyota", "Camry"));
+        }
+        people = Collections.nCopies(20, person);
         out = new Sink(1024 * 1024);
     }
 
