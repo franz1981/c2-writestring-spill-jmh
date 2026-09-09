@@ -49,7 +49,7 @@ re-pollute the profile. Not measured here.
 escape table the test is expressible with constants
 (`ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\'`), so both the load and the bounds check go.
 
-## Problem 3 - with several String fields, only one copy is allocated well
+## Problem 3 - with several String fields, only one copy keeps its counter in a register
 
 **Everything in this section is measured with Problems 1 and 2 already fixed** - Jackson 3.1.4 with
 [#1681](https://github.com/FasterXML/jackson-core/pull/1681) and
@@ -60,33 +60,55 @@ The first two problems are about one copy loop. This one only appears when a ser
 **more than one String field**, which is the normal case for a bean.
 
 C2 inlines `writeString` **once per call site**, so a bean with two String properties gets two
-independent copies of the loop in one method - and it allocates them differently. Measured on the
-serializer Quarkus generates for a 4-field `Person` (`String firstName, String lastName, int age,
-double height`):
+independent copies of the loop in one method - and it allocates them differently. Measured on a
+serializer in the shape Quarkus generates for a 4-field `Person` (`String firstName, String
+lastName, int age, double height`), with `firstName` left at the application's `"John"` and
+`lastName` at 256 characters, so only the second copy does real work:
 
-| inlined copy | compiled shape |
-|---|---|
-| first (`firstName`) | 29 insns, 2x unrolled, **no stack traffic** |
-| second (`lastName`) | 31 insns, 2x unrolled, **loop counter lives in `[rsp+0x18]`** |
+| inlined copy | loop counter | stack refs in the loop |
+|---|---|---|
+| first (`writeString(firstName)`, bci 59) | **register `ebx`** | 6 |
+| second (`writeString(lastName)`, bci 122) | **memory, `[rsp+0x8]`** | 13 |
 
-Both copies unroll identically and have identical escape checks. The difference is purely register
-allocation: the second reloads its induction variable three times and stores it back once per
-iteration, where the first keeps it in `edx`.
-
-With longer strings the second copy degrades further - the output buffer base and a loop-invariant
-offset end up on the stack as well, reloaded on **every character**:
+The first copy ends its iteration with `add ebx,0x2 / cmp ebx,eax / jl`. The second has to do:
 
 ```asm
-0x15410:  mov    edx,DWORD PTR [rsp]         ; induction variable
-0x15413:  add    edx,DWORD PTR [rsp+0x3c]    ; loop-invariant offset, reloaded
-0x15417:  movsxd r8,DWORD PTR [rsp]          ; induction variable again
-   ...
-0x15453:  mov    ebx,DWORD PTR [rsp+0x4]     ; output buffer base, reloaded per character
-0x154fd:  mov    r8d,DWORD PTR [rsp]         ; induction variable a third time
+mov    r10d,DWORD PTR [rsp+0x8]     ; load the counter
+add    r10d,0x2
+mov    DWORD PTR [rsp+0x8],r10d     ; store it back
+cmp    r10d,edx
+jl     ...                          ; and it is loaded again at the loop head
 ```
 
-`perfasm` puts **57.8 % of all cycles** in exactly that loop, annotated `serializeContent@209` -
-the static reading and the sampled profile agree on which copy is the bad one.
+Both loops touch the stack for other values - the output buffer base and the output pointer - so
+neither is free of stack traffic. The difference that matters is the counter itself, and the second
+copy carries roughly twice the stack references overall.
+
+`perfasm` puts **57.8 % of all cycles** in the second copy's loop.
+
+### What C2 is doing
+
+Under a fastdebug JVM, `-XX:+PrintOptoAssembly` labels the allocator's spill code directly. Both
+copy loops use **the same 13 registers**; x86-64 offers 14 allocatable here, since `RSP` is the
+stack pointer and `R12` is pinned as the compressed-oop heap base (visible in the addressing,
+`[R12 + R11 << 3 + #16]`). The loops sit right at the limit.
+
+That suggests being one register short, but the test does not support it. With the unroll factor
+pinned at 2x in both arms so only the register count changes:
+
+| | first copy | second copy |
+|---|---|---|
+| `-XX:+UseCompressedOops` | 50 insns, 6 stack refs | 53 insns, 13 stack refs |
+| `-XX:-UseCompressedOops` (frees `R12`) | 49 insns, 4 stack refs | 33 insns, 7 stack refs |
+
+Handing the allocator one more register roughly halves the second copy's stack traffic but does not
+get its counter back into a register. So the shortfall is larger than one register, and **why the
+later copy is the one that loses its counter is not established here.**
+
+*The `PrintOptoAssembly` register census comes from a fastdebug VM, whose allocation for this method
+is not identical to the release build's - treat it as indicative of the pressure, not as a
+description of the release code. The shapes and stack-ref counts in the tables above are from
+release builds.*
 
 ### What it costs
 

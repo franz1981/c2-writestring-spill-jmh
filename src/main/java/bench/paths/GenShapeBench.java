@@ -43,7 +43,9 @@ import bench.paths.sers.GenPersonSer;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Fork(value = 5, jvmArgsAppend = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch" })
+// LoopMaxUnroll=2 matches what the application's compiled loop does. Left to itself C2
+// unrolls this loop 4x here, which is a different compiled shape from the one being studied.
+@Fork(value = 5, jvmArgsAppend = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch", "-XX:LoopMaxUnroll=2" })
 @Warmup(iterations = 5, time = 5)
 @Measurement(iterations = 5, time = 5)
 @Threads(1)
@@ -91,7 +93,7 @@ public class GenShapeBench {
     /** Identical work, with writeString kept out of the serializer: one copy, no second allocation. */
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    @Fork(value = 5, jvmArgsAppend = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch",
+    @Fork(value = 5, jvmArgsAppend = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch", "-XX:LoopMaxUnroll=2",
             "-XX:CompileCommand=dontinline,tools/jackson/core/json/UTF8JsonGenerator.writeString" })
     public long serializeWriteStringNotInlined() throws IOException {
         out.reset();
