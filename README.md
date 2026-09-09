@@ -64,10 +64,10 @@ independent copies of the loop in one method - and it allocates them differently
 serializer Quarkus generates for a 4-field `Person` (`String firstName, String lastName, int age,
 double height`):
 
-| inlined copy | compiled shape, hand-written `GenPersonSer` | real generated serializer |
-|---|---|---|
-| first (`firstName`) | 29 insns, 2x unrolled, **no stack traffic** | 28 insns, 2x, no stack traffic |
-| second (`lastName`) | 31 insns, 2x unrolled, **counter in `[rsp+0x18]`** | 31 insns, 2x, counter in `[rsp+0x8]` |
+| inlined copy | compiled shape |
+|---|---|
+| first (`firstName`) | 29 insns, 2x unrolled, **no stack traffic** |
+| second (`lastName`) | 31 insns, 2x unrolled, **loop counter lives in `[rsp+0x18]`** |
 
 Both copies unroll identically and have identical escape checks. The difference is purely register
 allocation: the second reloads its induction variable three times and stores it back once per
@@ -100,12 +100,8 @@ inlined and is the case to fix; `serializeWriteStringNotInlined` is the control:
 | `serializeWriteStringNotInlined` (control) | 5051.2 ± 11.2 |
 | | **-5.6 %** |
 
-The same measurement against the *real* serializer Quarkus generates, rather than the hand-written
-stand-in, gives 5392.7 ± 140.0 and 5065.8 ± 7.0 - **-6.1 %**. See `GenSerBench` and the
-`quarkus-gen` profile.
-
-The control is also far more reproducible (±11.2 vs ±60.3, and ±7.0 vs ±140.0 on the generated
-serializer): with one out-of-line copy there is no second allocation to get wrong.
+The control is also far more reproducible (±11.2 vs ±60.3): with one out-of-line copy there is no
+second allocation to get wrong.
 
 Which copy gets the bad allocation, and why, is not established here.
 
@@ -125,17 +121,6 @@ serializer's own method instead of letting C2 bury them in `CollectionSerializer
 its generated serializers the same way - `GeneratedSerializer.serialize` writes the braces and calls
 an abstract `serializeContent` holding the property writes - so `serializeContent`, not `serialize`,
 is the method that matters.
-
-To cross-check against the real generated serializer instead of the stand-in, install the classes
-dumped from a built app and use the opt-in profile:
-
-```
-mvn install:install-file -Dfile=quarkus-gen-person.jar \
-    -DgroupId=bench.local -DartifactId=quarkus-gen-person -Dversion=1.0 -Dpackaging=jar
-mvn -Pquarkus-gen clean package
-java -jar target/benchmarks.jar GenSerBench.genser -p len=256 -f 5 \
-  -jvmArgsAppend "-XX:CompileCommand=dontinline,org.quarkus.metaprogramming.Person\$quarkusjacksonserializer::serializeContent"
-```
 
 To read the compiled loops, add `-XX:+UnlockDiagnosticVMOptions -XX:-BackgroundCompilation` and
 `-XX:CompileCommand=print,...::serializeContent` - print one method only, because with a global

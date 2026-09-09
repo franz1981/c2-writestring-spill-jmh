@@ -29,13 +29,10 @@ import bench.Sink;
 import bench.paths.beans.Bool5;
 import bench.paths.beans.Int5;
 import bench.paths.beans.Str1;
-import bench.paths.beans.Mixed4;
 import bench.paths.beans.Str5;
 import bench.paths.sers.Bool5Ser;
 import bench.paths.sers.Int5Ser;
 import bench.paths.sers.Str1Ser;
-import bench.paths.sers.Mixed4Ser;
-import bench.paths.sers.Mixed4xSer;
 import bench.paths.sers.Str5Ser;
 
 /**
@@ -83,12 +80,11 @@ public class CallPathBench {
     @Param({ "10", "40" })
     public int len;
 
-    private ObjectWriter str1W, str5W, int5W, bool5W, mixed4W, mixed4xW;
+    private ObjectWriter str1W, str5W, int5W, bool5W;
     private List<Str1> str1s;
     private List<Str5> str5s;
     private List<Int5> int5s;
     private List<Bool5> bool5s;
-    private List<Mixed4> mixed4s;
     private Sink out;
 
     private static <T> ObjectWriter writerFor(Class<T> type, ValueSerializer<T> ser, TypeReference<?> listType) {
@@ -103,15 +99,12 @@ public class CallPathBench {
         str5W = writerFor(Str5.class, new Str5Ser(), new TypeReference<List<Str5>>() {});
         int5W = writerFor(Int5.class, new Int5Ser(), new TypeReference<List<Int5>>() {});
         bool5W = writerFor(Bool5.class, new Bool5Ser(), new TypeReference<List<Bool5>>() {});
-        mixed4W = writerFor(Mixed4.class, new Mixed4Ser(), new TypeReference<List<Mixed4>>() {});
-        mixed4xW = writerFor(Mixed4.class, new Mixed4xSer(), new TypeReference<List<Mixed4>>() {});
 
         String pad = "x".repeat(Math.max(0, len - 1));
         str1s = new ArrayList<>(size);
         str5s = new ArrayList<>(size);
         int5s = new ArrayList<>(size);
         bool5s = new ArrayList<>(size);
-        mixed4s = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Str1 a = new Str1();
             a.p0 = "a" + pad;
@@ -121,10 +114,6 @@ public class CallPathBench {
             str5s.add(b);
             int5s.add(new Int5());
             bool5s.add(new Bool5());
-            Mixed4 m = new Mixed4();
-            m.firstName = "a" + pad;
-            m.lastName = "b" + pad;
-            mixed4s.add(m);
         }
         out = new Sink(1024 * 1024);
     }
@@ -151,10 +140,4 @@ public class CallPathBench {
 
     /** writeName isolated: writeBoolean writes a constant, so nothing else does real work. */
     @Benchmark public long bool5() { return write(bool5W, bool5s); }
-
-    /** Quarkus Person shape in field order: String, String, int, double. */
-    @Benchmark public long mixed4() { return write(mixed4W, mixed4s); }
-
-    /** Same bean, number writes moved between the two String writes. */
-    @Benchmark public long mixed4x() { return write(mixed4xW, mixed4s); }
 }
