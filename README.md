@@ -64,10 +64,10 @@ independent copies of the loop in one method - and it allocates them differently
 serializer Quarkus generates for a 4-field `Person` (`String firstName, String lastName, int age,
 double height`):
 
-| inlined copy | call site | compiled shape |
+| inlined copy | compiled shape, hand-written `GenPersonSer` | real generated serializer |
 |---|---|---|
-| first | `writeString(firstName)`, bci 116 | 28 insns, 2x unrolled, **no stack traffic** |
-| second | `writeString(lastName)`, bci 209 | 31 insns, 2x unrolled, **loop counter lives in `[rsp+0x8]`** |
+| first (`firstName`) | 29 insns, 2x unrolled, **no stack traffic** | 28 insns, 2x, no stack traffic |
+| second (`lastName`) | 31 insns, 2x unrolled, **counter in `[rsp+0x18]`** | 31 insns, 2x, counter in `[rsp+0x8]` |
 
 Both copies unroll identically and have identical escape checks. The difference is purely register
 allocation: the second reloads its induction variable three times and stores it back once per
@@ -90,46 +90,61 @@ the static reading and the sampled profile agree on which copy is the bad one.
 
 ### What it costs
 
-`GenSerBench`, 20 `Person`s per op, `firstName` fixed at `"John"` so only the *second* copy does
-real work, 5 forks:
+`GenShapeBench`, 20 beans per op, `firstName` fixed at the application's `"John"` so only the
+*second* copy does real work, `lastName` grown to 256 characters. `serialize` has `writeString`
+inlined and is the case to fix; `serializeWriteStringNotInlined` is the control:
 
-| `lastName` length | `writeString` inlined | not inlined | not inlining is |
-|---|---:|---:|---|
-| 3 (`"Doe"`, the app's data) | 1878.1 ± 2.9 | 1944.8 ± 10.5 | **3.6 % slower** |
-| 256 | 5392.7 ± 140.0 | 5065.8 ± 7.0 | **6.1 % faster** |
+| | ns/op |
+|---|---:|
+| `serialize` (inlined, second copy spills) | 5350.6 ± 60.3 |
+| `serializeWriteStringNotInlined` (control) | 5051.2 ± 11.2 |
+| | **-5.6 %** |
 
-The sign flips with string length. At the application's own 3-character values inlining wins, and
-taking `writeString` out of line costs 3.6 % - the spilled counter is not worth a call boundary
-when the loop runs three times. At 256 characters the spill dominates and the call boundary pays
-for itself. The not-inlined arm is also far more reproducible (±7.0 vs ±140.0 ns/op): with one
-out-of-line copy there is no second allocation to get wrong. Per-fork means for the inlined arm at
-256 chars were 5316, 5322, 5325, 5326, 5331, 5399, 5488, 5624 - a tight cluster with a slow tail,
-and even the fastest fork is 4.9 % behind the not-inlined arm.
+The same measurement against the *real* serializer Quarkus generates, rather than the hand-written
+stand-in, gives 5392.7 ± 140.0 and 5065.8 ± 7.0 - **-6.1 %**. See `GenSerBench` and the
+`quarkus-gen` profile.
+
+The control is also far more reproducible (±11.2 vs ±60.3, and ±7.0 vs ±140.0 on the generated
+serializer): with one out-of-line copy there is no second allocation to get wrong.
 
 Which copy gets the bad allocation, and why, is not established here.
 
 ### Reproducing
 
-Needs the Quarkus-generated classes, which are not redistributable here - hence the opt-in profile:
+Self-contained - `GenPersonSer` is hand-written in the shape Quarkus generates, so this needs no
+generated classes and builds from a clean clone:
+
+```
+mvn clean package
+java -jar target/benchmarks.jar GenShapeBench -p len=256
+```
+
+`serializeContent` carries `@CompilerControl(DONT_INLINE)`. That is the 1:1 counterpart of the same
+annotation on `FlatSer.serialize` on `master`, and it is what keeps the two copy loops in the
+serializer's own method instead of letting C2 bury them in `CollectionSerializer`. Quarkus splits
+its generated serializers the same way - `GeneratedSerializer.serialize` writes the braces and calls
+an abstract `serializeContent` holding the property writes - so `serializeContent`, not `serialize`,
+is the method that matters.
+
+To cross-check against the real generated serializer instead of the stand-in, install the classes
+dumped from a built app and use the opt-in profile:
 
 ```
 mvn install:install-file -Dfile=quarkus-gen-person.jar \
     -DgroupId=bench.local -DartifactId=quarkus-gen-person -Dversion=1.0 -Dpackaging=jar
 mvn -Pquarkus-gen clean package
-
 java -jar target/benchmarks.jar GenSerBench.genser -p len=256 -f 5 \
   -jvmArgsAppend "-XX:CompileCommand=dontinline,org.quarkus.metaprogramming.Person\$quarkusjacksonserializer::serializeContent"
 ```
-
-That `dontinline` is **required**, and is the part that took longest to find. Without it C2 inlines
-the whole serializer into `CollectionSerializer`'s OSR compile - a compile unit that does not exist
-in the real application - and the spill disappears. A plain JMH harness reports "no spill" and is
-simply measuring a different compilation.
 
 To read the compiled loops, add `-XX:+UnlockDiagnosticVMOptions -XX:-BackgroundCompilation` and
 `-XX:CompileCommand=print,...::serializeContent` - print one method only, because with a global
 `-XX:+PrintAssembly` the compiler threads interleave and truncate each other's output. No unrolling
 flag is needed: with both patches applied the loop unrolls 2x on its own.
+
+*Do not pass `-jvmArgsAppend` on the command line when running `GenShapeBench`: it replaces the
+`@Fork` annotation's arguments rather than adding to them, which silently disables the control arm's
+`dontinline` and makes both arms identical.*
 
 ## Results
 
