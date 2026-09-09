@@ -51,24 +51,30 @@ escape table the test is expressible with constants
 
 ## Problem 3 - with several String fields, only one copy is allocated well
 
+**Everything in this section is measured with Problems 1 and 2 already fixed** - Jackson 3.1.4 with
+[#1681](https://github.com/FasterXML/jackson-core/pull/1681) and
+[#6183](https://github.com/FasterXML/jackson-databind/pull/6183) applied. This is a problem that
+remains after both patches, not one they mask.
+
 The first two problems are about one copy loop. This one only appears when a serializer writes
 **more than one String field**, which is the normal case for a bean.
 
 C2 inlines `writeString` **once per call site**, so a bean with two String properties gets two
 independent copies of the loop in one method - and it allocates them differently. Measured on the
 serializer Quarkus generates for a 4-field `Person` (`String firstName, String lastName, int age,
-double height`), which emits properties alphabetically, so `writeNumber(height)` falls between the
-two string writes:
+double height`):
 
 | inlined copy | call site | compiled shape |
 |---|---|---|
 | first | `writeString(firstName)`, bci 116 | 28 insns, 2x unrolled, **no stack traffic** |
 | second | `writeString(lastName)`, bci 209 | 31 insns, 2x unrolled, **loop counter lives in `[rsp+0x8]`** |
 
-Both unroll identically and have identical escape checks. The difference is purely register
-allocation: the second copy reloads its induction variable three times and stores it back once per
-iteration. With longer strings it degrades further - the output buffer base and a loop-invariant
-offset end up on the stack too, reloaded on **every character**:
+Both copies unroll identically and have identical escape checks. The difference is purely register
+allocation: the second reloads its induction variable three times and stores it back once per
+iteration, where the first keeps it in `edx`.
+
+With longer strings the second copy degrades further - the output buffer base and a loop-invariant
+offset end up on the stack as well, reloaded on **every character**:
 
 ```asm
 0x15410:  mov    edx,DWORD PTR [rsp]         ; induction variable
@@ -89,23 +95,16 @@ real work, 5 forks:
 
 | `lastName` length | `writeString` inlined | not inlined | |
 |---|---:|---:|---|
-| 4 (`"Doe"`, the app's data) | 1997.3 ± 12.1 | 1993.1 ± 6.3 | no difference |
+| 3 (`"Doe"`, the app's data) | 1997.3 ± 12.1 | 1993.1 ± 6.3 | no difference |
 | 256 | 5392.7 ± 140.0 | 5065.8 ± 7.0 | **-6.1 %** |
 
-Two things to note. At short strings the spill costs nothing measurable - it needs a loop with real
-work before it shows. And the not-inlined arm is far more *reproducible* (±7.0 vs ±140.0): with one
-out-of-line copy there is no second allocation to get wrong.
+At short strings the spill costs nothing measurable - it needs a loop with real work before it
+shows. The not-inlined arm is also far more reproducible (±7.0 vs ±140.0 ns/op): with one
+out-of-line copy there is no second allocation to get wrong. Per-fork means for the inlined arm at
+256 chars were 5316, 5322, 5325, 5326, 5331, 5399, 5488, 5624 - a tight cluster with a slow tail,
+and even the fastest fork is 4.9 % behind the not-inlined arm.
 
-### Why the second copy and not the first
-
-**Unknown.** The obvious hypothesis - that the inlined double formatting between the two string
-writes consumes the registers - was tested and **refuted**: forcing
-`jdk.internal.math.DoubleToDecimal::toDecimal` out of line made throughput *worse*
-(5655.3 ± 354.7 vs 5387.8 ± 175.5) and made the assembly worse too, with *both* copies spilling
-instead of one. Removing that code costs registers rather than freeing them.
-
-Related: OpenJDK confirmed the underlying effect is an unlucky register-allocation decision rather
-than a modelled cost, which is consistent with the fork-to-fork spread above.
+Which copy gets the bad allocation, and why, is not established here.
 
 ### Reproducing
 
@@ -125,9 +124,10 @@ the whole serializer into `CollectionSerializer`'s OSR compile - a compile unit 
 in the real application - and the spill disappears. A plain JMH harness reports "no spill" and is
 simply measuring a different compilation.
 
-*Measured with Jackson 3.1.4 plus both fixes above, to match the application these numbers came
-from; the repository otherwise builds 3.1.5. The spill reproduces on unpatched 3.1.5 as well, so it
-is independent of Problems 1 and 2.*
+To read the compiled loops, add `-XX:+UnlockDiagnosticVMOptions -XX:-BackgroundCompilation` and
+`-XX:CompileCommand=print,...::serializeContent` - print one method only, because with a global
+`-XX:+PrintAssembly` the compiler threads interleave and truncate each other's output. No unrolling
+flag is needed: with both patches applied the loop unrolls 2x on its own.
 
 ## Results
 
