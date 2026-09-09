@@ -49,109 +49,79 @@ re-pollute the profile. Not measured here.
 escape table the test is expressible with constants
 (`ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\'`), so both the load and the bounds check go.
 
-## Problem 3 - with several String fields, only one copy keeps its counter in a register
+## Problem 3 - with several String properties, the copies are not allocated alike
 
-**Everything in this section is measured with Problems 1 and 2 already fixed** - Jackson 3.1.4 with
+**Measured with Problems 1 and 2 already fixed** - Jackson 3.1.4 with
 [#1681](https://github.com/FasterXML/jackson-core/pull/1681) and
-[#6183](https://github.com/FasterXML/jackson-databind/pull/6183) applied. This is a problem that
-remains after both patches, not one they mask.
+[#6183](https://github.com/FasterXML/jackson-databind/pull/6183) applied. This is what remains after
+both patches, not something they mask.
 
-The first two problems are about one copy loop. This one only appears when a serializer writes
-**more than one String field**, which is the normal case for a bean.
+C2 inlines `writeString` **once per call site**, so a serializer writing several String properties
+ends up with several independent copies of the copy loop, and it does not allocate them alike: some
+keep the loop counter in a register, others leave it in a stack slot and reload it every iteration.
 
-C2 inlines `writeString` **once per call site**, so a bean with two String properties gets two
-independent copies of the loop in one method - and it allocates them differently. Measured on a
-serializer in the shape Quarkus generates for a 4-field `Person` (`String firstName, String
-lastName, int age, double height`), with `firstName` left at the application's `"John"` and
-`lastName` at 256 characters, so only the second copy does real work:
+`ExtendedPersonBench` reproduces the shape of the application this came from - the
+`persons/get-all-extended` endpoint of
+[quarkus-metaprogramming-advantage](https://github.com/mariofusco/quarkus-metaprogramming-advantage),
+serving `Collections.nCopies(20, EXTENDED_DEFAULT_PERSON)`.
 
-| inlined copy | loop counter | stack refs in the loop |
-|---|---|---|
-| first (`writeString(firstName)`, bci 59) | **register `ebx`** | 6 |
-| second (`writeString(lastName)`, bci 122) | **memory, `[rsp+0x8]`** | 13 |
+`ExtendedPerson` has two String properties, an int, and two nested beans holding two Strings each -
+six String writes over three generated serializers. In the compiled code they land in two methods:
 
-The first copy ends its iteration with `add ebx,0x2 / cmp ebx,eax / jl`. The second has to do:
-
-```asm
-mov    r10d,DWORD PTR [rsp+0x8]     ; load the counter
-add    r10d,0x2
-mov    DWORD PTR [rsp+0x8],r10d     ; store it back
-cmp    r10d,edx
-jl     ...                          ; and it is loaded again at the loop head
+```
+CollectionSerializer.serializeContentsImpl
+  GeneratedSer.serialize                        inlined
+    ExtendedPersonSer.serializeContent          NOT inlined - 2 writeString call sites
+      MapperUtil.serializePojo                  NOT inlined - the nested serializers inline here,
+        GeneratedSer.serialize                                so the other 4 land in this method
+          AddressSer/CarSer.serializeContent
+            UTF8JsonGenerator.writeString
 ```
 
-Both loops touch the stack for other values - the output buffer base and the output pointer - so
-neither is free of stack traffic. The difference that matters is the counter itself, and the second
-copy carries roughly twice the stack references overall.
+Those two methods are the only physical frames in the application's profile; everything else is
+inlined into one of them. `ExtendedPersonSer.serializeContent` and `MapperUtil.serializePojo` carry
+`@CompilerControl(DONT_INLINE)` here to hold that shape.
 
-`perfasm` puts **57.8 % of all cycles** in the second copy's loop.
+### The sources
 
-### What C2 is doing
+Written against the bytecode Quarkus generates (`target/decompiler/generated-bytecode` in the
+application) and its runtime classes, rather than an idealised version of either:
 
-Under a fastdebug JVM, `-XX:+PrintOptoAssembly` labels the allocator's spill code directly. Both
-copy loops use **the same 13 registers**; x86-64 offers 14 allocatable here, since `RSP` is the
-stack pointer and `R12` is pinned as the compressed-oop heap base (visible in the addressing,
-`[R12 + R11 << 3 + #16]`). The loops sit right at the limit.
+| | |
+|---|---|
+| `beans/{ExtendedPerson,Address,Car}` | field for field, including `@JsonProperty("familyName")` |
+| `sers/{ExtendedPersonSer,AddressSer,CarSer}` | generated property order (alphabetical by JSON name), a `shouldSerialize` guard per property, nested beans through `serializePojo` |
+| `sers/GeneratedSer` | copy of Quarkus's `GeneratedSerializer`: braces in `serialize`, abstract `serializeContent` |
+| `sers/SerializationInclude` | copy of `JacksonMapperUtil.SerializationInclude` - its size is what keeps it out of line |
+| `sers/MapperUtil` | copy of `JacksonMapperUtil.writeFieldName` and `serializePojo` |
+| `sers/SerializedStrings` | copy of the generated holder, one static per property name |
 
-That suggests being one register short, but the test does not support it. With the unroll factor
-pinned at 2x in both arms so only the register count changes:
+The JSON is identical to the application's:
+`{"address":{"city":…,"street":…},"age":30,"car":{"brand":…,"model":…},"firstName":…,"familyName":…}`
 
-| | first copy | second copy |
-|---|---|---|
-| `-XX:+UseCompressedOops` | 50 insns, 6 stack refs | 53 insns, 13 stack refs |
-| `-XX:-UseCompressedOops` (frees `R12`) | 49 insns, 4 stack refs | 33 insns, 7 stack refs |
-
-Handing the allocator one more register roughly halves the second copy's stack traffic but does not
-get its counter back into a register. So the shortfall is larger than one register, and **why the
-later copy is the one that loses its counter is not established here.**
-
-*The `PrintOptoAssembly` register census comes from a fastdebug VM, whose allocation for this method
-is not identical to the release build's - treat it as indicative of the pressure, not as a
-description of the release code. The shapes and stack-ref counts in the tables above are from
-release builds.*
-
-### What it costs
-
-`GenShapeBench`, 20 beans per op, `firstName` fixed at the application's `"John"` so only the
-*second* copy does real work, `lastName` grown to 256 characters. `serialize` has `writeString`
-inlined and is the case to fix; `serializeWriteStringNotInlined` is the control:
-
-| | ns/op |
-|---|---:|
-| `serialize` (inlined, second copy spills) | 5350.6 ± 60.3 |
-| `serializeWriteStringNotInlined` (control) | 5051.2 ± 11.2 |
-| | **-5.6 %** |
-
-The control is also far more reproducible (±11.2 vs ±60.3): with one out-of-line copy there is no
-second allocation to get wrong.
-
-Which copy gets the bad allocation, and why, is not established here.
-
-### Reproducing
-
-Self-contained - `GenPersonSer` is hand-written in the shape Quarkus generates, so this needs no
-generated classes and builds from a clean clone:
+### Running it
 
 ```
 mvn clean package
-java -jar target/benchmarks.jar GenShapeBench -p len=256
+java -jar target/benchmarks.jar ExtendedPersonBench
 ```
 
-`serializeContent` carries `@CompilerControl(DONT_INLINE)`. That is the 1:1 counterpart of the same
-annotation on `FlatSer.serialize` on `master`, and it is what keeps the two copy loops in the
-serializer's own method instead of letting C2 bury them in `CollectionSerializer`. Quarkus splits
-its generated serializers the same way - `GeneratedSerializer.serialize` writes the braces and calls
-an abstract `serializeContent` holding the property writes - so `serializeContent`, not `serialize`,
-is the method that matters.
+`serialize` has `writeString` inlined and is the case to fix; `serializeWriteStringNotInlined` is
+the control. The bean carries the application's own values; edit `setup()` for longer Strings, which
+is what makes the copy loop a large enough share of the profile to separate the two arms.
 
 To read the compiled loops, add `-XX:+UnlockDiagnosticVMOptions -XX:-BackgroundCompilation` and
-`-XX:CompileCommand=print,...::serializeContent` - print one method only, because with a global
-`-XX:+PrintAssembly` the compiler threads interleave and truncate each other's output. No unrolling
-flag is needed: with both patches applied the loop unrolls 2x on its own.
+`-XX:CompileCommand=print,…::serializeContent` - print one method only, because with a global
+`-XX:+PrintAssembly` the compiler threads interleave and truncate each other's output.
 
-*Do not pass `-jvmArgsAppend` on the command line when running `GenShapeBench`: it replaces the
-`@Fork` annotation's arguments rather than adding to them, which silently disables the control arm's
-`dontinline` and makes both arms identical.*
+### Not established
+
+Which copy gets the bad allocation, and why. Two explanations were tested and both failed: that the
+inlined double formatting between the writes consumes the registers (removing it made the code
+worse, not better), and that the allocator is one register short (freeing `R12` with
+`-XX:-UseCompressedOops` halved the stack traffic without recovering the counter).
+
+No cost figure is quoted here because none has been measured on this reproducer.
 
 ## Results
 
@@ -234,39 +204,6 @@ while (offset < len) {
 
 These are equivalent to the linked PRs, not cherry-picked from them.
 
-## Profiling with linux perf instead of async-profiler
-
-`scripts/perfjit.sh` records a benchmark under `perf` with JIT symbols resolved and produces a
-per-instruction cycle annotation of the compiled code, so the assembly and the profile come from
-the same run and can be read side by side:
-
-```
-scripts/perfjit.sh target/benchmarks.jar -p len=128 -p size=20 -s serializeContent
-```
-
-It sets `-XX:+PreserveFramePointer`, loads `libperf-jvmti.so` so the JVM writes a jitdump, records
-with `perf record -k mono` (the jitdump timestamps must share perf's clock), then runs
-`perf inject --jit` and `perf annotate`. Output lands in `perfjit-out/<jar>/`:
-
-| file | |
-|---|---|
-| `jmh.txt` | the JMH score for the run that was profiled |
-| `symbols.txt` | hottest symbols, and which jitted object each came from |
-| `annotate.txt` | per-instruction cycle percentages of the chosen symbol |
-| `perf.jit.data` | for your own `perf report` / `perf annotate` |
-
-Two things to know when reading it. **A Java method has several compilations** - a profiled C1 one
-and a C2 one - and they share a symbol name while living in different `jitted-*.so` objects. Check
-`symbols.txt` for which object carries the cycles before drawing anything from `annotate.txt`; the
-C1 one is recognisable by its MDO counter bumps (`addq $0x1,0x198(%rdi)`). And **read the
-annotation rather than grepping it** - loops here are unrolled, peeled and strip-mined, so a method
-holds several copies of the same source loop and a pattern match cannot tell you which is which.
-
-Give the strings enough length (`-p len=128` and up) that the copy loop dominates; at the
-application's own 3-4 character values it is a small fraction of the profile and nothing separates.
-
-Needs `perf` and `/usr/lib64/libperf-jvmti.so` (the `perf-jvmti` / `linux-tools` package).
-
 ## Notes
 
 - **The fixed builds are bimodal across forks.** At 3 forks one unlucky fork moves the mean by
@@ -274,7 +211,6 @@ Needs `perf` and `/usr/lib64/libperf-jvmti.so` (the `perf-jvmti` / `linux-tools`
   understood.
 - The `dontinline` benchmark is a control, not a proposed fix - `writeString` is Jackson's method
   and cannot be annotated.
-- This branch also carries `AccessorBench` and `CallPathBench`, unrelated to the two problems
   documented here; pass `SingleBench` to run only this reproducer.
 
 ## Not verified
