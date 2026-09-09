@@ -1,4 +1,4 @@
-# Two problems in the `UTF8JsonGenerator` ASCII copy loop
+# Three problems in the `UTF8JsonGenerator` ASCII copy loop
 
 JMH reproducer. Measured on **Jackson 3.1.5, Temurin 25.0.2+10, x86-64**.
 
@@ -12,8 +12,9 @@ while (offset < len) {
 }
 ```
 
-Two independent problems. Both are visible only in the compiled code, and both make the loop
-markedly worse when C2 inlines `writeString` into the caller.
+Three independent problems. All are visible only in the compiled code, and all make the loop
+markedly worse when C2 inlines `writeString` into the caller. The third only appears once a
+serializer writes more than one String field.
 
 ## Problem 1 - the loop does not unroll, and spills
 
@@ -47,6 +48,86 @@ re-pollute the profile. Not measured here.
 **Fixed by** [jackson-core#1680](https://github.com/FasterXML/jackson-core/issues/1680) / [PR #1681](https://github.com/FasterXML/jackson-core/pull/1681): for the standard
 escape table the test is expressible with constants
 (`ch < 0x20 || ch > 0x7F || ch == '"' || ch == '\\'`), so both the load and the bounds check go.
+
+## Problem 3 - with several String fields, only one copy is allocated well
+
+The first two problems are about one copy loop. This one only appears when a serializer writes
+**more than one String field**, which is the normal case for a bean.
+
+C2 inlines `writeString` **once per call site**, so a bean with two String properties gets two
+independent copies of the loop in one method - and it allocates them differently. Measured on the
+serializer Quarkus generates for a 4-field `Person` (`String firstName, String lastName, int age,
+double height`), which emits properties alphabetically, so `writeNumber(height)` falls between the
+two string writes:
+
+| inlined copy | call site | compiled shape |
+|---|---|---|
+| first | `writeString(firstName)`, bci 116 | 28 insns, 2x unrolled, **no stack traffic** |
+| second | `writeString(lastName)`, bci 209 | 31 insns, 2x unrolled, **loop counter lives in `[rsp+0x8]`** |
+
+Both unroll identically and have identical escape checks. The difference is purely register
+allocation: the second copy reloads its induction variable three times and stores it back once per
+iteration. With longer strings it degrades further - the output buffer base and a loop-invariant
+offset end up on the stack too, reloaded on **every character**:
+
+```asm
+0x15410:  mov    edx,DWORD PTR [rsp]         ; induction variable
+0x15413:  add    edx,DWORD PTR [rsp+0x3c]    ; loop-invariant offset, reloaded
+0x15417:  movsxd r8,DWORD PTR [rsp]          ; induction variable again
+   ...
+0x15453:  mov    ebx,DWORD PTR [rsp+0x4]     ; output buffer base, reloaded per character
+0x154fd:  mov    r8d,DWORD PTR [rsp]         ; induction variable a third time
+```
+
+`perfasm` puts **57.8 % of all cycles** in exactly that loop, annotated `serializeContent@209` -
+the static reading and the sampled profile agree on which copy is the bad one.
+
+### What it costs
+
+`GenSerBench`, 20 `Person`s per op, `firstName` fixed at `"John"` so only the *second* copy does
+real work, 5 forks:
+
+| `lastName` length | `writeString` inlined | not inlined | |
+|---|---:|---:|---|
+| 4 (`"Doe"`, the app's data) | 1997.3 ± 12.1 | 1993.1 ± 6.3 | no difference |
+| 256 | 5392.7 ± 140.0 | 5065.8 ± 7.0 | **-6.1 %** |
+
+Two things to note. At short strings the spill costs nothing measurable - it needs a loop with real
+work before it shows. And the not-inlined arm is far more *reproducible* (±7.0 vs ±140.0): with one
+out-of-line copy there is no second allocation to get wrong.
+
+### Why the second copy and not the first
+
+**Unknown.** The obvious hypothesis - that the inlined double formatting between the two string
+writes consumes the registers - was tested and **refuted**: forcing
+`jdk.internal.math.DoubleToDecimal::toDecimal` out of line made throughput *worse*
+(5655.3 ± 354.7 vs 5387.8 ± 175.5) and made the assembly worse too, with *both* copies spilling
+instead of one. Removing that code costs registers rather than freeing them.
+
+Related: OpenJDK confirmed the underlying effect is an unlucky register-allocation decision rather
+than a modelled cost, which is consistent with the fork-to-fork spread above.
+
+### Reproducing
+
+Needs the Quarkus-generated classes, which are not redistributable here - hence the opt-in profile:
+
+```
+mvn install:install-file -Dfile=quarkus-gen-person.jar \
+    -DgroupId=bench.local -DartifactId=quarkus-gen-person -Dversion=1.0 -Dpackaging=jar
+mvn -Pquarkus-gen clean package
+
+java -jar target/benchmarks.jar GenSerBench.genser -p len=256 -f 5 \
+  -jvmArgsAppend "-XX:CompileCommand=dontinline,org.quarkus.metaprogramming.Person\$quarkusjacksonserializer::serializeContent"
+```
+
+That `dontinline` is **required**, and is the part that took longest to find. Without it C2 inlines
+the whole serializer into `CollectionSerializer`'s OSR compile - a compile unit that does not exist
+in the real application - and the spill disappears. A plain JMH harness reports "no spill" and is
+simply measuring a different compilation.
+
+*Measured with Jackson 3.1.4 plus both fixes above, to match the application these numbers came
+from; the repository otherwise builds 3.1.5. The spill reproduces on unpatched 3.1.5 as well, so it
+is independent of Problems 1 and 2.*
 
 ## Results
 
