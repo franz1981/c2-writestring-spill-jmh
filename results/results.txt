@@ -6,17 +6,14 @@ Three builds: released jars (no fix); + jackson-databind#6183; + that and jackso
 Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
 SingleBench.serialize                           10  avgt   50  445.606 ± 3.295  ns/op
 SingleBench.serializeWriteStringNotInlined      10  avgt   50  373.151 ± 4.255  ns/op
-Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-base.json
 
 === + jackson-databind#6183 ===
 Benchmark                                   (size)  Mode  Cnt    Score    Error  Units
 SingleBench.serialize                           10  avgt   50  356.893 ±  6.613  ns/op
 SingleBench.serializeWriteStringNotInlined      10  avgt   50  371.751 ± 22.680  ns/op
-Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-db.json
 
 === + jackson-databind#6183 + jackson-core#1681 ===
 Benchmark                                   (size)  Mode  Cnt    Score   Error  Units
 SingleBench.serialize                           10  avgt   50  346.744 ± 3.685  ns/op
 SingleBench.serializeWriteStringNotInlined      10  avgt   50  350.375 ± 7.309  ns/op
-Benchmark result is saved to /tmp/claude-1000/-home-forked-franz-IdeaProjects-quarkus-metaprogramming-advantage/823544a1-0f26-4d00-ba5c-1f7d1c260d6b/scratchpad/jmh/f10-j3-both.json
 

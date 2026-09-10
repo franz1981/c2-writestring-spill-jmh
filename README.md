@@ -1,6 +1,9 @@
 # Three problems in the `UTF8JsonGenerator` ASCII copy loop
 
-JMH reproducer. Measured on **Jackson 3.1.5, Temurin 25.0.2+10, x86-64**.
+JMH reproducer, x86-64. Problems 1 and 2 (`SingleBench`, the numbers and the assembly counts below)
+were measured on **Jackson 3.1.5, Temurin 25.0.2+10**. Problem 3 (`ExtendedPersonBench`) is built
+against **Jackson 3.1.4** - the version the application's Quarkus BOM resolves - which is what
+`pom.xml` pins; its compiled loops were read on Oracle JDK 25+37.
 
 ```java
 // UTF8JsonGenerator._writeStringSegment
@@ -92,7 +95,7 @@ application) and its runtime classes, rather than an idealised version of either
 | `beans/{ExtendedPerson,Address,Car}` | field for field, including `@JsonProperty("familyName")` |
 | `sers/{ExtendedPersonSer,AddressSer,CarSer}` | generated property order (alphabetical by JSON name), a `shouldSerialize` guard per property, nested beans through `serializePojo` |
 | `sers/GeneratedSer` | copy of Quarkus's `GeneratedSerializer`: braces in `serialize`, abstract `serializeContent` |
-| `sers/SerializationInclude` | copy of `JacksonMapperUtil.SerializationInclude` - its size is what keeps it out of line |
+| `sers/SerializationInclude` | copy of `JacksonMapperUtil.SerializationInclude`, verbatim (C2 inlines `decode` into the serializers, in the application and here alike) |
 | `sers/MapperUtil` | copy of `JacksonMapperUtil.writeFieldName` and `serializePojo` |
 | `sers/SerializedStrings` | copy of the generated holder, one static per property name |
 
@@ -107,21 +110,32 @@ java -jar target/benchmarks.jar ExtendedPersonBench
 ```
 
 `serialize` has `writeString` inlined and is the case to fix; `serializeWriteStringNotInlined` is
-the control. The bean carries the application's own values; edit `setup()` for longer Strings, which
-is what makes the copy loop a large enough share of the profile to separate the two arms.
+the control. The bean carries the application's own values; `-p strLen=64` replaces every String
+property with 64 ASCII characters, which is what makes the copy loop a large enough share of the
+profile to separate the arms.
 
-To read the compiled loops, add `-XX:+UnlockDiagnosticVMOptions -XX:-BackgroundCompilation` and
-`-XX:CompileCommand=print,…::serializeContent` - print one method only, because with a global
-`-XX:+PrintAssembly` the compiler threads interleave and truncate each other's output.
+To read the compiled loops, print the two compile roots and nothing else (a global
+`-XX:+PrintAssembly` makes the compiler threads interleave and truncate each other's output):
 
-### Not established
+```
+java -jar target/benchmarks.jar 'ExtendedPersonBench.serialize$' -f 1 -jvmArgsAppend \
+  '-XX:+UnlockDiagnosticVMOptions -XX:CompileCommand=quiet \
+   -XX:CompileCommand=print,bench.paths.sers.ExtendedPersonSer::serializeContent \
+   -XX:CompileCommand=print,bench.paths.sers.MapperUtil::serializePojo'
+```
 
-Which copy gets the bad allocation, and why. Two explanations were tested and both failed: that the
-inlined double formatting between the writes consumes the registers (removing it made the code
-worse, not better), and that the allocator is one register short (freeing `R12` with
-`-XX:-UseCompressedOops` halved the stack traffic without recovering the counter).
+(dotted class names with `::`; the `/`-separated form is rejected together with `::`.)
 
-No cost figure is quoted here because none has been measured on this reproducer.
+### What is observed, and what is not established
+
+Which copy gets the bad allocation is consistent: with both patches applied, in every serializer the
+first `writeString` (firstName, city, brand) keeps its counter in a register and the second
+(familyName, street, model) keeps it in a stack slot, reloaded three to four times and stored once
+per iteration - the same three sites in the application's own compiled code and here. Why the
+allocator does that is not established.
+
+No cost figure for the spill is quoted here because none has been measured: every build of this
+reproducer contains it, so there is no arm without it to compare against.
 
 ## Results
 
@@ -152,7 +166,7 @@ Hot method is `bench.flat.FlatSer::serialize` with `writeString` inlined, identi
 
 ```bash
 mvn clean package
-java -jar target/benchmarks.jar SingleBench                     # released jars = the "no fix" column
+java -jar target/benchmarks.jar SingleBench                     # released jars = the "no fix" column (3.1.5 when these were taken; pom.xml now pins 3.1.4)
 java -jar target/benchmarks.jar SingleBench -f 10               # fixed builds are bimodal, use 10 forks
 java -jar target/benchmarks.jar SingleBench.serialize -f 1 -prof perfasm
 ```
@@ -211,7 +225,6 @@ These are equivalent to the linked PRs, not cherry-picked from them.
   understood.
 - The `dontinline` benchmark is a control, not a proposed fix - `writeString` is Jackson's method
   and cannot be annotated.
-  documented here; pass `SingleBench` to run only this reproducer.
 
 ## Not verified
 
