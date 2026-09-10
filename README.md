@@ -102,6 +102,11 @@ application) and its runtime classes, rather than an idealised version of either
 The JSON is identical to the application's:
 `{"address":{"city":…,"street":…},"age":30,"car":{"brand":…,"model":…},"firstName":…,"familyName":…}`
 
+`ReflectiveBench` is the other arm of the application - Jackson's own bean serializers with the
+mapper configured as Quarkus configures it (`QuarkusMapper`), nothing annotated. There the
+per-property serializer call is megamorphic, so `StringSerializer.serialize` is compiled once as
+its own root with one copy loop, shared by all six properties.
+
 ### Running it
 
 ```

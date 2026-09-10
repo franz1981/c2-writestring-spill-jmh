@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import tools.jackson.databind.ObjectWriter;
-import tools.jackson.databind.module.SimpleModule;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -27,26 +26,16 @@ import bench.Sink;
 import bench.paths.beans.Address;
 import bench.paths.beans.Car;
 import bench.paths.beans.ExtendedPerson;
-import bench.paths.sers.AddressSer;
-import bench.paths.sers.CarSer;
-import bench.paths.sers.ExtendedPersonSer;
 
 /**
- * Problem 3, reproducing what the Quarkus application serves from {@code persons/get-all-extended}:
- * {@code Collections.nCopies(20, EXTENDED_DEFAULT_PERSON)} written by the serializers Quarkus
- * generates for {@code ExtendedPerson}, {@code Address} and {@code Car}.
+ * The same data as {@link ExtendedPersonBench}, written by Jackson's own reflective bean
+ * serializers - what the application does with
+ * {@code quarkus.rest.jackson.optimization.enable-reflection-free-serializers=false}.
  *
- * <p>Six String properties over three serializers. Two {@code writeString} call sites are in
- * {@code ExtendedPersonSer}; the other four are reached through {@code MapperUtil.serializePojo},
- * which is where the nested serializers get inlined - matching the application, where that method
- * holds four copy loops and {@code serializeContent} holds two.
- *
- * <p>The data is declared exactly as {@code PersonResource} declares it - {@code static final}
- * fields holding {@code Collections.nCopies(20, EXTENDED_DEFAULT_PERSON)} - so that C2 gets the same
- * constants the application gives it.
- *
- * <p>Run both benchmarks: {@code serialize} has {@code writeString} inlined and is the case to fix,
- * {@code serializeWriteStringNotInlined} is the control.
+ * <p>Nothing is registered: the mapper is {@link QuarkusMapper#builder()} as is, so Jackson picks
+ * {@code UnrolledBeanSerializer} (six properties or fewer) with {@code BeanPropertyWriter}s reading
+ * the getters through {@code MethodHandle}s. No {@code @CompilerControl} on any Jackson method:
+ * the compile roots are whatever C2 decides, to be compared with the application's.
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -55,18 +44,9 @@ import bench.paths.sers.ExtendedPersonSer;
 @Warmup(iterations = 5, time = 1)
 @Measurement(iterations = 5, time = 1)
 @Threads(1)
-public class ExtendedPersonBench {
+public class ReflectiveBench {
 
-
-    /**
-     * Not a good practice is made to match what the Quarkus metaprogramming benchmark does
-     */
-    /**
-     * Length of every String property. {@code 0} keeps the application's own values; any other
-     * value replaces all six with the <b>same</b> ASCII String instance of that length, so every
-     * copy loop sees identical input and identical length and anything that differs between the six
-     * is a compiler decision.
-     */
+    /** Same meaning as in {@link ExtendedPersonBench}. */
     @Param("0")
     public int strLen;
 
@@ -76,13 +56,7 @@ public class ExtendedPersonBench {
 
     @Setup
     public void setup() {
-        SimpleModule module = new SimpleModule("gen");
-        module.addSerializer(ExtendedPerson.class, new ExtendedPersonSer());
-        module.addSerializer(Address.class, new AddressSer());
-        module.addSerializer(Car.class, new CarSer());
-        // mapper and writer configured as the application configures them (see QuarkusMapper)
-        writer = QuarkusMapper.listWriter(QuarkusMapper.builder().addModule(module).build());
-        // held as PersonResource holds it: one instance, repeated, in a CopiesList
+        writer = QuarkusMapper.listWriter(QuarkusMapper.builder().build());
         ExtendedPerson person;
         if (strLen > 0) {
             String filler = "x".repeat(strLen);
@@ -103,7 +77,6 @@ public class ExtendedPersonBench {
         out.close();
     }
 
-    /** writeString is inlined into the serializers: six copies of the copy loop. */
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public long serialize() throws IOException {
@@ -112,7 +85,7 @@ public class ExtendedPersonBench {
         return out.count();
     }
 
-    /** Identical work, with writeString kept out of the serializers: one copy, shared. */
+    /** Control: writeString kept out of line everywhere. */
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     @Fork(value = 3, jvmArgs = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch",
