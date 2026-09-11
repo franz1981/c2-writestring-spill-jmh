@@ -119,6 +119,12 @@ Both patches, 64-char strings: 8,151 ns/op under ParallelGC vs 7,453 under G1; P
 `-XX:+UseCountedLoopSafepoints -XX:LoopStripMiningIter=1000` gives 7,425. See the `@Fork` comment
 in `ExtendedPersonBench`.
 
+The penalty grows with string length: the XMM moves are inside the unrolled loop (a `vmovd` before
+every store, one per character parked and restored), so their cost is paid per character copied.
+At the application's 4-11 character values the loops are a small share of the request and the
+difference is within noise (app strings: 2,723 vs 2,816 ns/op); at 64 characters the loop dominates
+and #6183 alone is 44 % slower under ParallelGC than under G1 (11,203 vs 7,780).
+
 
 ```
 mvn clean package
