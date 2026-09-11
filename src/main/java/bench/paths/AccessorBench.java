@@ -38,6 +38,10 @@ public class AccessorBench {
     @Param("0")
     public int strLen;
 
+    /** typed = the branch's six writer classes; kind = one KindWriter class switching on an int kind. */
+    @Param({ "typed", "kind" })
+    public String writers;
+
     private ObjectWriter writer;
     private List<ExtendedPerson> people;
     private Sink out;
@@ -49,7 +53,7 @@ public class AccessorBench {
         accessors.put(Address.class, new AddressAccessor(Address.class));
         accessors.put(Car.class, new CarAccessor(Car.class));
         SimpleModule module = new SimpleModule();
-        module.setSerializerModifier(new GeneratedPropertyWriterModifier(accessors));
+        module.setSerializerModifier(new GeneratedPropertyWriterModifier(accessors, "kind".equals(writers)));
         writer = QuarkusMapper.listWriter(QuarkusMapper.builder().addModule(module).build());
         ExtendedPerson person;
         if (strLen > 0) {

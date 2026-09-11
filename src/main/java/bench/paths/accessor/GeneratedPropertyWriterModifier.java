@@ -16,9 +16,16 @@ import tools.jackson.databind.ser.ValueSerializerModifier;
 public class GeneratedPropertyWriterModifier extends ValueSerializerModifier {
 
     private final Map<Class<?>, GeneratedPropertyAccessor> accessors;
+    /** Experiment (JMH only): one KindWriter class for all kinds instead of the six typed writers. */
+    private final boolean kindWriter;
 
     public GeneratedPropertyWriterModifier(Map<Class<?>, GeneratedPropertyAccessor> accessors) {
+        this(accessors, false);
+    }
+
+    public GeneratedPropertyWriterModifier(Map<Class<?>, GeneratedPropertyAccessor> accessors, boolean kindWriter) {
         this.accessors = accessors;
+        this.kindWriter = kindWriter;
     }
 
     @Override
@@ -46,7 +53,8 @@ public class GeneratedPropertyWriterModifier extends ValueSerializerModifier {
             if (!kindMatches(kind, writer.getType().getRawClass())) {
                 continue;
             }
-            beanProperties.set(i, GeneratedPropertyWriters.create(writer, accessor, index, kind));
+            beanProperties.set(i, kindWriter ? new KindWriter(writer, accessor, index, kind)
+                    : GeneratedPropertyWriters.create(writer, accessor, index, kind));
         }
         return beanProperties;
     }
