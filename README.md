@@ -109,6 +109,17 @@ its own root with one copy loop, shared by all six properties.
 
 ### Running it
 
+The forks run with the application's JVM flags, `-Xms1g -Xmx1g -XX:+UseParallelGC`. That is not
+cosmetic: G1 (the JMH default) also enables loop strip mining (`UseCountedLoopSafepoints`,
+`LoopStripMiningIter=1000`), ParallelGC does not, and without it C2 rates the copy loop's blocks at
+frequency 5.8 instead of 39.8, scores their live ranges as cheap to spill, and parks the buffer
+reference, the current character and the output pointer in XMM registers (4-15 `vmovd` per unrolled
+trip) - the loops the application actually compiles. Under G1 the same jar produces clean loops.
+Both patches, 64-char strings: 8,151 ns/op under ParallelGC vs 7,453 under G1; ParallelGC with
+`-XX:+UseCountedLoopSafepoints -XX:LoopStripMiningIter=1000` gives 7,425. See the `@Fork` comment
+in `ExtendedPersonBench`.
+
+
 ```
 mvn clean package
 java -jar target/benchmarks.jar ExtendedPersonBench

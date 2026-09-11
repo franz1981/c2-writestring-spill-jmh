@@ -40,7 +40,21 @@ import bench.paths.beans.ExtendedPerson;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Fork(value = 3, jvmArgs = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch" })
+/*
+ * JVM flags of the application benchmark (scripts/run.sh in quarkus-metaprogramming-advantage):
+ * 1 GB heap and ParallelGC. The collector is not a detail here. With G1 (the JMH default) the JVM
+ * also enables UseCountedLoopSafepoints and LoopStripMiningIter=1000; with ParallelGC (and SerialGC)
+ * both stay off. Without strip mining C2's block-frequency model rates the copy loop's blocks at
+ * Freq 5.8 instead of 39.8 (TraceSpilling block dump, same IR either way), the register allocator
+ * therefore scores the loop's live ranges as cheap to spill, and the output buffer reference, the
+ * current character and the output pointer end up parked in XMM registers: 4 to 15 vmovd per
+ * unrolled trip, exactly what the application's compiled loops show. Flipping only those two flags
+ * moves the effect between the collectors (ParallelGC + strip mining: clean loops; G1 - strip
+ * mining: parked loops). Measured with both patches, 64-char strings: 8,151 +/- 27 ns/op under
+ * ParallelGC vs 7,453 +/- 46 under G1. To compile the loops the application compiles, the fork has
+ * to use its collector - and therefore its loop-safepoint defaults.
+ */
+@Fork(value = 3, jvmArgs = { "-Xms1g", "-Xmx1g", "-XX:+UseParallelGC", "-XX:+AlwaysPreTouch" })
 @Warmup(iterations = 5, time = 1)
 @Measurement(iterations = 5, time = 1)
 @Threads(1)
@@ -88,7 +102,7 @@ public class ReflectiveBench {
     /** Control: writeString kept out of line everywhere. */
     @Benchmark
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    @Fork(value = 3, jvmArgs = { "-Xms2g", "-Xmx2g", "-XX:+AlwaysPreTouch",
+    @Fork(value = 3, jvmArgs = { "-Xms1g", "-Xmx1g", "-XX:+UseParallelGC", "-XX:+AlwaysPreTouch",
             "-XX:CompileCommand=dontinline,tools/jackson/core/json/UTF8JsonGenerator.writeString" })
     public long serializeWriteStringNotInlined() throws IOException {
         out.reset();
