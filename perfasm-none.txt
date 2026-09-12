@@ -1,0 +1,1132 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-none.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 28-internal, OpenJDK 64-Bit Server VM, 28-internal-adhoc.forkedfranz.loom
+# VM invoker: /home/forked_franz/CLionProjects/loom/build/linux-x86_64-server-release/images/jdk/bin/java
+# VM options: -Xms2g -Xmx2g -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (strLen = 32)
+
+# Run progress: 0.00% complete, ETA 00:00:20
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfAsmProfiler 
+# Profilers consume stdout and stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 2654829.081 ns/op
+# Warmup Iteration   2: 13429.738 ns/op
+# Warmup Iteration   3: 7945.348 ns/op
+# Warmup Iteration   4: 7758.407 ns/op
+# Warmup Iteration   5: 7781.861 ns/op
+Iteration   1: 7829.836 ns/op
+Iteration   2: 7991.670 ns/op
+Iteration   3: 7933.237 ns/op
+Iteration   4: 7906.954 ns/op
+Iteration   5: 7785.500 ns/op
+# Processing profiler results: LinuxPerfAsmProfiler 
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  7889.439 ±(99.9%) 316.550 ns/op [Average]
+  (min, avg, max) = (7785.500, 7889.439, 7991.670), stdev = 82.207
+  CI (99.9%): [7572.889, 8205.989] (assumes normal distribution)
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:asm":
+PrintAssembly processed: 480165 total address lines.
+Perf output processed (skipped 11.538 seconds):
+ Column 1: cycles (cycles:P) (4900 events)
+
+Hottest code regions (>10.00% "cycles" events):
+ Event counts are percents of total event count.
+
+....[Hottest Region 1]..............................................................................
+c2, level 4, bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+
+             0x00007f39dbe44275:   movabs $0x7f39db645ea0,%r10         ;   {runtime_call Stub::jbyte_arraycopy_stub (stub gen)}
+             0x00007f39dbe4427f:   call   *%r10
+             0x00007f39dbe44282:   nopl   0x0(%rax,%rax,1)             ;   {post_call_nop}
+             0x00007f39dbe4428a:   jmp    0x00007f39dbe43bf4
+             0x00007f39dbe4428f:   vzeroupper 
+             0x00007f39dbe44292:   movabs $0x7f39db645ea0,%r10         ;   {runtime_call Stub::jbyte_arraycopy_stub (stub gen)}
+             0x00007f39dbe4429c:   call   *%r10
+             0x00007f39dbe4429f:   nopl   0x0(%rax,%rax,1)             ;   {post_call_nop}
+             0x00007f39dbe442a7:   jmp    0x00007f39dbe439ed
+             0x00007f39dbe442ac:   mov    %r8d,%r10d
+   0.04%     0x00007f39dbe442af:   movslq %r10d,%r10
+             0x00007f39dbe442b2:   mov    $0xffffffffffffffff,%r9
+   0.02%     0x00007f39dbe442b9:   bzhi   %r10,%r9,%r9
+   0.02%     0x00007f39dbe442be:   kmovq  %r9,%k7
+   0.04%     0x00007f39dbe442c3:   vmovdqu8 (%rdi),%ymm0{%k7}{z}
+             0x00007f39dbe442c9:   vmovdqu8 %ymm0,(%rsi){%k7}
+             0x00007f39dbe442cf:   jmp    0x00007f39dbe44596
+             0x00007f39dbe442d4:   nopw   0x0(%rax,%rax,1)
+             0x00007f39dbe442da:   nopw   0x0(%rax,%rax,1)
+   0.43%  ↗  0x00007f39dbe442e0:   mov    0x4(%rsp),%r11d
+   0.67%  │  0x00007f39dbe442e5:   mov    0x8(%rsp),%edi
+   0.49%  │  0x00007f39dbe442e9:   mov    0xc(%rsp),%ecx
+   0.35%  │  0x00007f39dbe442ed:   mov    0x10(%rsp),%edx
+   0.47%  │  0x00007f39dbe442f1:   mov    0x14(%rsp),%ebp
+   1.00%  │  0x00007f39dbe442f5:   lea    0x1(%r8,%rax,1),%r9d         ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.65%  │  0x00007f39dbe442fa:   mov    (%rsp),%r10d
+   0.37%  │  0x00007f39dbe442fe:   mov    0x10(%r10),%r13d             ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@8 (line 1835)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.33%  │  0x00007f39dbe44302:   cmpb   $0x0,0xc(%r10)
+   0.39%  │  0x00007f39dbe44307:   jne    0x00007f39dbe4494f           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@4 (line 1834)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.41%  │  0x00007f39dbe4430d:   mov    %rsi,0x38(%rsp)
+   0.47%  │  0x00007f39dbe44312:   mov    %r9d,0x34(%rsp)
+   0.45%  │  0x00007f39dbe44317:   mov    %ebp,0x14(%rsp)
+   0.49%  │  0x00007f39dbe4431b:   mov    %edx,0x10(%rsp)
+   0.31%  │  0x00007f39dbe4431f:   mov    %ecx,0xc(%rsp)
+   0.33%  │  0x00007f39dbe44323:   mov    %edi,0x8(%rsp)
+   0.37%  │  0x00007f39dbe44327:   mov    %r11d,0x4(%rsp)
+   0.41%  │  0x00007f39dbe4432c:   mov    0x8(%r13),%ebp               ; implicit exception: dispatches to 0x00007f39dbe45d58
+          │                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.StringLatin1::charAt@2 (line 58)
+          │                                                            ; - java.lang.String::charAt@12 (line 1835)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.43%  │  0x00007f39dbe44330:   cmp    %ebp,%r8d
+          │  0x00007f39dbe44333:   jae    0x00007f39dbe44a68
+   0.47%  │  0x00007f39dbe44339:   movzbl 0xc(%r13,%r8,1),%r9d         ;*invokevirtual charAt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.55%  │  0x00007f39dbe4433f:   cmp    $0x7f,%r9d
+          │  0x00007f39dbe44343:   jg     0x00007f39dbe44afc           ;*if_icmpgt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@38 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.69%  │  0x00007f39dbe44349:   cmp    %ebx,%r9d
+          │  0x00007f39dbe4434c:   jae    0x00007f39dbe44a28
+   0.67%  │  0x00007f39dbe44352:   mov    0x30(%rsp),%r13d
+   0.51%  │  0x00007f39dbe44357:   mov    0xc(%r13,%r9,4),%ebp         ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.18%  │  0x00007f39dbe4435c:   test   %ebp,%ebp
+          │  0x00007f39dbe4435e:   jne    0x00007f39dbe44b3c           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@46 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.37%  │  0x00007f39dbe44364:   movslq %r8d,%r11
+   0.35%  │  0x00007f39dbe44367:   mov    0x38(%rsp),%rsi
+   0.45%  │  0x00007f39dbe4436c:   add    %rsi,%r11
+   0.31%  │  0x00007f39dbe4436f:   mov    0x28(%rsp),%r10d
+   0.71%  │  0x00007f39dbe44374:   mov    %r9b,0xd(%r10,%r11,1)        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@62 (line 1512)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.45%  │  0x00007f39dbe44379:   inc    %r8d                         ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@63 (line 1513)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   1.16%  │  0x00007f39dbe4437c:   cmp    0x2c(%rsp),%r8d
+          ╰  0x00007f39dbe44381:   jl     0x00007f39dbe442e0           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+             0x00007f39dbe44387:   mov    0x34(%rsp),%ecx
+             0x00007f39dbe4438b:   inc    %ecx                         ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@56 (line 1512)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+   0.02%     0x00007f39dbe4438d:   mov    0x20(%rsp),%r9
+             0x00007f39dbe44392:   mov    0x8(%rsp),%esi
+   0.08%     0x00007f39dbe44396:   mov    0xc(%rsp),%ebx
+   0.02%     0x00007f39dbe4439a:   mov    0x10(%rsp),%r13d             ;   {other}
+             0x00007f39dbe4439f:   mov    0x14(%rsp),%r14d
+             0x00007f39dbe443a4:   mov    (%rsp),%r10d
+             0x00007f39dbe443a8:   mov    0x2c(%rsp),%r11d             ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+             0x00007f39dbe443ad:   mov    %ecx,0x38(%r9)               ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@72 (line 1515)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.ExtendedPersonSer::serializeContent@186 (line 71)
+....................................................................................................
+  15.92%  <total for region 1>
+
+....[Hottest Region 2]..............................................................................
+c2, level 4, bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+             0x00007f39dbe3e867:   cmp    %r9d,%r11d
+             0x00007f39dbe3e86a:   jae    0x00007f39dbe406d0
+             0x00007f39dbe3e870:   mov    %al,0xc(%r14,%r11,1)         ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@73 (line 537)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%     0x00007f39dbe3e875:   mov    %ebx,%r10d
+             0x00007f39dbe3e878:   test   %ebx,%ebx
+             0x00007f39dbe3e87a:   jle    0x00007f39dbe3fdc5           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.04%     0x00007f39dbe3e880:   mov    %r11d,0x1c(%rsp)
+             0x00007f39dbe3e885:   mov    %ebx,0x18(%rsp)
+             0x00007f39dbe3e889:   mov    %r14d,0x4(%rsp)
+   0.02%     0x00007f39dbe3e88e:   rex.W push 0x20(%rsp)
+   0.12%     0x00007f39dbe3e893:   rex.W pop 0x10(%rsp)
+             0x00007f39dbe3e898:   mov    0x1c(%r8),%r11d              ;*getfield _outputEscapes {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@17 (line 1504)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%     0x00007f39dbe3e89c:   mov    %r11d,0x20(%rsp)
+             0x00007f39dbe3e8a1:   mov    0x8(%r11),%r10d              ; implicit exception: dispatches to 0x00007f39dbe40ad4
+                                                                       ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%     0x00007f39dbe3e8a5:   mov    %r10d,0x5c(%rsp)
+   0.02%     0x00007f39dbe3e8aa:   cmp    %r9d,%edi
+             0x00007f39dbe3e8ad:   jae    0x00007f39dbe40ad4
+             0x00007f39dbe3e8b3:   movslq %edi,%r10
+             0x00007f39dbe3e8b6:   movslq %r9d,%r11
+             0x00007f39dbe3e8b9:   movslq %ebx,%r8
+   0.04%     0x00007f39dbe3e8bc:   lea    -0x1(%r10,%r8,1),%r10
+             0x00007f39dbe3e8c1:   cmp    %r11,%r10
+             0x00007f39dbe3e8c4:   jae    0x00007f39dbe40ad4
+             0x00007f39dbe3e8ca:   movslq 0x1c(%rsp),%rdi
+   0.04%     0x00007f39dbe3e8cf:   xor    %r11d,%r11d
+             0x00007f39dbe3e8d2:   mov    $0x3a,%r10d
+             0x00007f39dbe3e8d8:   mov    $0x2,%r9d
+             0x00007f39dbe3e8de:   mov    $0x3,%r8d
+   0.02%     0x00007f39dbe3e8e4:   mov    $0x1,%ebx
+             0x00007f39dbe3e8e9:   xor    %ecx,%ecx
+   0.04%     0x00007f39dbe3e8eb:   mov    %r11d,0x48(%rsp)
+             0x00007f39dbe3e8f0:   mov    %r10d,0x4c(%rsp)
+             0x00007f39dbe3e8f5:   mov    %r9d,0x50(%rsp)
+             0x00007f39dbe3e8fa:   mov    %r8d,0x54(%rsp)
+             0x00007f39dbe3e8ff:   mov    %ebx,0x58(%rsp)
+   0.02%     0x00007f39dbe3e903:   mov    %rdi,0x60(%rsp)
+             0x00007f39dbe3e908:   mov    %ecx,0x2c(%rsp)
+             0x00007f39dbe3e90c:   nopl   0x0(%rax)                    ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1507)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.49%  ↗  0x00007f39dbe3e910:   mov    (%rsp),%r10d
+   1.04%  │  0x00007f39dbe3e914:   mov    0x10(%r10),%r9d              ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@8 (line 1835)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.51%  │  0x00007f39dbe3e918:   mov    0x2c(%rsp),%r10d
+   0.35%  │  0x00007f39dbe3e91d:   mov    0x1c(%rsp),%r8d
+   0.20%  │  0x00007f39dbe3e922:   add    %r8d,%r10d                   ;*iadd {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@65 (line 537)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.49%  │  0x00007f39dbe3e925:   mov    %r10d,0x24(%rsp)
+   0.33%  │  0x00007f39dbe3e92a:   lea    0x1(%r10),%r11d
+   0.31%  │  0x00007f39dbe3e92e:   mov    %r11d,0x28(%rsp)
+   0.24%  │  0x00007f39dbe3e933:   mov    (%rsp),%r10d
+   0.39%  │  0x00007f39dbe3e937:   cmpb   $0x0,0xc(%r10)               ;   {other}
+   0.41%  │  0x00007f39dbe3e93c:   jne    0x00007f39dbe3fff8           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.String::charAt@4 (line 1834)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.37%  │  0x00007f39dbe3e942:   mov    0x8(%r9),%ebp                ; implicit exception: dispatches to 0x00007f39dbe41c28
+          │                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - java.lang.StringLatin1::charAt@2 (line 58)
+          │                                                            ; - java.lang.String::charAt@12 (line 1835)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.78%  │  0x00007f39dbe3e946:   mov    0x2c(%rsp),%r11d
+   0.49%  │  0x00007f39dbe3e94b:   cmp    %ebp,%r11d
+          │  0x00007f39dbe3e94e:   jae    0x00007f39dbe4018c
+   0.31%  │  0x00007f39dbe3e954:   movzbl 0xc(%r9,%r11,1),%r11d        ;*invokevirtual charAt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.39%  │  0x00007f39dbe3e95a:   cmp    $0x7f,%r11d
+          │  0x00007f39dbe3e95e:   jg     0x00007f39dbe402e0           ;*if_icmpgt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@38 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   1.14%  │  0x00007f39dbe3e964:   cmp    0x5c(%rsp),%r11d
+          │  0x00007f39dbe3e969:   jae    0x00007f39dbe40158
+   0.47%  │  0x00007f39dbe3e96f:   mov    0x20(%rsp),%r8d
+   0.47%  │  0x00007f39dbe3e974:   mov    0xc(%r8,%r11,4),%ebp         ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.27%  │  0x00007f39dbe3e979:   test   %ebp,%ebp
+          │  0x00007f39dbe3e97b:   jne    0x00007f39dbe40310           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@46 (line 1509)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.39%  │  0x00007f39dbe3e981:   movslq 0x2c(%rsp),%r10
+   0.53%  │  0x00007f39dbe3e986:   mov    0x60(%rsp),%r8
+   0.49%  │  0x00007f39dbe3e98b:   add    %r8,%r10
+   0.61%  │  0x00007f39dbe3e98e:   mov    0x4(%rsp),%r8d
+   0.53%  │  0x00007f39dbe3e993:   mov    %r11b,0xd(%r8,%r10,1)        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@62 (line 1512)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.27%  │  0x00007f39dbe3e998:   mov    0x2c(%rsp),%r11d
+   0.59%  │  0x00007f39dbe3e99d:   inc    %r11d                        ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@63 (line 1513)
+          │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                            ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+          │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.24%  │  0x00007f39dbe3e9a0:   mov    %r11d,0x2c(%rsp)
+   1.04%  │  0x00007f39dbe3e9a5:   cmp    0x18(%rsp),%r11d
+          ╰  0x00007f39dbe3e9aa:   jl     0x00007f39dbe3e910           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+             0x00007f39dbe3e9b0:   mov    0x24(%rsp),%edi
+             0x00007f39dbe3e9b4:   add    $0x2,%edi                    ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@56 (line 1512)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+             0x00007f39dbe3e9b7:   mov    0x4c(%rsp),%ebx
+             0x00007f39dbe3e9bb:   mov    0x50(%rsp),%eax
+   0.02%     0x00007f39dbe3e9bf:   mov    0x54(%rsp),%r13d
+             0x00007f39dbe3e9c4:   mov    0x58(%rsp),%esi
+   0.02%     0x00007f39dbe3e9c8:   mov    0x10(%rsp),%rcx
+             0x00007f39dbe3e9cd:   mov    0x18(%rsp),%r10d             ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+                                                                       ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                       ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+             0x00007f39dbe3e9d2:   mov    %edi,0x38(%rcx)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@72 (line 1515)
+                                                                       ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                       ; - bench.paths.sers.CarSer::serializeContent@62 (line 29)
+....................................................................................................
+  14.59%  <total for region 2>
+
+....[Hottest Region 3]..............................................................................
+c2, level 4, bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+
+                 0x00007f39dbe3f251:   jae    0x00007f39dbe40a88
+                 0x00007f39dbe3f257:   movslq %r8d,%rsi
+   0.02%         0x00007f39dbe3f25a:   xor    %r10d,%r10d
+                 0x00007f39dbe3f25d:   mov    $0x3a,%r9d
+                 0x00007f39dbe3f263:   mov    $0x2,%ebx
+                 0x00007f39dbe3f268:   mov    $0x3,%r11d
+                 0x00007f39dbe3f26e:   mov    $0x1,%edx
+                 0x00007f39dbe3f273:   xor    %edi,%edi
+                 0x00007f39dbe3f275:   mov    %r10d,0x34(%rsp)
+                 0x00007f39dbe3f27a:   mov    %r9d,0x48(%rsp)
+   0.02%         0x00007f39dbe3f27f:   mov    %ebx,0x4c(%rsp)
+                 0x00007f39dbe3f283:   mov    %r11d,0x50(%rsp)
+   0.02%         0x00007f39dbe3f288:   mov    %edx,0x54(%rsp)
+   0.02%         0x00007f39dbe3f28c:   mov    %rsi,0x58(%rsp)
+                 0x00007f39dbe3f291:   mov    %edi,0x4(%rsp)
+                 0x00007f39dbe3f295:   data16 data16 nopw 0x0(%rax,%rax,1) ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1507)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.37%  ↗      0x00007f39dbe3f2a0:   mov    (%rsp),%r10d
+   0.43%  │      0x00007f39dbe3f2a4:   mov    0x10(%r10),%r10d             ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - java.lang.String::charAt@8 (line 1835)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.69%  │      0x00007f39dbe3f2a8:   mov    0x4(%rsp),%r9d
+   0.35%  │      0x00007f39dbe3f2ad:   add    %r8d,%r9d                    ;*iadd {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@65 (line 537)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.31%  │      0x00007f39dbe3f2b0:   lea    0x1(%r9),%r11d
+   0.33%  │      0x00007f39dbe3f2b4:   mov    %r11d,0x8(%rsp)
+   0.37%  │      0x00007f39dbe3f2b9:   mov    (%rsp),%ebx
+   0.14%  │      0x00007f39dbe3f2bc:   cmpb   $0x0,0xc(%rbx)
+   0.18%  │      0x00007f39dbe3f2c0:   jne    0x00007f39dbe3ff41           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - java.lang.String::charAt@4 (line 1834)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+          │                                                                ;   {other}
+   0.49%  │      0x00007f39dbe3f2c6:   mov    0x8(%r10),%ebp               ; implicit exception: dispatches to 0x00007f39dbe41bf8
+          │                                                                ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - java.lang.StringLatin1::charAt@2 (line 58)
+          │                                                                ; - java.lang.String::charAt@12 (line 1835)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.24%  │      0x00007f39dbe3f2ca:   mov    0x4(%rsp),%ebx
+   0.49%  │      0x00007f39dbe3f2ce:   cmp    %ebp,%ebx
+          │      0x00007f39dbe3f2d0:   jae    0x00007f39dbe400c4
+   0.76%  │      0x00007f39dbe3f2d6:   movzbl 0xc(%r10,%rbx,1),%r11d       ;*invokevirtual charAt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.47%  │      0x00007f39dbe3f2dc:   cmp    $0x7f,%r11d
+          │      0x00007f39dbe3f2e0:   jg     0x00007f39dbe40228           ;*if_icmpgt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@38 (line 1509)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.27%  │      0x00007f39dbe3f2e6:   cmp    %ecx,%r11d
+          │      0x00007f39dbe3f2e9:   jae    0x00007f39dbe40094
+   0.41%  │      0x00007f39dbe3f2ef:   mov    0x30(%rsp),%r10d
+   0.53%  │      0x00007f39dbe3f2f4:   mov    0xc(%r10,%r11,4),%ebp        ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.37%  │      0x00007f39dbe3f2f9:   test   %ebp,%ebp
+          │      0x00007f39dbe3f2fb:   jne    0x00007f39dbe40264           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@46 (line 1509)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.35%  │      0x00007f39dbe3f301:   movslq 0x4(%rsp),%r10
+   0.22%  │      0x00007f39dbe3f306:   mov    0x58(%rsp),%rbx
+   0.35%  │      0x00007f39dbe3f30b:   add    %rbx,%r10
+   0.20%  │      0x00007f39dbe3f30e:   mov    0x28(%rsp),%edi
+   0.55%  │      0x00007f39dbe3f312:   mov    %r11b,0xd(%rdi,%r10,1)       ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@62 (line 1512)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.12%  │      0x00007f39dbe3f317:   mov    0x4(%rsp),%r10d
+   0.31%  │      0x00007f39dbe3f31c:   inc    %r10d                        ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@63 (line 1513)
+          │                                                                ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+          │                                                                ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+          │                                                                ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+          │                                                                ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.61%  │      0x00007f39dbe3f31f:   mov    %r10d,0x4(%rsp)
+   1.16%  │      0x00007f39dbe3f324:   cmp    0x2c(%rsp),%r10d
+          ╰      0x00007f39dbe3f329:   jl     0x00007f39dbe3f2a0           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f32f:   add    $0x2,%r9d                    ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@56 (line 1512)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.04%         0x00007f39dbe3f333:   mov    0x34(%rsp),%eax
+   0.06%         0x00007f39dbe3f337:   mov    0x48(%rsp),%r13d
+                 0x00007f39dbe3f33c:   mov    0x4c(%rsp),%ebp
+   0.04%         0x00007f39dbe3f340:   mov    0x50(%rsp),%r14d
+   0.06%         0x00007f39dbe3f345:   mov    0x54(%rsp),%esi
+   0.04%         0x00007f39dbe3f349:   mov    0x20(%rsp),%rcx
+   0.02%         0x00007f39dbe3f34e:   mov    0x2c(%rsp),%r11d
+                 0x00007f39dbe3f353:   mov    %r10d,%r8d                   ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f356:   mov    %r9d,0x38(%rcx)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@72 (line 1515)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f35a:   cmp    %r11d,%r8d
+                 0x00007f39dbe3f35d:   jl     0x00007f39dbe41144           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@77 (line 1516)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f363:   mov    0x3c(%rcx),%r8d              ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@86 (line 539)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f367:   cmp    %r8d,%r9d
+                 0x00007f39dbe3f36a:   jge    0x00007f39dbe41170           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@89 (line 539)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f370:   movsbl 0x48(%rcx),%edi              ;*getfield _quoteChar {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@112 (line 542)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.08%         0x00007f39dbe3f374:   mov    0x50(%rcx),%edx              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@97 (line 542)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f377:   lea    0x1(%r9),%r10d
+   0.02%         0x00007f39dbe3f37b:   mov    %r10d,0x38(%rcx)             ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@108 (line 542)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f37f:   mov    0x8(%rdx),%r11d              ; implicit exception: dispatches to 0x00007f39dbe41dc4
+                                                                           ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@77 (line 261)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.06%         0x00007f39dbe3f383:   cmp    %r11d,%r9d
+                 0x00007f39dbe3f386:   jae    0x00007f39dbe404f4
+   0.04%         0x00007f39dbe3f38c:   mov    %dil,0xc(%rdx,%r9,1)         ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@115 (line 542)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@62 (line 29)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f391:   mov    %r9d,0x14(%rsp)
+   0.04%         0x00007f39dbe3f396:   mov    0x24(%rcx),%r9d              ;*getfield _prettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@1 (line 249)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f39a:   mov    0x18(%rsp),%rbx
+                 0x00007f39dbe3f39f:   mov    0xc(%rbx),%ebx               ;*getfield street {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - bench.paths.beans.Address::getStreet@1 (line 17)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@68 (line 32)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f3a2:   test   %r9d,%r9d
+                 0x00007f39dbe3f3a5:   jne    0x00007f39dbe411a4           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@4 (line 249)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f3ab:   mov    %ebx,0x10(%rsp)
+   0.02%         0x00007f39dbe3f3af:   mov    %r11d,0xc(%rsp)
+                 0x00007f39dbe3f3b4:   vmovd  %r10d,%xmm3
+                 0x00007f39dbe3f3b9:   vmovd  %edx,%xmm2
+                 0x00007f39dbe3f3bd:   vmovd  %edi,%xmm1                   ;   {other}
+                 0x00007f39dbe3f3c1:   mov    %r8d,0x8(%rsp)
+   0.02%         0x00007f39dbe3f3c6:   mov    %esi,0x4(%rsp)
+                 0x00007f39dbe3f3ca:   mov    %ebp,%ebx
+                 0x00007f39dbe3f3cc:   mov    %eax,(%rsp)
+                 0x00007f39dbe3f3cf:   mov    0x2c(%rcx),%r10d             ;*getfield _streamWriteContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@15 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f3d3:   vmovd  %r10d,%xmm0
+                 0x00007f39dbe3f3d8:   mov    %rcx,%r9
+   0.02%         0x00007f39dbe3f3db:   movabs $0xfe667b78,%rcx             ;   {oop(a &apos;tools/jackson/core/io/SerializedString&apos;{0x00000000fe667b78})}
+                 0x00007f39dbe3f3e5:   mov    0x8(%rcx),%r10d              ;*getfield _value {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.io.SerializedString::getValue@1 (line 88)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@19 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f3e9:   mov    %r10d,%eax
+   0.02%         0x00007f39dbe3f3ec:   vmovd  %xmm0,%r10d
+                 0x00007f39dbe3f3f1:   mov    0x8(%r10),%ebp               ; implicit exception: dispatches to 0x00007f39dbe41de0
+                                                                           ;*getfield _type {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@1 (line 183)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f3f5:   cmp    $0x2,%ebp
+                 0x00007f39dbe3f3f8:   jne    0x00007f39dbe40ea8           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@5 (line 183)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f3fe:   movzbl 0x14(%r10),%ebp              ;*getfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@9 (line 183)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f403:   test   %ebp,%ebp
+                 0x00007f39dbe3f405:   jne    0x00007f39dbe411cc           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@12 (line 183)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f40b:   movb   $0x1,0x14(%r10)              ;*putfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@19 (line 186)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f410:   mov    0x1c(%r10),%ebp              ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@28 (line 188)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.02%         0x00007f39dbe3f414:   lea    0x24(%r10),%r8
+                 0x00007f39dbe3f418:   cmpb   $0x0,0x48(%r15)
+   0.04%         0x00007f39dbe3f41d:   jne    0x00007f39dbe42714
+                 0x00007f39dbe3f423:   mov    %eax,(%r8)
+                 0x00007f39dbe3f426:   mov    %eax,%edi
+   0.02%         0x00007f39dbe3f428:   mov    %r8,%rdx
+                 0x00007f39dbe3f42b:   xor    %rdi,%rdx
+   0.06%         0x00007f39dbe3f42e:   shr    $0x14,%rdx
+           ╭     0x00007f39dbe3f432:   je     0x00007f39dbe3f44c
+           │     0x00007f39dbe3f434:   test   %rdi,%rdi
+           │╭    0x00007f39dbe3f437:   je     0x00007f39dbe3f44c
+           ││    0x00007f39dbe3f439:   mov    %r8,%rdx
+   0.04%   ││    0x00007f39dbe3f43c:   shr    $0x9,%rdx
+           ││    0x00007f39dbe3f440:   add    0x50(%r15),%rdx
+   0.02%   ││    0x00007f39dbe3f444:   cmpb   $0xff,(%rdx)
+           ││╭   0x00007f39dbe3f447:   jne    0x00007f39dbe3f44c
+           │││   0x00007f39dbe3f449:   movb   $0x0,(%rdx)                  ;*putfield _currentName {reexecute=0 rethrow=0 return_oop=0}
+           │││                                                             ; - tools.jackson.core.json.JsonWriteContext::writeName@24 (line 187)
+           │││                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+           │││                                                             ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+           │││                                                             ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+           │││                                                             ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+           │││                                                             ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+           ↘↘↘   0x00007f39dbe3f44c:   test   %ebp,%ebp
+                 0x00007f39dbe3f44e:   jne    0x00007f39dbe408c0           ;*getfield _dups {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.JsonWriteContext::writeName@28 (line 188)
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@24 (line 253)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f454:   mov    0xc(%r10),%r10d
+                 0x00007f39dbe3f458:   test   %r10d,%r10d
+              ╭  0x00007f39dbe3f45b:   jge    0x00007f39dbe3f464           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+              │                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@42 (line 257)
+              │                                                            ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+              │                                                            ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+              │                                                            ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+              │                                                            ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+              │  0x00007f39dbe3f45d:   vmovd  %xmm2,%r8d
+              │  0x00007f39dbe3f462:   jmp    0x00007f39dbe3f49c
+   0.02%      ↘  0x00007f39dbe3f464:   vmovd  %xmm3,%r10d
+                 0x00007f39dbe3f469:   cmp    0x8(%rsp),%r10d
+                 0x00007f39dbe3f46e:   jge    0x00007f39dbe419d8           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@53 (line 258)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+   0.04%         0x00007f39dbe3f474:   mov    0x14(%rsp),%r11d
+   0.04%         0x00007f39dbe3f479:   add    $0x2,%r11d
+                 0x00007f39dbe3f47d:   mov    %r11d,0x38(%r9)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+                                                                           ; - tools.jackson.core.json.UTF8JsonGenerator::writeName@72 (line 261)
+                                                                           ; - bench.paths.sers.MapperUtil::writeFieldName@6 (line 24)
+                                                                           ; - bench.paths.sers.AddressSer::serializeContent@95 (line 35)
+                                                                           ; - bench.paths.sers.GeneratedSer::serialize@9 (line 29)
+                                                                           ; - bench.paths.sers.MapperUtil::serializePojo@32 (line 40)
+                 0x00007f39dbe3f481:   cmp    0xc(%rsp),%r10d
+                 0x00007f39dbe3f486:   jae    0x00007f39dbe40cec
+                 0x00007f39dbe3f48c:   movslq 0x14(%rsp),%r10
+                 0x00007f39dbe3f491:   vmovd  %xmm2,%r8d
+....................................................................................................
+  12.18%  <total for region 3>
+
+....[Hottest Regions]...............................................................................
+  15.92%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+  14.59%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+  12.18%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   7.76%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   7.59%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   7.59%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   3.45%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   1.53%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   1.35%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   1.31%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   1.20%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   1.06%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   1.00%         c2, level 4  tools.jackson.databind.ser.jdk.CollectionSerializer::serializeContentsImpl, version 2, compile id 1576 
+   0.96%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   0.94%   [kernel.kallsyms]  srso_alias_safe_ret 
+   0.84%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   0.80%   [kernel.kallsyms]  perf_ibs_handle_irq 
+   0.76%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+   0.73%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   0.67%   [kernel.kallsyms]  entry_SYSRETQ_unsafe_stack 
+  17.76%  <...other 288 warm regions...>
+....................................................................................................
+  99.98%  <totals>
+
+....[Hottest Methods (after inlining)]..............................................................
+  52.55%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1437 
+  32.82%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1468 
+   1.96%         c2, level 4  tools.jackson.databind.ser.jdk.CollectionSerializer::serializeContentsImpl, version 2, compile id 1576 
+   1.14%   [kernel.kallsyms]  perf_event_update_userpage 
+   1.10%         c2, level 4  bench.paths.ExtendedPersonBench::serialize, version 2, compile id 1584 
+   0.94%   [kernel.kallsyms]  srso_alias_safe_ret 
+   0.80%   [kernel.kallsyms]  perf_ibs_handle_irq 
+   0.69%                      <unknown> 
+   0.67%   [kernel.kallsyms]  entry_SYSRETQ_unsafe_stack 
+   0.55%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy_stub (stub gen) 
+   0.53%   [kernel.kallsyms]  __rcu_read_unlock 
+   0.47%   [kernel.kallsyms]  native_queued_spin_lock_slowpath 
+   0.45%   [kernel.kallsyms]  native_write_msr 
+   0.18%   [kernel.kallsyms]  anon_pipe_write 
+   0.16%         c2, level 4  java.util.concurrent.ConcurrentLinkedDeque::unlink, version 2, compile id 1602 
+   0.16%   [kernel.kallsyms]  change_pte_range 
+   0.16%   [kernel.kallsyms]  entry_SYSCALL_64_after_hwframe 
+   0.14%   [kernel.kallsyms]  asm_exc_page_fault 
+   0.14%   [kernel.kallsyms]  vm_normal_page 
+   0.12%   [kernel.kallsyms]  __handle_mm_fault 
+   4.22%  <...other 144 warm methods...>
+....................................................................................................
+  99.98%  <totals>
+
+....[Distribution by Source]........................................................................
+  88.63%         c2, level 4
+   8.82%   [kernel.kallsyms]
+   0.86%           libjvm.so
+   0.69%                    
+   0.55%        runtime stub
+   0.31%           libc.so.6
+   0.04%         c1, level 3
+   0.04%         interpreter
+   0.02%      hsdis-amd64.so
+   0.02%          [mac80211]
+....................................................................................................
+  99.98%  <totals>
+
+
+
+# JMH version: 1.37
+# VM version: JDK 28-internal, OpenJDK 64-Bit Server VM, 28-internal-adhoc.forkedfranz.loom
+# VM invoker: /home/forked_franz/CLionProjects/loom/build/linux-x86_64-server-release/images/jdk/bin/java
+# VM options: -Xms2g -Xmx2g -XX:+AlwaysPreTouch -XX:CompileCommand=dontinline,tools/jackson/core/json/UTF8JsonGenerator.writeString
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serializeWriteStringNotInlined
+# Parameters: (strLen = 32)
+
+# Run progress: 50.00% complete, ETA 00:00:19
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfAsmProfiler 
+# Profilers consume stdout and stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 2046902.520 ns/op
+# Warmup Iteration   2: 11928.795 ns/op
+# Warmup Iteration   3: 5745.479 ns/op
+# Warmup Iteration   4: 5832.999 ns/op
+# Warmup Iteration   5: 5817.291 ns/op
+Iteration   1: 6080.135 ns/op
+Iteration   2: 5824.679 ns/op
+Iteration   3: 5921.275 ns/op
+Iteration   4: 5720.931 ns/op
+Iteration   5: 5718.681 ns/op
+# Processing profiler results: LinuxPerfAsmProfiler 
+
+
+Result "bench.paths.ExtendedPersonBench.serializeWriteStringNotInlined":
+  5853.140 ±(99.9%) 585.682 ns/op [Average]
+  (min, avg, max) = (5718.681, 5853.140, 6080.135), stdev = 152.100
+  CI (99.9%): [5267.458, 6438.822] (assumes normal distribution)
+
+Secondary result "bench.paths.ExtendedPersonBench.serializeWriteStringNotInlined:asm":
+PrintAssembly processed: 481316 total address lines.
+Perf output processed (skipped 11.448 seconds):
+ Column 1: cycles (cycles:P) (4917 events)
+
+Hottest code regions (>10.00% "cycles" events):
+ Event counts are percents of total event count.
+
+....[Hottest Region 1]..............................................................................
+c2, level 4, tools.jackson.core.json.UTF8JsonGenerator::writeString, version 2, compile id 1380 
+
+            [Entry Point]
+              # {method} {0x00007fd018669230} &apos;writeString&apos; &apos;(Ljava/lang/String;)Ltools/jackson/core/JsonGenerator;&apos; in &apos;tools/jackson/core/json/UTF8JsonGenerator&apos;
+              # this:     rsi:rsi   = &apos;tools/jackson/core/json/UTF8JsonGenerator&apos;
+              # parm0:    rdx:rdx   = &apos;java/lang/String&apos;
+              #           [sp+0x60]  (sp of caller)
+              0x00007fd0a3e3730f:   mov    (%rsi),%r10
+              0x00007fd0a3e37312:   shr    $0x2a,%r10
+              0x00007fd0a3e37316:   cmp    0x8(%rax),%r10d
+              0x00007fd0a3e3731a:   jne    0x00007fd0a3662960           ;   {runtime_call ic_miss_blob (shared runtime)}
+            [Verified Entry Point]
+   0.18%      0x00007fd0a3e37320:   mov    %eax,-0x14000(%rsp)
+   0.12%      0x00007fd0a3e37327:   push   %rbp
+   0.20%      0x00007fd0a3e37328:   sub    $0x50,%rsp
+   0.08%      0x00007fd0a3e3732c:   cmpl   $0x1,0x20(%r15)
+   0.14%      0x00007fd0a3e37334:   jne    0x00007fd0a3e378e3           ;*synchronization entry
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@-1 (line 523)
+   0.06%      0x00007fd0a3e3733a:   mov    %rsi,%rax
+   0.12%      0x00007fd0a3e3733d:   mov    0x2c(%rsi),%r11d             ;*getfield _streamWriteContext {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@1 (line 1191)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%      0x00007fd0a3e37341:   mov    0x8(%r11),%r10d              ; implicit exception: dispatches to 0x00007fd0a3e37830
+                                                                        ;*getfield _type {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - tools.jackson.core.json.JsonWriteContext::writeValue@1 (line 203)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.04%      0x00007fd0a3e37345:   mov    0xc(%r11),%r9d               ;*getfield _index {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - tools.jackson.core.json.JsonWriteContext::writeValue@24 (line 208)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.20%      0x00007fd0a3e37349:   lea    0x1(%r9),%r8d
+   0.10%      0x00007fd0a3e3734d:   cmp    $0x2,%r10d
+          ╭   0x00007fd0a3e37351:   jne    0x00007fd0a3e374e6           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.JsonWriteContext::writeValue@5 (line 203)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.14%  │   0x00007fd0a3e37357:   movzbl 0x14(%r11),%ebp              ;*getfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.JsonWriteContext::writeValue@9 (line 204)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%  │   0x00007fd0a3e3735c:   test   %ebp,%ebp
+          │   0x00007fd0a3e3735e:   je     0x00007fd0a3e377e0           ;*ifne {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.JsonWriteContext::writeValue@12 (line 204)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.10%  │   0x00007fd0a3e37364:   mov    %r8d,0xc(%r11)               ;*putfield _index {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.JsonWriteContext::writeValue@29 (line 208)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.10%  │   0x00007fd0a3e37368:   mov    %r12b,0x14(%r11)             ;*putfield _gotName {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.JsonWriteContext::writeValue@19 (line 207)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%  │   0x00007fd0a3e3736c:   mov    $0x2,%r10d                   ;*invokevirtual writeValue {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.02%  │   0x00007fd0a3e37372:   mov    0x24(%rsi),%ebp              ;*getfield _prettyPrinter {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@9 (line 1192)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.08%  │   0x00007fd0a3e37375:   test   %ebp,%ebp
+          │   0x00007fd0a3e37377:   jne    0x00007fd0a3e3770c           ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@12 (line 1192)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%  │   0x00007fd0a3e3737d:   mov    0x50(%rsi),%ebx              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@126 (line 1223)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.02%  │   0x00007fd0a3e37380:   mov    0x3c(%rsi),%r9d              ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@115 (line 1220)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.02%  │   0x00007fd0a3e37384:   cmp    $0x2,%r10d
+          │   0x00007fd0a3e37388:   jne    0x00007fd0a3e37500           ;*tableswitch {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@23 (line 1198)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.02%  │   0x00007fd0a3e3738e:   mov    $0x3a,%r8d                   ;*goto {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@64 (line 1204)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.02%  │   0x00007fd0a3e37394:   mov    0x38(%rsi),%ebp              ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@111 (line 1220)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%  │   0x00007fd0a3e37397:   cmp    %r9d,%ebp
+          │   0x00007fd0a3e3739a:   jge    0x00007fd0a3e377b8           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@118 (line 1220)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.10%  │   0x00007fd0a3e373a0:   lea    0x1(%rbp),%r10d
+   0.14%  │   0x00007fd0a3e373a4:   mov    %r10d,0x38(%rsi)             ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@137 (line 1223)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.14%  │   0x00007fd0a3e373a8:   mov    0x8(%rbx),%r10d              ; implicit exception: dispatches to 0x00007fd0a3e3788c
+   0.10%  │   0x00007fd0a3e373ac:   cmp    %r10d,%ebp
+          │   0x00007fd0a3e373af:   jae    0x00007fd0a3e376bc
+   0.12%  │   0x00007fd0a3e373b5:   mov    %r8b,0xc(%rbx,%rbp,1)        ;*invokevirtual _verifyValueWrite {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+   0.06%  │   0x00007fd0a3e373ba:   mov    %rdx,%r10
+   0.06%  │   0x00007fd0a3e373bd:   mov    0x10(%rdx),%r11d             ; implicit exception: dispatches to 0x00007fd0a3e378a4
+          │                                                             ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - java.lang.String::length@1 (line 1794)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@17 (line 529)
+   0.14%  │   0x00007fd0a3e373c1:   mov    0x8(%r11),%ecx               ; implicit exception: dispatches to 0x00007fd0a3e37844
+   0.04%  │   0x00007fd0a3e373c5:   movsbl 0xc(%rdx),%r11d
+   0.08%  │   0x00007fd0a3e373ca:   mov    0x40(%rsi),%r8d              ;*getfield _outputMaxContiguous {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@23 (line 530)
+   0.12%  │   0x00007fd0a3e373ce:   sarx   %r11d,%ecx,%r11d             ;*ishr {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - java.lang.String::length@9 (line 1794)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@17 (line 529)
+   0.02%  │   0x00007fd0a3e373d3:   cmp    %r8d,%r11d
+          │   0x00007fd0a3e373d6:   jg     0x00007fd0a3e3772c           ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@26 (line 530)
+   0.12%  │   0x00007fd0a3e373dc:   mov    0x38(%rsi),%edi              ;*getfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@38 (line 534)
+   0.12%  │   0x00007fd0a3e373df:   lea    (%r11,%rdi,1),%ebp
+   0.08%  │   0x00007fd0a3e373e3:   cmp    %r9d,%ebp
+          │   0x00007fd0a3e373e6:   jge    0x00007fd0a3e37750           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@47 (line 534)
+   0.02%  │   0x00007fd0a3e373ec:   movsbl 0x48(%rsi),%ecx              ;*getfield _quoteChar {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@70 (line 537)
+   0.08%  │   0x00007fd0a3e373f0:   lea    0x1(%rdi),%r8d
+   0.08%  │   0x00007fd0a3e373f4:   mov    %r8d,0x38(%rsi)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@66 (line 537)
+   0.10%  │   0x00007fd0a3e373f8:   mov    0x8(%rbx),%ebp               ; implicit exception: dispatches to 0x00007fd0a3e37858
+   0.14%  │   0x00007fd0a3e373fb:   cmp    %ebp,%edi
+          │   0x00007fd0a3e373fd:   jae    0x00007fd0a3e37670
+   0.12%  │   0x00007fd0a3e37403:   mov    %cl,0xc(%rbx,%rdi,1)         ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@73 (line 537)
+   0.16%  │   0x00007fd0a3e37407:   test   %r11d,%r11d
+          │   0x00007fd0a3e3740a:   jle    0x00007fd0a3e37515           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.06%  │   0x00007fd0a3e37410:   mov    0x1c(%rsi),%edx              ;*getfield _outputEscapes {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@17 (line 1504)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.10%  │   0x00007fd0a3e37413:   mov    0x8(%rdx),%esi               ; implicit exception: dispatches to 0x00007fd0a3e376e0
+          │                                                             ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.08%  │   0x00007fd0a3e37416:   cmp    %ebp,%r8d
+          │   0x00007fd0a3e37419:   jae    0x00007fd0a3e376e0           ;   {other}
+   0.14%  │   0x00007fd0a3e3741f:   movslq %r11d,%r9
+   0.18%  │   0x00007fd0a3e37422:   movslq %r8d,%rcx
+   0.33%  │   0x00007fd0a3e37425:   lea    -0x1(%rcx,%r9,1),%r9
+   0.10%  │   0x00007fd0a3e3742a:   movslq %ebp,%rcx
+   0.10%  │   0x00007fd0a3e3742d:   cmp    %rcx,%r9
+          │   0x00007fd0a3e37430:   jae    0x00007fd0a3e376e0
+   0.12%  │   0x00007fd0a3e37436:   movslq %edi,%r13
+   0.24%  │   0x00007fd0a3e37439:   xor    %ecx,%ecx
+          │   0x00007fd0a3e3743b:   nopl   0x0(%rax,%rax,1)             ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1507)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   2.68%  │↗  0x00007fd0a3e37440:   mov    0x10(%r10),%r9d              ;*getfield value {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.lang.String::charAt@8 (line 1835)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   5.59%  ││  0x00007fd0a3e37444:   lea    0x1(%rcx,%rdi,1),%r8d        ;*aload_1 {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@27 (line 1507)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   2.36%  ││  0x00007fd0a3e37449:   cmpb   $0x0,0xc(%r10)
+   3.27%  ││  0x00007fd0a3e3744e:   jne    0x00007fd0a3e37537           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.lang.String::charAt@4 (line 1834)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   2.36%  ││  0x00007fd0a3e37454:   mov    0x8(%r9),%ebp                ; implicit exception: dispatches to 0x00007fd0a3e3781c
+          ││                                                            ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - java.lang.StringLatin1::charAt@2 (line 58)
+          ││                                                            ; - java.lang.String::charAt@12 (line 1835)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   4.05%  ││  0x00007fd0a3e37458:   cmp    %ebp,%ecx
+          ││  0x00007fd0a3e3745a:   jae    0x00007fd0a3e375dc
+   2.99%  ││  0x00007fd0a3e37460:   movzbl 0xc(%r9,%rcx,1),%r9d         ;*invokevirtual charAt {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@29 (line 1507)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   4.31%  ││  0x00007fd0a3e37466:   cmp    $0x7f,%r9d
+          ││  0x00007fd0a3e3746a:   jg     0x00007fd0a3e37618           ;*if_icmpgt {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@38 (line 1509)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   3.15%  ││  0x00007fd0a3e37470:   cmp    %esi,%r9d
+          ││  0x00007fd0a3e37473:   jae    0x00007fd0a3e375a8
+   3.01%  ││  0x00007fd0a3e37479:   mov    0xc(%rdx,%r9,4),%ebp         ;*iaload {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@45 (line 1509)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   2.97%  ││  0x00007fd0a3e3747e:   test   %ebp,%ebp
+          ││  0x00007fd0a3e37480:   jne    0x00007fd0a3e37644           ;*ifeq {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@46 (line 1509)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   3.05%  ││  0x00007fd0a3e37486:   movslq %ecx,%rbp
+   2.70%  ││  0x00007fd0a3e37489:   add    %r13,%rbp
+   6.12%  ││  0x00007fd0a3e3748c:   mov    %r9b,0xd(%rbx,%rbp,1)        ;*bastore {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@62 (line 1512)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   2.81%  ││  0x00007fd0a3e37491:   inc    %ecx                         ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@63 (line 1513)
+          ││                                                            ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   3.23%  ││  0x00007fd0a3e37493:   cmp    %r11d,%ecx
+          │╰  0x00007fd0a3e37496:   jl     0x00007fd0a3e37440
+   0.08%  │   0x00007fd0a3e37498:   inc    %r8d                         ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@24 (line 1506)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.08%  │   0x00007fd0a3e3749b:   mov    %r8d,0x38(%rax)              ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@72 (line 1515)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.08%  │   0x00007fd0a3e3749f:   cmp    %r11d,%ecx
+          │   0x00007fd0a3e374a2:   jl     0x00007fd0a3e37778           ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::_writeStringSegment@77 (line 1516)
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@78 (line 538)
+   0.08%  │   0x00007fd0a3e374a8:   mov    0x3c(%rax),%ebp              ;*getfield _outputEnd {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@86 (line 539)
+   0.08%  │   0x00007fd0a3e374ab:   cmp    %ebp,%r8d
+          │   0x00007fd0a3e374ae:   jge    0x00007fd0a3e3779c           ;*if_icmplt {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@89 (line 539)
+   0.02%  │   0x00007fd0a3e374b4:   movsbl 0x48(%rax),%r9d              ;*getfield _quoteChar {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@112 (line 542)
+   0.10%  │   0x00007fd0a3e374b9:   mov    0x50(%rax),%ebp              ;*getfield _outputBuffer {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@97 (line 542)
+   0.02%  │   0x00007fd0a3e374bc:   lea    0x1(%r8),%r10d
+   0.04%  │   0x00007fd0a3e374c0:   mov    %r10d,0x38(%rax)             ;*putfield _outputTail {reexecute=0 rethrow=0 return_oop=0}
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@108 (line 542)
+          │   0x00007fd0a3e374c4:   mov    0x8(%rbp),%r10d              ; implicit exception: dispatches to 0x00007fd0a3e37870
+   0.12%  │   0x00007fd0a3e374c8:   cmp    %r10d,%r8d
+          │   0x00007fd0a3e374cb:   jae    0x00007fd0a3e3769c
+   0.22%  │   0x00007fd0a3e374d1:   mov    %r9b,0xc(%rbp,%r8,1)         ;*synchronization entry
+          │                                                             ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@-1 (line 523)
+   0.16%  │   0x00007fd0a3e374d6:   add    $0x50,%rsp
+   0.18%  │   0x00007fd0a3e374da:   pop    %rbp
+   0.22%  │   0x00007fd0a3e374db:   cmp    0x28(%r15),%rsp              ;   {poll_return}
+   0.02%  │   0x00007fd0a3e374df:   ja     0x00007fd0a3e378cd
+   0.14%  │   0x00007fd0a3e374e5:   ret    
+          ↘   0x00007fd0a3e374e6:   cmp    $0x1,%r10d
+              0x00007fd0a3e374ea:   jne    0x00007fd0a3e3751c           ;*if_icmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - tools.jackson.core.json.JsonWriteContext::writeValue@39 (line 213)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+              0x00007fd0a3e374ec:   test   %r9d,%r9d
+              0x00007fd0a3e374ef:   jl     0x00007fd0a3e37532           ;*ifge {reexecute=0 rethrow=0 return_oop=0}
+                                                                        ; - tools.jackson.core.json.JsonWriteContext::writeValue@58 (line 216)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::_verifyValueWrite@4 (line 1191)
+                                                                        ; - tools.jackson.core.json.UTF8JsonGenerator::writeString@3 (line 523)
+....................................................................................................
+  62.07%  <total for region 1>
+
+....[Hottest Regions]...............................................................................
+  62.07%         c2, level 4  tools.jackson.core.json.UTF8JsonGenerator::writeString, version 2, compile id 1380 
+   8.30%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1458 
+   2.01%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   1.75%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   1.48%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   1.46%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   1.40%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   1.22%   [kernel.kallsyms]  perf_ibs_handle_irq 
+   1.12%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1458 
+   0.92%   [kernel.kallsyms]  srso_alias_safe_ret 
+   0.83%   [kernel.kallsyms]  perf_event_update_userpage 
+   0.83%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   0.79%         c2, level 4  tools.jackson.databind.ser.jdk.CollectionSerializer::serializeContentsImpl, version 2, compile id 1558 
+   0.71%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+   0.67%   [kernel.kallsyms]  entry_SYSRETQ_unsafe_stack 
+   0.65%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1458 
+   0.63%   [kernel.kallsyms]  native_write_msr 
+   0.61%         c2, level 4  tools.jackson.databind.ser.jdk.CollectionSerializer::serializeContentsImpl, version 2, compile id 1558 
+   0.59%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy_stub (stub gen) 
+   0.49%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+  11.41%  <...other 301 warm regions...>
+....................................................................................................
+  99.96%  <totals>
+
+....[Hottest Methods (after inlining)]..............................................................
+  62.07%         c2, level 4  tools.jackson.core.json.UTF8JsonGenerator::writeString, version 2, compile id 1380 
+  10.82%         c2, level 4  bench.paths.sers.MapperUtil::serializePojo, version 2, compile id 1421 
+  10.07%         c2, level 4  bench.paths.sers.ExtendedPersonSer::serializeContent, version 2, compile id 1458 
+   2.24%         c2, level 4  tools.jackson.databind.ser.jdk.CollectionSerializer::serializeContentsImpl, version 2, compile id 1558 
+   1.40%   [kernel.kallsyms]  perf_event_update_userpage 
+   1.22%   [kernel.kallsyms]  perf_ibs_handle_irq 
+   1.14%         c2, level 4  bench.paths.ExtendedPersonBench::serializeWriteStringNotInlined, version 2, compile id 1571 
+   0.92%   [kernel.kallsyms]  srso_alias_safe_ret 
+   0.71%                      <unknown> 
+   0.67%   [kernel.kallsyms]  entry_SYSRETQ_unsafe_stack 
+   0.63%   [kernel.kallsyms]  native_write_msr 
+   0.61%        runtime stub  StubRoutines::jbyte_disjoint_arraycopy_stub (stub gen) 
+   0.45%   [kernel.kallsyms]  __irqentry_text_end 
+   0.45%   [kernel.kallsyms]  __rcu_read_unlock 
+   0.39%   [kernel.kallsyms]  native_queued_spin_lock_slowpath 
+   0.20%   [kernel.kallsyms]  _copy_from_iter 
+   0.20%         c2, level 4  java.util.concurrent.ConcurrentLinkedDeque::unlink, version 2, compile id 1582 
+   0.16%   [kernel.kallsyms]  __handle_mm_fault 
+   0.16%   [kernel.kallsyms]  do_numa_page.isra.0 
+   0.16%         c2, level 4  tools.jackson.core.json.JsonWriteContext::&lt;init&gt;, version 2, compile id 1562 
+   5.29%  <...other 163 warm methods...>
+....................................................................................................
+  99.96%  <totals>
+
+....[Distribution by Source]........................................................................
+  86.76%         c2, level 4
+  10.62%   [kernel.kallsyms]
+   0.77%           libjvm.so
+   0.71%                    
+   0.61%        runtime stub
+   0.31%           libc.so.6
+   0.08%      hsdis-amd64.so
+   0.06%         interpreter
+   0.02%         c1, level 1
+   0.02%         c1, level 3
+....................................................................................................
+  99.96%  <totals>
+
+
+
+# Run complete. Total time: 00:00:38
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                               (strLen)  Mode  Cnt     Score     Error  Units
+ExtendedPersonBench.serialize                                 32  avgt    5  7889.439 ± 316.550  ns/op
+ExtendedPersonBench.serialize:asm                             32  avgt            NaN              ---
+ExtendedPersonBench.serializeWriteStringNotInlined            32  avgt    5  5853.140 ± 585.682  ns/op
+ExtendedPersonBench.serializeWriteStringNotInlined:asm        32  avgt            NaN              ---

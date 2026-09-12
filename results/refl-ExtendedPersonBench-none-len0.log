@@ -1,0 +1,57 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-none.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms2g -Xmx2g -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 2 s each
+# Measurement: 5 iterations, 2 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:00:20
+# Fork: 1 of 1
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-none.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 4039.575 ns/op
+# Warmup Iteration   2: 4044.321 ns/op
+# Warmup Iteration   3: 3746.420 ns/op
+# Warmup Iteration   4: 3745.474 ns/op
+# Warmup Iteration   5: 3739.108 ns/op
+Iteration   1: 3731.250 ns/op
+Iteration   2: 3731.550 ns/op
+Iteration   3: 3730.364 ns/op
+Iteration   4: 3730.617 ns/op
+Iteration   5: 3742.269 ns/op
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  3733.210 ±(99.9%) 19.587 ns/op [Average]
+  (min, avg, max) = (3730.364, 3733.210, 3742.269), stdev = 5.087
+  CI (99.9%): [3713.624, 3752.797] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:00:20
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                      (strLen)  Mode  Cnt     Score    Error  Units
+ExtendedPersonBench.serialize         0  avgt    5  3733.210 ± 19.587  ns/op

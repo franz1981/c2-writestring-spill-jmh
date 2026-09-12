@@ -38,8 +38,14 @@ public class AccessorBench {
     @Param("0")
     public int strLen;
 
-    /** typed = the branch's six writer classes; kind = one KindWriter class switching on an int kind. */
-    @Param({ "typed", "kind" })
+    /**
+     * typed = the branch's six writer classes; kind = one KindWriter class switching on an int kind;
+     * direct = one writer class per property calling the bean getter directly (no accessor, no index);
+     * bean = one writer class per bean switching on the index and calling the getter directly;
+     * beanser = "bean" plus a generated serializer per bean whose writer fields have the concrete
+     * final writer type, so no call in the property sequence is megamorphic.
+     */
+    @Param({ "typed", "kind", "direct", "bean", "beanser" })
     public String writers;
 
     private ObjectWriter writer;
@@ -53,7 +59,10 @@ public class AccessorBench {
         accessors.put(Address.class, new AddressAccessor(Address.class));
         accessors.put(Car.class, new CarAccessor(Car.class));
         SimpleModule module = new SimpleModule();
-        module.setSerializerModifier(new GeneratedPropertyWriterModifier(accessors, "kind".equals(writers)));
+        module.setSerializerModifier("direct".equals(writers) ? new PerPropertyWriters.Modifier(accessors)
+                : "bean".equals(writers) ? new PerBeanWriters.Modifier(accessors)
+                : "beanser".equals(writers) ? new PerBeanSerializers.Modifier(accessors)
+                : new GeneratedPropertyWriterModifier(accessors, "kind".equals(writers)));
         writer = QuarkusMapper.listWriter(QuarkusMapper.builder().addModule(module).build());
         ExtendedPerson person;
         if (strLen > 0) {

@@ -30,6 +30,10 @@ import bench.paths.beans.ExtendedPerson;
 import bench.paths.sers.AddressSer;
 import bench.paths.sers.CarSer;
 import bench.paths.sers.ExtendedPersonSer;
+import bench.paths.sers.AddressSerResolved;
+import bench.paths.sers.CarSerResolved;
+import bench.paths.sers.ExtendedPersonSerNested;
+import bench.paths.sers.ExtendedPersonSerResolved;
 
 /**
  * Problem 3, reproducing what the Quarkus application serves from {@code persons/get-all-extended}:
@@ -80,12 +84,29 @@ public class ExtendedPersonBench {
     private List<ExtendedPerson> people;
     private Sink out;
 
+    /**
+     * main = the generator as Quarkus main emits it; nested = main plus the nested serializer resolved
+     * once; resolved = nested plus the inclusion and the property names resolved once.
+     */
+    @Param("main")
+    public String gen;
+
     @Setup
     public void setup() {
         SimpleModule module = new SimpleModule("gen");
-        module.addSerializer(ExtendedPerson.class, new ExtendedPersonSer());
-        module.addSerializer(Address.class, new AddressSer());
-        module.addSerializer(Car.class, new CarSer());
+        if ("nested".equals(gen)) {
+            module.addSerializer(ExtendedPerson.class, new ExtendedPersonSerNested());
+            module.addSerializer(Address.class, new AddressSer());
+            module.addSerializer(Car.class, new CarSer());
+        } else if ("resolved".equals(gen)) {
+            module.addSerializer(ExtendedPerson.class, new ExtendedPersonSerResolved());
+            module.addSerializer(Address.class, new AddressSerResolved());
+            module.addSerializer(Car.class, new CarSerResolved());
+        } else {
+            module.addSerializer(ExtendedPerson.class, new ExtendedPersonSer());
+            module.addSerializer(Address.class, new AddressSer());
+            module.addSerializer(Car.class, new CarSer());
+        }
         // mapper and writer configured as the application configures them (see QuarkusMapper)
         writer = QuarkusMapper.listWriter(QuarkusMapper.builder().addModule(module).build());
         // held as PersonResource holds it: one instance, repeated, in a CopiesList

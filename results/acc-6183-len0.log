@@ -1,0 +1,74 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-6183.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 2 s each
+# Measurement: 5 iterations, 2 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.AccessorBench.serialize
+# Parameters: (strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:00:40
+# Fork: 1 of 2
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-6183.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 3202.742 ns/op
+# Warmup Iteration   2: 3052.764 ns/op
+# Warmup Iteration   3: 3017.331 ns/op
+# Warmup Iteration   4: 3010.624 ns/op
+# Warmup Iteration   5: 3009.210 ns/op
+Iteration   1: 3010.028 ns/op
+Iteration   2: 3004.971 ns/op
+Iteration   3: 3009.526 ns/op
+Iteration   4: 3011.232 ns/op
+Iteration   5: 3008.661 ns/op
+
+# Run progress: 50.00% complete, ETA 00:00:20
+# Fork: 2 of 2
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-6183.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 3159.900 ns/op
+# Warmup Iteration   2: 3027.934 ns/op
+# Warmup Iteration   3: 3024.690 ns/op
+# Warmup Iteration   4: 3019.646 ns/op
+# Warmup Iteration   5: 3017.640 ns/op
+Iteration   1: 3020.089 ns/op
+Iteration   2: 3004.382 ns/op
+Iteration   3: 3008.038 ns/op
+Iteration   4: 3004.245 ns/op
+Iteration   5: 3004.263 ns/op
+
+
+Result "bench.paths.AccessorBench.serialize":
+  3008.543 ±(99.9%) 7.318 ns/op [Average]
+  (min, avg, max) = (3004.245, 3008.543, 3020.089), stdev = 4.840
+  CI (99.9%): [3001.226, 3015.861] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:00:40
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                (strLen)  Mode  Cnt     Score   Error  Units
+AccessorBench.serialize         0  avgt   10  3008.543 ± 7.318  ns/op

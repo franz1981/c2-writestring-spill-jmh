@@ -1,0 +1,91 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:00:30
+# Fork: 1 of 3
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2944.795 ns/op
+# Warmup Iteration   2: 2815.305 ns/op
+# Warmup Iteration   3: 2832.696 ns/op
+# Warmup Iteration   4: 2825.242 ns/op
+# Warmup Iteration   5: 2940.225 ns/op
+Iteration   1: 3100.963 ns/op
+Iteration   2: 2824.529 ns/op
+Iteration   3: 2799.777 ns/op
+Iteration   4: 2805.115 ns/op
+Iteration   5: 2842.779 ns/op
+
+# Run progress: 33.33% complete, ETA 00:00:20
+# Fork: 2 of 3
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2753.998 ns/op
+# Warmup Iteration   2: 2650.674 ns/op
+# Warmup Iteration   3: 2675.761 ns/op
+# Warmup Iteration   4: 2645.156 ns/op
+# Warmup Iteration   5: 2832.489 ns/op
+Iteration   1: 2817.483 ns/op
+Iteration   2: 2618.503 ns/op
+Iteration   3: 2653.764 ns/op
+Iteration   4: 2658.209 ns/op
+Iteration   5: 2627.425 ns/op
+
+# Run progress: 66.67% complete, ETA 00:00:10
+# Fork: 3 of 3
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2733.240 ns/op
+# Warmup Iteration   2: 2619.919 ns/op
+# Warmup Iteration   3: 2632.543 ns/op
+# Warmup Iteration   4: 2614.593 ns/op
+# Warmup Iteration   5: 2809.073 ns/op
+Iteration   1: 2772.672 ns/op
+Iteration   2: 2661.303 ns/op
+Iteration   3: 2612.463 ns/op
+Iteration   4: 2641.393 ns/op
+Iteration   5: 2614.476 ns/op
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  2736.724 ±(99.9%) 143.494 ns/op [Average]
+  (min, avg, max) = (2612.463, 2736.724, 3100.963), stdev = 134.224
+  CI (99.9%): [2593.230, 2880.218] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:00:31
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                      (strLen)  Mode  Cnt     Score     Error  Units
+ExtendedPersonBench.serialize         0  avgt   15  2736.724 ± 143.494  ns/op

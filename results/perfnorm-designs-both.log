@@ -1,0 +1,542 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.AccessorBench.serialize
+# Parameters: (strLen = 0, writers = typed)
+
+# Run progress: 0.00% complete, ETA 00:00:30
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 3475.058 ns/op
+# Warmup Iteration   2: 3045.742 ns/op
+# Warmup Iteration   3: 3051.141 ns/op
+# Warmup Iteration   4: 3078.369 ns/op
+# Warmup Iteration   5: 3163.718 ns/op
+Iteration   1: 3254.869 ns/op
+Iteration   2: 3217.135 ns/op
+Iteration   3: 3135.747 ns/op
+Iteration   4: 3073.313 ns/op
+Iteration   5: 3052.891 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.AccessorBench.serialize":
+  3146.791 ±(99.9%) 338.809 ns/op [Average]
+  (min, avg, max) = (3052.891, 3146.791, 3254.869), stdev = 87.988
+  CI (99.9%): [2807.982, 3485.600] (assumes normal distribution)
+
+Secondary result "bench.paths.AccessorBench.serialize:CPI":
+  0.208 clks/insn
+
+Secondary result "bench.paths.AccessorBench.serialize:IPC":
+  4.811 insns/clk
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-load-misses":
+  75.104 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-loads":
+  20717.921 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-load-misses":
+  0.448 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-loads":
+  295.841 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branch-misses":
+  10.744 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branches":
+  13579.966 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:cycles":
+  13649.434 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-load-misses":
+  0.507 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-loads":
+  3.499 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-load-misses":
+  0.242 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-loads":
+  0.145 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:instructions":
+  65667.603 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:stalled-cycles-frontend":
+  462.939 #/op
+
+
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.AccessorBench.serialize
+# Parameters: (strLen = 0, writers = bean)
+
+# Run progress: 33.33% complete, ETA 00:00:21
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 2991.929 ns/op
+# Warmup Iteration   2: 2828.620 ns/op
+# Warmup Iteration   3: 2844.467 ns/op
+# Warmup Iteration   4: 2843.009 ns/op
+# Warmup Iteration   5: 3174.602 ns/op
+Iteration   1: 3149.403 ns/op
+Iteration   2: 2874.943 ns/op
+Iteration   3: 2888.049 ns/op
+Iteration   4: 2853.597 ns/op
+Iteration   5: 2859.594 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.AccessorBench.serialize":
+  2925.117 ±(99.9%) 485.563 ns/op [Average]
+  (min, avg, max) = (2853.597, 2925.117, 3149.403), stdev = 126.099
+  CI (99.9%): [2439.554, 3410.680] (assumes normal distribution)
+
+Secondary result "bench.paths.AccessorBench.serialize:CPI":
+  0.199 clks/insn
+
+Secondary result "bench.paths.AccessorBench.serialize:IPC":
+  5.029 insns/clk
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-load-misses":
+  71.102 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-loads":
+  19382.328 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-load-misses":
+  0.592 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-loads":
+  277.062 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branch-misses":
+  9.769 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branches":
+  13710.371 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:cycles":
+  12753.203 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-load-misses":
+  0.297 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-loads":
+  2.330 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-load-misses":
+  0.121 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-loads":
+  0.040 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:instructions":
+  64137.647 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:stalled-cycles-frontend":
+  326.058 #/op
+
+
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.AccessorBench.serialize
+# Parameters: (strLen = 0, writers = direct)
+
+# Run progress: 66.67% complete, ETA 00:00:11
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 2902.996 ns/op
+# Warmup Iteration   2: 2740.597 ns/op
+# Warmup Iteration   3: 2767.644 ns/op
+# Warmup Iteration   4: 2766.245 ns/op
+# Warmup Iteration   5: 3202.048 ns/op
+Iteration   1: 3043.616 ns/op
+Iteration   2: 2739.649 ns/op
+Iteration   3: 2778.019 ns/op
+Iteration   4: 2753.252 ns/op
+Iteration   5: 2783.969 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.AccessorBench.serialize":
+  2819.701 ±(99.9%) 486.981 ns/op [Average]
+  (min, avg, max) = (2739.649, 2819.701, 3043.616), stdev = 126.468
+  CI (99.9%): [2332.720, 3306.682] (assumes normal distribution)
+
+Secondary result "bench.paths.AccessorBench.serialize:CPI":
+  0.200 clks/insn
+
+Secondary result "bench.paths.AccessorBench.serialize:IPC":
+  4.991 insns/clk
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-load-misses":
+  27.781 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-dcache-loads":
+  18694.760 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-load-misses":
+  0.575 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:L1-icache-loads":
+  143.723 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branch-misses":
+  7.776 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:branches":
+  13175.097 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:cycles":
+  12281.660 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-load-misses":
+  0.363 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:dTLB-loads":
+  2.291 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-load-misses":
+  0.121 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:iTLB-loads":
+  0.097 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:instructions":
+  61298.499 #/op
+
+Secondary result "bench.paths.AccessorBench.serialize:stalled-cycles-frontend":
+  324.009 #/op
+
+
+# Run complete. Total time: 00:00:33
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                        (strLen)  (writers)  Mode  Cnt      Score     Error      Units
+AccessorBench.serialize                                 0      typed  avgt    5   3146.791 ± 338.809      ns/op
+AccessorBench.serialize:CPI                             0      typed  avgt           0.208            clks/insn
+AccessorBench.serialize:IPC                             0      typed  avgt           4.811            insns/clk
+AccessorBench.serialize:L1-dcache-load-misses           0      typed  avgt          75.104                 #/op
+AccessorBench.serialize:L1-dcache-loads                 0      typed  avgt       20717.921                 #/op
+AccessorBench.serialize:L1-icache-load-misses           0      typed  avgt           0.448                 #/op
+AccessorBench.serialize:L1-icache-loads                 0      typed  avgt         295.841                 #/op
+AccessorBench.serialize:branch-misses                   0      typed  avgt          10.744                 #/op
+AccessorBench.serialize:branches                        0      typed  avgt       13579.966                 #/op
+AccessorBench.serialize:cycles                          0      typed  avgt       13649.434                 #/op
+AccessorBench.serialize:dTLB-load-misses                0      typed  avgt           0.507                 #/op
+AccessorBench.serialize:dTLB-loads                      0      typed  avgt           3.499                 #/op
+AccessorBench.serialize:iTLB-load-misses                0      typed  avgt           0.242                 #/op
+AccessorBench.serialize:iTLB-loads                      0      typed  avgt           0.145                 #/op
+AccessorBench.serialize:instructions                    0      typed  avgt       65667.603                 #/op
+AccessorBench.serialize:stalled-cycles-frontend         0      typed  avgt         462.939                 #/op
+AccessorBench.serialize                                 0       bean  avgt    5   2925.117 ± 485.563      ns/op
+AccessorBench.serialize:CPI                             0       bean  avgt           0.199            clks/insn
+AccessorBench.serialize:IPC                             0       bean  avgt           5.029            insns/clk
+AccessorBench.serialize:L1-dcache-load-misses           0       bean  avgt          71.102                 #/op
+AccessorBench.serialize:L1-dcache-loads                 0       bean  avgt       19382.328                 #/op
+AccessorBench.serialize:L1-icache-load-misses           0       bean  avgt           0.592                 #/op
+AccessorBench.serialize:L1-icache-loads                 0       bean  avgt         277.062                 #/op
+AccessorBench.serialize:branch-misses                   0       bean  avgt           9.769                 #/op
+AccessorBench.serialize:branches                        0       bean  avgt       13710.371                 #/op
+AccessorBench.serialize:cycles                          0       bean  avgt       12753.203                 #/op
+AccessorBench.serialize:dTLB-load-misses                0       bean  avgt           0.297                 #/op
+AccessorBench.serialize:dTLB-loads                      0       bean  avgt           2.330                 #/op
+AccessorBench.serialize:iTLB-load-misses                0       bean  avgt           0.121                 #/op
+AccessorBench.serialize:iTLB-loads                      0       bean  avgt           0.040                 #/op
+AccessorBench.serialize:instructions                    0       bean  avgt       64137.647                 #/op
+AccessorBench.serialize:stalled-cycles-frontend         0       bean  avgt         326.058                 #/op
+AccessorBench.serialize                                 0     direct  avgt    5   2819.701 ± 486.981      ns/op
+AccessorBench.serialize:CPI                             0     direct  avgt           0.200            clks/insn
+AccessorBench.serialize:IPC                             0     direct  avgt           4.991            insns/clk
+AccessorBench.serialize:L1-dcache-load-misses           0     direct  avgt          27.781                 #/op
+AccessorBench.serialize:L1-dcache-loads                 0     direct  avgt       18694.760                 #/op
+AccessorBench.serialize:L1-icache-load-misses           0     direct  avgt           0.575                 #/op
+AccessorBench.serialize:L1-icache-loads                 0     direct  avgt         143.723                 #/op
+AccessorBench.serialize:branch-misses                   0     direct  avgt           7.776                 #/op
+AccessorBench.serialize:branches                        0     direct  avgt       13175.097                 #/op
+AccessorBench.serialize:cycles                          0     direct  avgt       12281.660                 #/op
+AccessorBench.serialize:dTLB-load-misses                0     direct  avgt           0.363                 #/op
+AccessorBench.serialize:dTLB-loads                      0     direct  avgt           2.291                 #/op
+AccessorBench.serialize:iTLB-load-misses                0     direct  avgt           0.121                 #/op
+AccessorBench.serialize:iTLB-loads                      0     direct  avgt           0.097                 #/op
+AccessorBench.serialize:instructions                    0     direct  avgt       61298.499                 #/op
+AccessorBench.serialize:stalled-cycles-frontend         0     direct  avgt         324.009                 #/op
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ReflectiveBench.serialize
+# Parameters: (strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:00:10
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 3557.429 ns/op
+# Warmup Iteration   2: 3292.584 ns/op
+# Warmup Iteration   3: 3287.993 ns/op
+# Warmup Iteration   4: 3365.035 ns/op
+# Warmup Iteration   5: 3433.457 ns/op
+Iteration   1: 3458.297 ns/op
+Iteration   2: 3422.325 ns/op
+Iteration   3: 3251.933 ns/op
+Iteration   4: 3285.816 ns/op
+Iteration   5: 3269.746 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.ReflectiveBench.serialize":
+  3337.623 ±(99.9%) 367.180 ns/op [Average]
+  (min, avg, max) = (3251.933, 3337.623, 3458.297), stdev = 95.355
+  CI (99.9%): [2970.444, 3704.803] (assumes normal distribution)
+
+Secondary result "bench.paths.ReflectiveBench.serialize:CPI":
+  0.201 clks/insn
+
+Secondary result "bench.paths.ReflectiveBench.serialize:IPC":
+  4.981 insns/clk
+
+Secondary result "bench.paths.ReflectiveBench.serialize:L1-dcache-load-misses":
+  53.473 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:L1-dcache-loads":
+  23957.395 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:L1-icache-load-misses":
+  0.470 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:L1-icache-loads":
+  195.933 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:branch-misses":
+  8.630 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:branches":
+  15109.438 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:cycles":
+  14476.977 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:dTLB-load-misses":
+  0.436 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:dTLB-loads":
+  3.758 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:iTLB-load-misses":
+  0.135 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:iTLB-loads":
+  0.032 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:instructions":
+  72114.739 #/op
+
+Secondary result "bench.paths.ReflectiveBench.serialize:stalled-cycles-frontend":
+  351.236 #/op
+
+
+# Run complete. Total time: 00:00:10
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                          (strLen)  Mode  Cnt      Score     Error      Units
+ReflectiveBench.serialize                                 0  avgt    5   3337.623 ± 367.180      ns/op
+ReflectiveBench.serialize:CPI                             0  avgt           0.201            clks/insn
+ReflectiveBench.serialize:IPC                             0  avgt           4.981            insns/clk
+ReflectiveBench.serialize:L1-dcache-load-misses           0  avgt          53.473                 #/op
+ReflectiveBench.serialize:L1-dcache-loads                 0  avgt       23957.395                 #/op
+ReflectiveBench.serialize:L1-icache-load-misses           0  avgt           0.470                 #/op
+ReflectiveBench.serialize:L1-icache-loads                 0  avgt         195.933                 #/op
+ReflectiveBench.serialize:branch-misses                   0  avgt           8.630                 #/op
+ReflectiveBench.serialize:branches                        0  avgt       15109.438                 #/op
+ReflectiveBench.serialize:cycles                          0  avgt       14476.977                 #/op
+ReflectiveBench.serialize:dTLB-load-misses                0  avgt           0.436                 #/op
+ReflectiveBench.serialize:dTLB-loads                      0  avgt           3.758                 #/op
+ReflectiveBench.serialize:iTLB-load-misses                0  avgt           0.135                 #/op
+ReflectiveBench.serialize:iTLB-loads                      0  avgt           0.032                 #/op
+ReflectiveBench.serialize:instructions                    0  avgt       72114.739                 #/op
+ReflectiveBench.serialize:stalled-cycles-frontend         0  avgt         351.236                 #/op
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:00:10
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 2947.313 ns/op
+# Warmup Iteration   2: 2824.857 ns/op
+# Warmup Iteration   3: 2830.519 ns/op
+# Warmup Iteration   4: 2823.877 ns/op
+# Warmup Iteration   5: 3045.484 ns/op
+Iteration   1: 3055.244 ns/op
+Iteration   2: 2816.125 ns/op
+Iteration   3: 2848.676 ns/op
+Iteration   4: 2818.806 ns/op
+Iteration   5: 2822.841 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  2872.338 ±(99.9%) 396.869 ns/op [Average]
+  (min, avg, max) = (2816.125, 2872.338, 3055.244), stdev = 103.066
+  CI (99.9%): [2475.469, 3269.208] (assumes normal distribution)
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:CPI":
+  0.212 clks/insn
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:IPC":
+  4.723 insns/clk
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:L1-dcache-load-misses":
+  28.579 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:L1-dcache-loads":
+  16952.710 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:L1-icache-load-misses":
+  0.380 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:L1-icache-loads":
+  175.391 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:branch-misses":
+  12.303 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:branches":
+  11394.192 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:cycles":
+  12504.470 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:dTLB-load-misses":
+  0.335 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:dTLB-loads":
+  1.971 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:iTLB-load-misses":
+  0.177 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:iTLB-loads":
+  0.023 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:instructions":
+  59061.561 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:stalled-cycles-frontend":
+  408.501 #/op
+
+
+# Run complete. Total time: 00:00:10
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                              (strLen)  Mode  Cnt      Score     Error      Units
+ExtendedPersonBench.serialize                                 0  avgt    5   2872.338 ± 396.869      ns/op
+ExtendedPersonBench.serialize:CPI                             0  avgt           0.212            clks/insn
+ExtendedPersonBench.serialize:IPC                             0  avgt           4.723            insns/clk
+ExtendedPersonBench.serialize:L1-dcache-load-misses           0  avgt          28.579                 #/op
+ExtendedPersonBench.serialize:L1-dcache-loads                 0  avgt       16952.710                 #/op
+ExtendedPersonBench.serialize:L1-icache-load-misses           0  avgt           0.380                 #/op
+ExtendedPersonBench.serialize:L1-icache-loads                 0  avgt         175.391                 #/op
+ExtendedPersonBench.serialize:branch-misses                   0  avgt          12.303                 #/op
+ExtendedPersonBench.serialize:branches                        0  avgt       11394.192                 #/op
+ExtendedPersonBench.serialize:cycles                          0  avgt       12504.470                 #/op
+ExtendedPersonBench.serialize:dTLB-load-misses                0  avgt           0.335                 #/op
+ExtendedPersonBench.serialize:dTLB-loads                      0  avgt           1.971                 #/op
+ExtendedPersonBench.serialize:iTLB-load-misses                0  avgt           0.177                 #/op
+ExtendedPersonBench.serialize:iTLB-loads                      0  avgt           0.023                 #/op
+ExtendedPersonBench.serialize:instructions                    0  avgt       59061.561                 #/op
+ExtendedPersonBench.serialize:stalled-cycles-frontend         0  avgt         408.501                 #/op

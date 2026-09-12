@@ -1,0 +1,96 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-6183.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms2g -Xmx2g -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 2 s each
+# Measurement: 5 iterations, 2 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (strLen = 64)
+
+# Run progress: 0.00% complete, ETA 00:00:20
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfNormProfiler 
+# Profilers consume stderr from target VM, use -v EXTRA to copy to console
+# Warmup Iteration   1: 8055.916 ns/op
+# Warmup Iteration   2: 7814.176 ns/op
+# Warmup Iteration   3: 7803.336 ns/op
+# Warmup Iteration   4: 7804.765 ns/op
+# Warmup Iteration   5: 7794.911 ns/op
+Iteration   1: 7796.903 ns/op
+Iteration   2: 7798.442 ns/op
+Iteration   3: 7793.734 ns/op
+Iteration   4: 7803.289 ns/op
+Iteration   5: 7804.314 ns/op
+# Processing profiler results: LinuxPerfNormProfiler 
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  7799.336 ±(99.9%) 17.059 ns/op [Average]
+  (min, avg, max) = (7793.734, 7799.336, 7804.314), stdev = 4.430
+  CI (99.9%): [7782.278, 7816.395] (assumes normal distribution)
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:CPI":
+  0.195 clks/insn
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:IPC":
+  5.138 insns/clk
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:cycles":
+  33231.808 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:de_no_dispatch_per_slot.backend_stalls":
+  42465.285 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:ex_ret_brn_misp":
+  5.534 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:ex_ret_brn_tkn":
+  5191.517 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:ex_ret_fused_instr":
+  35153.788 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:ex_ret_ops":
+  154526.351 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:instructions":
+  170754.247 #/op
+
+Secondary result "bench.paths.ExtendedPersonBench.serialize:op_cache_hit_miss.op_cache_miss":
+  130.706 #/op
+
+
+# Run complete. Total time: 00:00:20
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                                             (strLen)  Mode  Cnt       Score    Error      Units
+ExtendedPersonBench.serialize                                               64  avgt    5    7799.336 ± 17.059      ns/op
+ExtendedPersonBench.serialize:CPI                                           64  avgt            0.195           clks/insn
+ExtendedPersonBench.serialize:IPC                                           64  avgt            5.138           insns/clk
+ExtendedPersonBench.serialize:cycles                                        64  avgt        33231.808                #/op
+ExtendedPersonBench.serialize:de_no_dispatch_per_slot.backend_stalls        64  avgt        42465.285                #/op
+ExtendedPersonBench.serialize:ex_ret_brn_misp                               64  avgt            5.534                #/op
+ExtendedPersonBench.serialize:ex_ret_brn_tkn                                64  avgt         5191.517                #/op
+ExtendedPersonBench.serialize:ex_ret_fused_instr                            64  avgt        35153.788                #/op
+ExtendedPersonBench.serialize:ex_ret_ops                                    64  avgt       154526.351                #/op
+ExtendedPersonBench.serialize:instructions                                  64  avgt       170754.247                #/op
+ExtendedPersonBench.serialize:op_cache_hit_miss.op_cache_miss               64  avgt          130.706                #/op

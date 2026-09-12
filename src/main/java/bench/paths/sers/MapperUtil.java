@@ -27,6 +27,27 @@ public final class MapperUtil {
         }
     }
 
+    /**
+     * Experiment: same as below, but with the nested bean's serializer already resolved by the caller.
+     * The class guard keeps the semantics of the lookup for a subclass or any other runtime type.
+     * Kept out of line like the original, so only the lookup differs between the two arms.
+     */
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    public static void serializePojo(ValueSerializer<Object> resolved, Class<?> resolvedType, Object value,
+            Object bean, JsonGenerator generator, SerializationContext ctxt) {
+        if (value == null) {
+            generator.writePOJO(value);
+            return;
+        }
+        ValueSerializer<Object> serializer = (value.getClass() == resolvedType) ? resolved
+                : ctxt.findTypedValueSerializer(value.getClass(), true);
+        if (serializer != null) {
+            serializer.serialize(value, generator, ctxt);
+        } else {
+            generator.writePOJO(value);
+        }
+    }
+
     /** Not inlined: the second of the two physical frames in the application's profile. */
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     public static void serializePojo(Object value, Object bean, JsonGenerator generator,

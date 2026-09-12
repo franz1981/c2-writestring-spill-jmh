@@ -1,0 +1,559 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (gen = main, strLen = 0)
+
+# Run progress: 0.00% complete, ETA 00:04:00
+# Fork: 1 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2951.674 ns/op
+# Warmup Iteration   2: 2844.665 ns/op
+# Warmup Iteration   3: 2857.531 ns/op
+# Warmup Iteration   4: 2934.739 ns/op
+# Warmup Iteration   5: 3023.466 ns/op
+Iteration   1: 3087.864 ns/op
+Iteration   2: 2842.538 ns/op
+Iteration   3: 2811.625 ns/op
+Iteration   4: 2842.036 ns/op
+Iteration   5: 3008.130 ns/op
+
+# Run progress: 4.17% complete, ETA 00:03:58
+# Fork: 2 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 3053.609 ns/op
+# Warmup Iteration   2: 2856.003 ns/op
+# Warmup Iteration   3: 2855.908 ns/op
+# Warmup Iteration   4: 2849.888 ns/op
+# Warmup Iteration   5: 2950.001 ns/op
+Iteration   1: 3015.241 ns/op
+Iteration   2: 2859.998 ns/op
+Iteration   3: 2835.366 ns/op
+Iteration   4: 2832.146 ns/op
+Iteration   5: 2847.819 ns/op
+
+# Run progress: 8.33% complete, ETA 00:03:48
+# Fork: 3 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2940.115 ns/op
+# Warmup Iteration   2: 2802.810 ns/op
+# Warmup Iteration   3: 2822.851 ns/op
+# Warmup Iteration   4: 2826.029 ns/op
+# Warmup Iteration   5: 3119.660 ns/op
+Iteration   1: 3210.804 ns/op
+Iteration   2: 2876.217 ns/op
+Iteration   3: 2818.786 ns/op
+Iteration   4: 2794.388 ns/op
+Iteration   5: 2831.277 ns/op
+
+# Run progress: 12.50% complete, ETA 00:03:37
+# Fork: 4 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2934.221 ns/op
+# Warmup Iteration   2: 2829.275 ns/op
+# Warmup Iteration   3: 2850.777 ns/op
+# Warmup Iteration   4: 2838.867 ns/op
+# Warmup Iteration   5: 3007.002 ns/op
+Iteration   1: 3078.676 ns/op
+Iteration   2: 2853.064 ns/op
+Iteration   3: 2835.610 ns/op
+Iteration   4: 2820.645 ns/op
+Iteration   5: 2910.859 ns/op
+
+# Run progress: 16.67% complete, ETA 00:03:27
+# Fork: 5 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2961.854 ns/op
+# Warmup Iteration   2: 2844.729 ns/op
+# Warmup Iteration   3: 2864.226 ns/op
+# Warmup Iteration   4: 2853.481 ns/op
+# Warmup Iteration   5: 3131.836 ns/op
+Iteration   1: 3301.919 ns/op
+Iteration   2: 2904.239 ns/op
+Iteration   3: 2818.006 ns/op
+Iteration   4: 2852.975 ns/op
+Iteration   5: 3080.117 ns/op
+
+# Run progress: 20.83% complete, ETA 00:03:17
+# Fork: 6 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2942.125 ns/op
+# Warmup Iteration   2: 2824.309 ns/op
+# Warmup Iteration   3: 2835.322 ns/op
+# Warmup Iteration   4: 2840.181 ns/op
+# Warmup Iteration   5: 2947.671 ns/op
+Iteration   1: 3115.629 ns/op
+Iteration   2: 2840.552 ns/op
+Iteration   3: 2821.018 ns/op
+Iteration   4: 2830.564 ns/op
+Iteration   5: 2857.731 ns/op
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  2914.528 ±(99.9%) 88.743 ns/op [Average]
+  (min, avg, max) = (2794.388, 2914.528, 3301.919), stdev = 132.827
+  CI (99.9%): [2825.785, 3003.271] (assumes normal distribution)
+
+
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.ExtendedPersonBench.serialize
+# Parameters: (gen = nested, strLen = 0)
+
+# Run progress: 25.00% complete, ETA 00:03:06
+# Fork: 1 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2908.565 ns/op
+# Warmup Iteration   2: 2861.847 ns/op
+# Warmup Iteration   3: 2823.155 ns/op
+# Warmup Iteration   4: 2794.670 ns/op
+# Warmup Iteration   5: 2968.776 ns/op
+Iteration   1: 3065.549 ns/op
+Iteration   2: 2787.575 ns/op
+Iteration   3: 2789.537 ns/op
+Iteration   4: 2790.057 ns/op
+Iteration   5: 2808.889 ns/op
+
+# Run progress: 29.17% complete, ETA 00:02:56
+# Fork: 2 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2858.427 ns/op
+# Warmup Iteration   2: 2752.940 ns/op
+# Warmup Iteration   3: 2793.095 ns/op
+# Warmup Iteration   4: 3034.669 ns/op
+# Warmup Iteration   5: 3176.932 ns/op
+Iteration   1: 2807.478 ns/op
+Iteration   2: 2734.736 ns/op
+Iteration   3: 2835.546 ns/op
+Iteration   4: 2799.721 ns/op
+Iteration   5: 2812.287 ns/op
+
+# Run progress: 33.33% complete, ETA 00:02:45
+# Fork: 3 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2774.249 ns/op
+# Warmup Iteration   2: 2657.790 ns/op
+# Warmup Iteration   3: 2677.698 ns/op
+# Warmup Iteration   4: 2677.812 ns/op
+# Warmup Iteration   5: 3407.022 ns/op
+Iteration   1: 4103.661 ns/op
+Iteration   2: 2901.515 ns/op
+Iteration   3: 2677.647 ns/op
+Iteration   4: 2660.876 ns/op
+Iteration   5: 2687.959 ns/op
+
+# Run progress: 37.50% complete, ETA 00:02:35
+# Fork: 4 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2843.930 ns/op
+# Warmup Iteration   2: 2755.157 ns/op
+# Warmup Iteration   3: 2867.849 ns/op
+# Warmup Iteration   4: 3104.531 ns/op
+# Warmup Iteration   5: 2960.303 ns/op
+Iteration   1: 2762.726 ns/op
+Iteration   2: 2743.324 ns/op
+Iteration   3: 2850.020 ns/op
+Iteration   4: 2919.193 ns/op
+Iteration   5: 2808.362 ns/op
+
+# Run progress: 41.67% complete, ETA 00:02:25
+# Fork: 5 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2856.417 ns/op
+# Warmup Iteration   2: 2743.956 ns/op
+# Warmup Iteration   3: 2750.328 ns/op
+# Warmup Iteration   4: 2737.190 ns/op
+# Warmup Iteration   5: 2882.741 ns/op
+Iteration   1: 2974.556 ns/op
+Iteration   2: 2766.787 ns/op
+Iteration   3: 2742.141 ns/op
+Iteration   4: 2759.383 ns/op
+Iteration   5: 2734.837 ns/op
+
+# Run progress: 45.83% complete, ETA 00:02:14
+# Fork: 6 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: 2792.133 ns/op
+# Warmup Iteration   2: 2675.168 ns/op
+# Warmup Iteration   3: 2696.862 ns/op
+# Warmup Iteration   4: 2719.838 ns/op
+# Warmup Iteration   5: 2848.414 ns/op
+Iteration   1: 2857.617 ns/op
+Iteration   2: 2671.819 ns/op
+Iteration   3: 2676.405 ns/op
+Iteration   4: 2730.688 ns/op
+Iteration   5: 2797.909 ns/op
+
+
+Result "bench.paths.ExtendedPersonBench.serialize":
+  2835.293 ±(99.9%) 170.925 ns/op [Average]
+  (min, avg, max) = (2660.876, 2835.293, 4103.661), stdev = 255.833
+  CI (99.9%): [2664.368, 3006.219] (assumes normal distribution)
+
+
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.MicronautBench.serialize
+# Parameters: (serde = generated, strLen = 0)
+
+# Run progress: 50.00% complete, ETA 00:02:04
+# Fork: 1 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3188.706 ns/op
+# Warmup Iteration   2: 2947.697 ns/op
+# Warmup Iteration   3: 2977.473 ns/op
+# Warmup Iteration   4: 3120.990 ns/op
+# Warmup Iteration   5: 3115.173 ns/op
+Iteration   1: 3075.845 ns/op
+Iteration   2: 2948.695 ns/op
+Iteration   3: 2950.187 ns/op
+Iteration   4: 2944.614 ns/op
+Iteration   5: 3007.700 ns/op
+
+# Run progress: 54.17% complete, ETA 00:01:54
+# Fork: 2 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3202.614 ns/op
+# Warmup Iteration   2: 2997.392 ns/op
+# Warmup Iteration   3: 2962.690 ns/op
+# Warmup Iteration   4: 2964.232 ns/op
+# Warmup Iteration   5: 3105.345 ns/op
+Iteration   1: 3146.255 ns/op
+Iteration   2: 2981.018 ns/op
+Iteration   3: 2970.721 ns/op
+Iteration   4: 2951.157 ns/op
+Iteration   5: 2984.284 ns/op
+
+# Run progress: 58.33% complete, ETA 00:01:43
+# Fork: 3 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3153.759 ns/op
+# Warmup Iteration   2: 2959.360 ns/op
+# Warmup Iteration   3: 3308.000 ns/op
+# Warmup Iteration   4: 3336.748 ns/op
+# Warmup Iteration   5: 3139.965 ns/op
+Iteration   1: 2952.039 ns/op
+Iteration   2: 3009.942 ns/op
+Iteration   3: 2959.417 ns/op
+Iteration   4: 3203.363 ns/op
+Iteration   5: 3261.122 ns/op
+
+# Run progress: 62.50% complete, ETA 00:01:33
+# Fork: 4 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3161.735 ns/op
+# Warmup Iteration   2: 2931.286 ns/op
+# Warmup Iteration   3: 2958.506 ns/op
+# Warmup Iteration   4: 3006.101 ns/op
+# Warmup Iteration   5: 3401.129 ns/op
+Iteration   1: 3319.764 ns/op
+Iteration   2: 3034.751 ns/op
+Iteration   3: 2974.347 ns/op
+Iteration   4: 2959.648 ns/op
+Iteration   5: 2985.300 ns/op
+
+# Run progress: 66.67% complete, ETA 00:01:23
+# Fork: 5 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3236.599 ns/op
+# Warmup Iteration   2: 2984.527 ns/op
+# Warmup Iteration   3: 3024.040 ns/op
+# Warmup Iteration   4: 3030.853 ns/op
+# Warmup Iteration   5: 3683.671 ns/op
+Iteration   1: 4277.220 ns/op
+Iteration   2: 3420.561 ns/op
+Iteration   3: 2993.861 ns/op
+Iteration   4: 3002.745 ns/op
+Iteration   5: 2986.965 ns/op
+
+# Run progress: 70.83% complete, ETA 00:01:12
+# Fork: 6 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut generated wrote 2821 bytes
+3192.668 ns/op
+# Warmup Iteration   2: 2999.928 ns/op
+# Warmup Iteration   3: 3006.555 ns/op
+# Warmup Iteration   4: 3028.860 ns/op
+# Warmup Iteration   5: 3198.821 ns/op
+Iteration   1: 3228.454 ns/op
+Iteration   2: 3056.983 ns/op
+Iteration   3: 2999.677 ns/op
+Iteration   4: 2979.268 ns/op
+Iteration   5: 3017.185 ns/op
+
+
+Result "bench.paths.MicronautBench.serialize":
+  3086.103 ±(99.9%) 171.053 ns/op [Average]
+  (min, avg, max) = (2944.614, 3086.103, 4277.220), stdev = 256.025
+  CI (99.9%): [2915.050, 3257.156] (assumes normal distribution)
+
+
+# JMH version: 1.37
+# VM version: JDK 25, Java HotSpot(TM) 64-Bit Server VM, 25+37-LTS-3491
+# VM invoker: /home/forked_franz/.sdkman/candidates/java/25-oracle/bin/java
+# VM options: -Xms1g -Xmx1g -XX:+UseParallelGC -XX:+AlwaysPreTouch
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: bench.paths.MicronautBench.serialize
+# Parameters: (serde = runtime, strLen = 0)
+
+# Run progress: 75.00% complete, ETA 00:01:02
+# Fork: 1 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+3957.909 ns/op
+# Warmup Iteration   2: 3703.103 ns/op
+# Warmup Iteration   3: 3745.841 ns/op
+# Warmup Iteration   4: 3743.340 ns/op
+# Warmup Iteration   5: 3869.168 ns/op
+Iteration   1: 3878.013 ns/op
+Iteration   2: 3858.333 ns/op
+Iteration   3: 3735.620 ns/op
+Iteration   4: 3703.707 ns/op
+Iteration   5: 3746.933 ns/op
+
+# Run progress: 79.17% complete, ETA 00:00:52
+# Fork: 2 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+3978.089 ns/op
+# Warmup Iteration   2: 3741.951 ns/op
+# Warmup Iteration   3: 3784.801 ns/op
+# Warmup Iteration   4: 4090.727 ns/op
+# Warmup Iteration   5: 4041.873 ns/op
+Iteration   1: 4117.810 ns/op
+Iteration   2: 3910.875 ns/op
+Iteration   3: 3896.072 ns/op
+Iteration   4: 3749.601 ns/op
+Iteration   5: 3952.628 ns/op
+
+# Run progress: 83.33% complete, ETA 00:00:41
+# Fork: 3 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+3935.921 ns/op
+# Warmup Iteration   2: 3696.405 ns/op
+# Warmup Iteration   3: 3745.387 ns/op
+# Warmup Iteration   4: 3739.267 ns/op
+# Warmup Iteration   5: 3911.621 ns/op
+Iteration   1: 4119.935 ns/op
+Iteration   2: 4131.427 ns/op
+Iteration   3: 3752.466 ns/op
+Iteration   4: 3719.250 ns/op
+Iteration   5: 3730.322 ns/op
+
+# Run progress: 87.50% complete, ETA 00:00:31
+# Fork: 4 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+3998.259 ns/op
+# Warmup Iteration   2: 3723.575 ns/op
+# Warmup Iteration   3: 3783.133 ns/op
+# Warmup Iteration   4: 3812.434 ns/op
+# Warmup Iteration   5: 3924.877 ns/op
+Iteration   1: 4168.840 ns/op
+Iteration   2: 4118.693 ns/op
+Iteration   3: 3881.929 ns/op
+Iteration   4: 3981.579 ns/op
+Iteration   5: 3988.385 ns/op
+
+# Run progress: 91.67% complete, ETA 00:00:20
+# Fork: 5 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+4053.943 ns/op
+# Warmup Iteration   2: 3809.990 ns/op
+# Warmup Iteration   3: 3820.602 ns/op
+# Warmup Iteration   4: 3752.806 ns/op
+# Warmup Iteration   5: 3864.503 ns/op
+Iteration   1: 3945.150 ns/op
+Iteration   2: 3969.147 ns/op
+Iteration   3: 3753.259 ns/op
+Iteration   4: 3733.789 ns/op
+Iteration   5: 3745.432 ns/op
+
+# Run progress: 95.83% complete, ETA 00:00:10
+# Fork: 6 of 6
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.openjdk.jmh.util.Utils (file:/home/forked_franz/IdeaProjects/c2-writestring-spill-jmh/arms/benchmarks-both.jar)
+WARNING: Please consider reporting this to the maintainers of class org.openjdk.jmh.util.Utils
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+# Warmup Iteration   1: SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+# micronaut runtime wrote 2821 bytes
+3939.505 ns/op
+# Warmup Iteration   2: 3706.103 ns/op
+# Warmup Iteration   3: 3758.954 ns/op
+# Warmup Iteration   4: 3778.461 ns/op
+# Warmup Iteration   5: 3869.692 ns/op
+Iteration   1: 3890.371 ns/op
+Iteration   2: 3892.187 ns/op
+Iteration   3: 3723.297 ns/op
+Iteration   4: 3707.029 ns/op
+Iteration   5: 3723.612 ns/op
+
+
+Result "bench.paths.MicronautBench.serialize":
+  3874.190 ±(99.9%) 99.549 ns/op [Average]
+  (min, avg, max) = (3703.707, 3874.190, 4168.840), stdev = 149.000
+  CI (99.9%): [3774.641, 3973.739] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:04:10
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                       (gen)    (serde)  (strLen)  Mode  Cnt     Score     Error  Units
+ExtendedPersonBench.serialize    main        N/A         0  avgt   30  2914.528 ±  88.743  ns/op
+ExtendedPersonBench.serialize  nested        N/A         0  avgt   30  2835.293 ± 170.925  ns/op
+MicronautBench.serialize          N/A  generated         0  avgt   30  3086.103 ± 171.053  ns/op
+MicronautBench.serialize          N/A    runtime         0  avgt   30  3874.190 ±  99.549  ns/op

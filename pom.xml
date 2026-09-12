@@ -35,6 +35,13 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- Jackson's own per-bean accessor design (ByteBuddy-generated BeanPropertyAccessor + typed
+             OptimizedBeanPropertyWriters), for AfterburnerBench: same shape as the Quarkus accessor branch. -->
+        <dependency>
+            <groupId>tools.jackson.module</groupId>
+            <artifactId>jackson-module-afterburner</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
