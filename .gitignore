@@ -2,3 +2,6 @@ target/
 dependency-reduced-pom.xml
 *.iml
 .idea/
+asm-dumps/
+scripts/
+*.asm
