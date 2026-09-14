@@ -103,7 +103,8 @@ The JSON is identical to the application's:
 `{"address":{"city":…,"street":…},"age":30,"car":{"brand":…,"model":…},"firstName":…,"familyName":…}`
 
 `ReflectiveBench` is the other arm of the application - Jackson's own bean serializers with the
-mapper configured as Quarkus configures it (`QuarkusMapper`), nothing annotated. There the
+mapper configured as Quarkus configures it (`QuarkusMapper`), nothing annotated; run it the same way
+(`java -jar target/benchmarks.jar ReflectiveBench`). There the
 per-property serializer call is megamorphic, so `StringSerializer.serialize` is compiled once as
 its own root with one copy loop, shared by all six properties.
 
@@ -120,7 +121,6 @@ Both patches, 64-char strings: 8,151 ns/op under ParallelGC vs 7,453 under G1; P
 restored inside the unrolled loop, so the cost is per character copied: at the application's 4-11
 character values it is within noise, and it is the longer strings that expose it. See the `@Fork`
 comment in `ExtendedPersonBench`.
-
 
 ```
 mvn clean package
@@ -143,6 +143,7 @@ java -jar target/benchmarks.jar 'ExtendedPersonBench.serialize$' -f 1 -jvmArgsAp
 ```
 
 (dotted class names with `::`; the `/`-separated form is rejected together with `::`.)
+This needs `hsdis` on the library path; without it the output is hex with no mnemonics.
 
 ### What is observed, and what is not established
 
@@ -167,7 +168,7 @@ case to fix; `serializeWriteStringNotInlined` is the control.
 
 Total on the inlined case **-22.2%**, and nothing regresses at any step. After #6183 the inlined case is 4.0 % **faster** than the control - the gap does not just close, it reverses.
 
-On this branch #6183 does not measurably move the not-inlined case (373.151 -> 371.751, and that run has a ±22.68 error), while #1681 does (-5.8%).
+#6183 does not measurably move the not-inlined case (373.151 -> 371.751, and that run has a ±22.68 error), while #1681 does (-5.8%).
 
 ## The loop, compiled
 
@@ -186,7 +187,7 @@ Hot method is `bench.flat.FlatSer::serialize` with `writeString` inlined, identi
 mvn clean package
 java -jar target/benchmarks.jar SingleBench                     # released jars = the "no fix" column (3.1.5 when these were taken; pom.xml now pins 3.1.4)
 java -jar target/benchmarks.jar SingleBench -f 10               # fixed builds are bimodal, use 10 forks
-java -jar target/benchmarks.jar SingleBench.serialize -f 1 -prof perfasm
+java -jar target/benchmarks.jar 'SingleBench.serialize$' -f 1 -prof perfasm   # $ or it also profiles the control
 ```
 
 ## Reproducing the fixed builds
@@ -195,7 +196,7 @@ The released jars are shaded into `target/benchmarks.jar`, so the simplest route
 two classes and replace them inside that jar.
 
 ```bash
-V=3.1.5
+V=3.1.4  # must match <jackson.version> in pom.xml
 mvn -q dependency:copy -Dartifact=tools.jackson.core:jackson-core:$V:jar:sources -DoutputDirectory=.
 mvn -q dependency:copy -Dartifact=tools.jackson.core:jackson-databind:$V:jar:sources -DoutputDirectory=.
 unzip -o jackson-core-$V-sources.jar     'tools/jackson/core/json/UTF8JsonGenerator.java' -d src
