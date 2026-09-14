@@ -1,0 +1,89 @@
+name: escape-filter across architectures
+
+# Does the jackson-core#1707 getChars() change, and the 64K escape table, behave the same on
+# aarch64 as on x86-64? On x86 charAt compiles to movsbl+movzbl (two instructions) while a char[]
+# read is one movzwl, which is where getChars() earns its keep. aarch64's ldrb zero-extends
+# natively, so that saving may not exist there. This workflow measures it instead of guessing.
+
+on:
+  # workflow_dispatch only works from the default branch, so a push to this branch triggers it too.
+  push:
+    branches: [ 'ci/arch-bench' ]
+  workflow_dispatch:
+    inputs:
+      forks:
+        description: JMH forks per arm
+        default: "5"
+      arms:
+        description: space-separated arms (base const t64k gc gct64k)
+        default: "base const t64k gc gct64k"
+
+jobs:
+  bench:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04,     arch: x86_64  }
+          - { os: ubuntu-24.04-arm, arch: aarch64 }
+          - { os: macos-14,         arch: aarch64 }
+    name: ${{ matrix.os }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Environment
+        run: |
+          uname -a
+          java -version 2>&1
+          echo "--- cpu"
+          (lscpu 2>/dev/null || sysctl -a | grep -E 'machdep.cpu|hw.model|hw.ncpu') | head -25
+
+      - name: Build variants
+        run: ./ci/build-variants.sh ${{ inputs.arms  || 'base const t64k gc gct64k' }}
+
+      - name: Output must be byte-identical to unpatched Jackson
+        run: ./ci/check-variants.sh
+
+      - name: Throughput
+        run: |
+          mkdir -p results
+          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k' }}; do
+            for sl in 0 64; do
+              echo "=== $arm strLen=$sl"
+              java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
+                -p strLen=$sl \
+                -f ${{ inputs.forks || '5' }} -wi 5 -i 5 -r 1 \
+                -rf json -rff results/$arm-len$sl.json 2>&1 | tail -3
+            done
+          done
+
+      # Instructions per op is the measurement that answers the aarch64 question without needing a
+      # disassembler: if getChars() saves an instruction per character on x86 but not on ARM, it shows
+      # up here. perf is not always permitted on hosted runners, so this is best effort.
+      - name: Hardware counters (Linux only, best effort)
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y linux-tools-common linux-tools-generic || true
+          sudo sysctl -w kernel.perf_event_paranoid=1 || true
+          perf --version || echo "perf unavailable"
+          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k' }}; do
+            for sl in 0 64; do
+              echo "=== $arm strLen=$sl"
+              java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
+                -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 -prof perfnorm 2>&1 \
+                | grep -E ':(instructions|cycles|branches|branch-misses|IPC|L1-dcache-loads)\b' || true
+            done
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.os }}-${{ matrix.arch }}
+          path: results/
