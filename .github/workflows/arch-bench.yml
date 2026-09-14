@@ -64,9 +64,11 @@ jobs:
             done
           done
 
-      # Instructions per op is the measurement that answers the aarch64 question without needing a
-      # disassembler: if getChars() saves an instruction per character on x86 but not on ARM, it shows
-      # up here. perf is not always permitted on hosted runners, so this is best effort.
+      # Instructions per op answers the aarch64 question without needing a disassembler: if getChars()
+      # saves an instruction per character on x86 but not on ARM, it shows up here.
+      # The events must be listed explicitly - perfnorm's default set includes '#slots', an x86
+      # topdown-methodology event that does not exist on aarch64, and its absence makes the whole
+      # profiler refuse to initialize ("Failure to read '#slots'").
       - name: Hardware counters (Linux only, best effort)
         if: runner.os == 'Linux'
         continue-on-error: true
@@ -83,7 +85,9 @@ jobs:
               echo "=== $arm strLen=$sl"
               # Do NOT filter: a grep here hides whatever perfnorm is complaining about.
               java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
-                -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 -prof perfnorm > perfnorm-$arm-len$sl.log 2>&1 \
+                -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 \
+                -prof 'perfnorm:events=instructions,cycles,branch-instructions,branch-misses' \
+                > perfnorm-$arm-len$sl.log 2>&1 \
                 || echo "perfnorm exited non-zero for $arm len$sl"
               tail -40 perfnorm-$arm-len$sl.log
             done
