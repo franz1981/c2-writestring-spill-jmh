@@ -17,9 +17,6 @@ on:
       arms:
         description: space-separated arms
         default: "base const t64k gc gct64k gcconst"
-      arch:
-        description: aarch64 | x86_64 | all
-        default: "aarch64"
 
 jobs:
   bench:
@@ -27,12 +24,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-24.04,     arch: x86_64  }
+          # x86-64 measured in run 34900140779; uncomment to re-run both architectures together
+          # - { os: ubuntu-24.04,     arch: x86_64  }
           - { os: ubuntu-24.04-arm, arch: aarch64 }
           - { os: macos-14,         arch: aarch64 }
     name: ${{ matrix.os }} (${{ matrix.arch }})
-    # x86-64 is already measured; default to aarch64 only. Dispatch with arch=all for both.
-    if: ${{ (inputs.arch || 'aarch64') == 'all' || matrix.arch == (inputs.arch || 'aarch64') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
