@@ -7,6 +7,7 @@ Arms (all also carry jackson-databind #6183, so the charAt MDO-pollution issue i
   t64k    64K byte table indexed by the char, no bounds check (franz1981's PR comment)
   gc      #1707 core change: getChars() into _charBuffer, scan the char[]
   gct64k  gc + t64k
+  gcconst gc + const
 """
 import os, sys
 
@@ -133,3 +134,4 @@ build("const",  core, test=CONST_TEST)
 build("t64k",   core, test=T64K_TEST, table=True)
 build("gc",     core, getchars=True)
 build("gct64k", core, test=T64K_TEST, table=True, getchars=True)
+build("gcconst", core, test=CONST_TEST, getchars=True)

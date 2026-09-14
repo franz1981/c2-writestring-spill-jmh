@@ -14,7 +14,7 @@ V=$(sed -n 's/.*<jackson.version>\(.*\)<\/jackson.version>.*/\1/p' pom.xml)
 echo "==> jackson $V"
 
 ARMS=("$@")
-[ ${#ARMS[@]} -eq 0 ] && ARMS=(base const t64k gc gct64k)
+[ ${#ARMS[@]} -eq 0 ] && ARMS=(base const t64k gc gct64k gcconst)
 
 mvn -q -DskipTests package
 mvn -q dependency:copy -Dartifact=tools.jackson.core:jackson-core:$V:jar:sources -DoutputDirectory=target/srcjars

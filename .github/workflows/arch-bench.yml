@@ -15,8 +15,11 @@ on:
         description: JMH forks per arm
         default: "5"
       arms:
-        description: space-separated arms (base const t64k gc gct64k)
-        default: "base const t64k gc gct64k"
+        description: space-separated arms
+        default: "base const t64k gc gct64k gcconst"
+      arch:
+        description: aarch64 | x86_64 | all
+        default: "aarch64"
 
 jobs:
   bench:
@@ -28,6 +31,8 @@ jobs:
           - { os: ubuntu-24.04-arm, arch: aarch64 }
           - { os: macos-14,         arch: aarch64 }
     name: ${{ matrix.os }} (${{ matrix.arch }})
+    # x86-64 is already measured; default to aarch64 only. Dispatch with arch=all for both.
+    if: ${{ (inputs.arch || 'aarch64') == 'all' || matrix.arch == (inputs.arch || 'aarch64') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +50,7 @@ jobs:
           (lscpu 2>/dev/null || sysctl -a | grep -E 'machdep.cpu|hw.model|hw.ncpu') | head -25
 
       - name: Build variants
-        run: ./ci/build-variants.sh ${{ inputs.arms  || 'base const t64k gc gct64k' }}
+        run: ./ci/build-variants.sh ${{ inputs.arms  || 'base const t64k gc gct64k gcconst' }}
 
       - name: Output must be byte-identical to unpatched Jackson
         run: ./ci/check-variants.sh
@@ -53,7 +58,7 @@ jobs:
       - name: Throughput
         run: |
           mkdir -p results
-          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k' }}; do
+          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k gcconst' }}; do
             for sl in 0 64; do
               echo "=== $arm strLen=$sl"
               java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
@@ -73,8 +78,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y linux-tools-common linux-tools-generic || true
           sudo sysctl -w kernel.perf_event_paranoid=1 || true
+          echo "perf_event_paranoid = $(cat /proc/sys/kernel/perf_event_paranoid)"
           perf --version || echo "perf unavailable"
-          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k' }}; do
+          # Does perf actually collect anything here? JMH swallows the failure, so ask directly.
+          perf stat -e instructions,cycles true || echo "perf stat FAILED - counters unavailable on this runner"
+          for arm in ${{ inputs.arms  || 'base const t64k gc gct64k gcconst' }}; do
             for sl in 0 64; do
               echo "=== $arm strLen=$sl"
               java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
