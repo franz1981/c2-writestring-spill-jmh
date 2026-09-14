@@ -66,9 +66,9 @@ jobs:
 
       # Instructions per op answers the aarch64 question without needing a disassembler: if getChars()
       # saves an instruction per character on x86 but not on ARM, it shows up here.
-      # The events must be listed explicitly - perfnorm's default set includes '#slots', an x86
-      # topdown-methodology event that does not exist on aarch64, and its absence makes the whole
-      # profiler refuse to initialize ("Failure to read '#slots'").
+      # perfnorm reads '#slots' - an x86 topdown-methodology event absent on aarch64 - and refuses to
+      # initialize without it ("Failure to read '#slots'"). Naming events explicitly does NOT avoid it,
+      # so use useDefaultStat, which runs "perf stat -d -d -d" instead of an explicit counter list.
       - name: Hardware counters (Linux only, best effort)
         if: runner.os == 'Linux'
         continue-on-error: true
@@ -86,10 +86,14 @@ jobs:
               # Do NOT filter: a grep here hides whatever perfnorm is complaining about.
               java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
                 -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 \
-                -prof 'perfnorm:events=instructions,cycles,branch-instructions,branch-misses' \
-                > perfnorm-$arm-len$sl.log 2>&1 \
+                -prof 'perfnorm:useDefaultStat=true' > perfnorm-$arm-len$sl.log 2>&1 \
                 || echo "perfnorm exited non-zero for $arm len$sl"
-              tail -40 perfnorm-$arm-len$sl.log
+              grep -E 'serialize:(instructions|cycles|IPC|CPI|branch)' perfnorm-$arm-len$sl.log || tail -15 perfnorm-$arm-len$sl.log
+              # Fallback: raw perf stat totals, in case perfnorm still cannot initialize.
+              java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
+                -p strLen=$sl -f 1 -wi 3 -i 3 -r 1 -prof perf > perf-$arm-len$sl.log 2>&1 \
+                || echo "perf profiler exited non-zero for $arm len$sl"
+              grep -E '^ +[0-9,]+ +(instructions|cycles|branch)' perf-$arm-len$sl.log | head -4 || true
             done
           done
 
@@ -100,3 +104,4 @@ jobs:
           path: |
             results/
             perfnorm-*.log
+            perf-*.log
