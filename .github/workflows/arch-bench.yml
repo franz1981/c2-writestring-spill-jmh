@@ -81,13 +81,18 @@ jobs:
           for arm in ${{ inputs.arms  || 'base const t64k gc gct64k gcconst' }}; do
             for sl in 0 64; do
               echo "=== $arm strLen=$sl"
+              # Do NOT filter: a grep here hides whatever perfnorm is complaining about.
               java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
-                -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 -prof perfnorm 2>&1 \
-                | grep -E ':(instructions|cycles|branches|branch-misses|IPC|L1-dcache-loads)\b' || true
+                -p strLen=$sl -f 2 -wi 3 -i 3 -r 1 -prof perfnorm > perfnorm-$arm-len$sl.log 2>&1 \
+                || echo "perfnorm exited non-zero for $arm len$sl"
+              tail -40 perfnorm-$arm-len$sl.log
             done
           done
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: results-${{ matrix.os }}-${{ matrix.arch }}
-          path: results/
+          path: |
+            results/
+            perfnorm-*.log
