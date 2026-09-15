@@ -97,6 +97,30 @@ jobs:
             done
           done
 
+
+      # The JMH perf profilers cannot initialize on aarch64 (they read '#slots'), but plain JVM
+      # diagnostic flags work anywhere and need neither perf nor hsdis. Inlining and nmethod sizes are
+      # decided from bytecode size and profiles, so they are comparable across architectures - and the
+      # two arms that disagree between x86 and ARM are const and t64k.
+      - name: Compilation shape (no perf, no hsdis needed)
+        continue-on-error: true
+        run: |
+          echo "=== is hsdis present anywhere?"
+          find / -name 'hsdis*' 2>/dev/null | head -5 || true
+          ls "$JAVA_HOME"/lib/hsdis* 2>/dev/null || echo "none in JAVA_HOME/lib"
+          for arm in const t64k; do
+            echo "########## $arm"
+            java -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
+              -p strLen=64 -f 1 -wi 3 -i 3 -r 1 \
+              -jvmArgsAppend '-XX:+UnlockDiagnosticVMOptions -XX:+PrintCompilation -XX:+PrintInlining' \
+              > shape-$arm.log 2>&1 || echo "run failed for $arm"
+            echo "--- nmethod sizes for the methods that carry the copy loop:"
+            grep -E 'UTF8JsonGenerator::(writeString|_writeStringSegment)|MapperUtil::serializePojo|ExtendedPersonSer::serializeContent' shape-$arm.log \
+              | grep -vE '@|inline|failed' | tail -12
+            echo "--- inlining decisions around the copy loop:"
+            grep -E '_writeStringSegment|writeString' shape-$arm.log | grep -E 'inline|too big|hot method too big|already compiled' | tail -12
+          done
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,3 +129,4 @@ jobs:
             results/
             perfnorm-*.log
             perf-*.log
+            shape-*.log
