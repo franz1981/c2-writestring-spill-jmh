@@ -121,6 +121,52 @@ jobs:
             grep -E '_writeStringSegment|writeString' shape-$arm.log | grep -E 'inline|too big|hot method too big|already compiled' | tail -12
           done
 
+
+      # Real-silicon assembly. JMH's perf profilers cannot initialize on aarch64 (they read '#slots'),
+      # but -XX:CompileCommand=print needs only hsdis - a single source file from the JDK, built against
+      # Capstone and linked statically so it has no runtime dependency.
+      - name: Build hsdis (Capstone backend) and dump the copy loop
+        continue-on-error: true
+        run: |
+          set -x
+          mkdir -p hsdis && cd hsdis
+          base=https://raw.githubusercontent.com/openjdk/jdk/master/src/utils/hsdis
+          curl -fsSL -o hsdis-capstone.c "$base/capstone/hsdis-capstone.c"
+          curl -fsSL -o hsdis.h          "$base/hsdis.h"
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get install -y -qq libcapstone-dev
+            gcc -O2 -fPIC -shared -I. -I/usr/include/capstone \
+              -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" \
+              -DCAPSTONE_ARCH=CS_ARCH_ARM64 -DCAPSTONE_MODE=CS_MODE_ARM \
+              -o hsdis-aarch64.so hsdis-capstone.c /usr/lib/aarch64-linux-gnu/libcapstone.a
+            cp hsdis-aarch64.so "$JAVA_HOME/lib/"
+          else
+            brew install -q capstone
+            P=$(brew --prefix capstone)
+            clang -O2 -fPIC -dynamiclib -I. -I"$P/include/capstone" \
+              -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/darwin" \
+              -DCAPSTONE_ARCH=CS_ARCH_ARM64 -DCAPSTONE_MODE=CS_MODE_ARM \
+              -o hsdis-aarch64.dylib hsdis-capstone.c "$P/lib/libcapstone.a"
+            cp hsdis-aarch64.dylib "$JAVA_HOME/lib/"
+          fi
+          cd ..
+          # What CPU is this really? The QEMU run reported implementer 0x00, which disables
+          # model-specific C2 tuning; a real Neoverse or Apple core does not.
+          java -Xlog:os+cpu=info -version 2>&1 | head -3
+          for arm in const t64k; do
+            java -Xms512m -Xmx512m -XX:+UseParallelGC -XX:+UnlockDiagnosticVMOptions \
+              -XX:CompileCommand=quiet \
+              -XX:CompileCommand=print,bench.paths.sers.MapperUtil::serializePojo \
+              -jar target/bench-$arm.jar 'ExtendedPersonBench.serialize$' \
+              -p strLen=64 -f 0 -wi 3 -i 1 -r 1 > asm-$arm.txt 2>&1 || true
+            echo "########## $arm: hsdis loaded? (0 = yes)"
+            grep -c "hsdis library failed" asm-$arm.txt || true
+            echo "--- constant materialisation (mov/movk of the table oop) per loop:"
+            grep -cE "movk" asm-$arm.txt || true
+            echo "--- byte loads/stores, i.e. is it disassembling at all:"
+            grep -cE "\bldrb\b|\bstrb\b" asm-$arm.txt || true
+          done
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -130,3 +176,4 @@ jobs:
             perfnorm-*.log
             perf-*.log
             shape-*.log
+            asm-*.txt
